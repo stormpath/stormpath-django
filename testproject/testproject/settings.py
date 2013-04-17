@@ -1,5 +1,11 @@
 # Django settings for django_stormpath project.
 
+import os
+import sys
+
+ROOT_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
+sys.path.insert(0, os.path.abspath(os.path.join(ROOT_DIR, '..')))
+
 DEBUG = True
 TEMPLATE_DEBUG = DEBUG
 
@@ -102,10 +108,10 @@ MIDDLEWARE_CLASSES = (
     # 'django.middleware.clickjacking.XFrameOptionsMiddleware',
 )
 
-ROOT_URLCONF = 'django_stormpath.urls'
+ROOT_URLCONF = 'testproject.urls'
 
 # Python dotted path to the WSGI application used by Django's runserver.
-WSGI_APPLICATION = 'django_stormpath.wsgi.application'
+WSGI_APPLICATION = 'testproject.wsgi.application'
 
 TEMPLATE_DIRS = (
     # Put strings here, like "/home/html/django_templates" or "C:/www/django/templates".
@@ -120,15 +126,14 @@ INSTALLED_APPS = (
     'django.contrib.sites',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    # Uncomment the next line to enable the admin:
     'django.contrib.admin',
-    # Uncomment the next line to enable admin documentation:
-    # 'django.contrib.admindocs',
+    'django_stormpath',
+    'testapp'
 )
 
 AUTHENTICATION_BACKENDS = (
     'django.contrib.auth.backends.ModelBackend',
-    'backends.StormpathBackend',
+    'django_stormpath.backends.StormpathBackend',
 )
 
 # A sample logging configuration. The only tangible logging
