@@ -23,8 +23,8 @@ class StormpathBackend(object):
         except ResourceError:
             return None
 
+        user_model = get_user_model()
         try:
-            user_model = get_user_model()
             user = user_model.objects.get(
                 Q(username=account.username) | Q(email=account.email))
             user.first_name = account.given_name
