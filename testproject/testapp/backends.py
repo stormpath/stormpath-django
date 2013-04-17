@@ -14,23 +14,23 @@ class StormpathBackend(object):
     def save_user(self, user, account):
 
         save = False
-        if (user.username != account.username):
+        if user.username != account.username:
             save = True
             user.username = account.username
 
-        if (user.email != account.email):
+        if user.email != account.email:
             save = True
             user.email = account.email
 
-        if (user.first_name != account.given_name):
+        if user.first_name != account.given_name:
             save = True
             user.first_name = account.given_name
 
-        if (user.last_name != account.surname):
+        if user.last_name != account.surname:
             save = True
             user.last_name = account.surname
 
-        if (user.is_active != (account.status == enabled)):
+        if user.is_active != (account.status == enabled):
             save = True
             user.is_active = (account.status == enabled)
 
