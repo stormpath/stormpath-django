@@ -1,5 +1,11 @@
 # Django settings for django_stormpath project.
 
+import os
+import sys
+
+ROOT_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
+sys.path.insert(0, os.path.abspath(os.path.join(ROOT_DIR, '..')))
+
 DEBUG = True
 TEMPLATE_DEBUG = DEBUG
 
@@ -126,7 +132,7 @@ INSTALLED_APPS = (
 
 AUTHENTICATION_BACKENDS = (
     'django.contrib.auth.backends.ModelBackend',
-    'testapp.backends.StormpathBackend',
+    'django_stormpath.backends.StormpathBackend',
 )
 
 # A sample logging configuration. The only tangible logging
