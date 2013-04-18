@@ -9,7 +9,7 @@ The only requirement needed to run django-stormpath is stormpath-sdk for Python.
 To install:
 
     # Download from GitHub
-    git clone git@bitbucket.org/dobarkod/django-stormpath.git
+    git clone <repository>
     cd django-stormpath
 
     # Build
