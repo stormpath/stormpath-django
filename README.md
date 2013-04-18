@@ -17,3 +17,10 @@ To install:
 
     # Install it
     python setup.py install
+
+
+## Usage
+
+Add "django_stormpath" to your INSTALLED_APPS in settings.py.
+
+Add "django_stormpath.backends.StormpathBackend" to AUTHENTICATION_BACKENDS in settings.py
