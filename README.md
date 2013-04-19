@@ -1,7 +1,7 @@
 # Django Stormapth API integration
 
 A Django application that uses Stormpath SDK API calls to provide authentication and access controls.
-It works with Python 3.x.
+It works with Python 3.x and 2.7.
 
 To install:
 
@@ -21,7 +21,7 @@ The only requirement needed to run django-stormpath is stormpath-sdk for Python.
 
 
 ## How it works
-When authentication a user, Django checks the credentials in order in which they are added in settings.py until a user is either authenticated or it ran out of backends to check. This allows us to use Stormpath auth alongside regular and other Django auth backends.
+When authenticating a user, Django checks the credentials in order in which they are added in settings.py until a user is either authenticated or it ran out of backends to check. This allows us to use Stormpath auth alongside regular and other Django auth backends.
 
 When a user tries to log in and Stormpath is used as the authentication backend Django-stormpath always asks the Stormpath service if the user's credentials (username or email and password) are correct.
 If the credentials are OK, there are two possible scenarios:
