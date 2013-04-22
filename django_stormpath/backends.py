@@ -10,10 +10,9 @@ class StormpathBackend(object):
     """
     Authenticate against the settings STORMPATH_URL
 
-    The methods are authenticate and get_user, all Django auth backends
-    are required them and return a user model object for a successful authentication
-    or None otherwise. save_user is a helper function to determine if the user object
-    should be saved.
+    The methods are authenticate and get_user. All Django auth backends
+    require them. They return a user model object if authentication was successful or None.
+    save_user is a helper function to determine if the user object should be saved.
     """
 
     def save_user(self, user, account):
@@ -52,8 +51,8 @@ class StormpathBackend(object):
 
     def authenticate(self, username=None, password=None):
         """
-        Create a new user model if it doesn't already doesn't already exist or
-        return update and existing user to match the Stormpath account.
+        Create a new user model if it doesn't already exist or
+        update and existing user to match the Stormpath account.
 
         The authenticate method takes credentials as keyword arguments.
         Usually, the method is used with a username and password as arguments.
