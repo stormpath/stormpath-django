@@ -43,7 +43,7 @@ class BackendTest(TestCase):
     @mock.patch('django_stormpath.backends.StormpathBackend.check_account', allow_account)
     def test_user_creation(self):
 
-        StormpathBackend().authenticate(self.username, self.password)
+        user = StormpathBackend().authenticate(self.username, self.password)
 
         self.assertTrue(isinstance(self.user_model.objects.get(
             username=self.username,
@@ -81,6 +81,8 @@ class BackendTest(TestCase):
             password="STORMPATH")
         user.save()
 
+        # The query should only execute when fetching the Django user
+        # If Stormpath users haven't changed, the database shouldn't be queried
         with self.assertNumQueries(1):
             StormpathBackend().authenticate(self.username, self.password)
 
