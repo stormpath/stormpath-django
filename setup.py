@@ -1,6 +1,29 @@
 #!/usr/bin/env python
 
-from setuptools import setup, find_packages
+from setuptools import setup, find_packages, Command
+import os
+import sys
+
+
+class BaseCommand(Command):
+    user_options = []
+
+    def initialize_options(self):
+        pass
+
+    def finalize_options(self):
+        pass
+
+
+class TestCommand(BaseCommand):
+
+    description = "run self-tests"
+
+    def run(self):
+        os.chdir('testproject')
+        ret = os.system('make test')
+        if ret != 0:
+            sys.exit(-1)
 
 setup(
     name='django_stormpath',
@@ -23,4 +46,7 @@ setup(
     install_requires=[
         "stormpath-sdk>=0.2.0",
     ],
+    cmdclass={
+        'test': TestCommand
+    },
 )
