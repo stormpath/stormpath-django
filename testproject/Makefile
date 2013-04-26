@@ -1,4 +1,4 @@
-SETTINGS=--settings=testproject.settings.test
+SETTINGS=--settings=testproject.settings
 MANAGE=python manage.py
 
 test:
