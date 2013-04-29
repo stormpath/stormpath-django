@@ -10,11 +10,31 @@ class StormpathBackend(object):
     """
     Authenticate against the settings STORMPATH_URL
 
-    The methods are authenticate and get_user, all Django auth backends
-    are required them and return a user model object for a successful authentication
-    or None otherwise. save_user is a helper function to determine if the user object
-    should be saved.
+    The methods are authenticate and get_user. All Django auth backends
+    require them. They return a user model object if authentication was successful or None.
+    save_user is a helper function to determine if the user object should be saved.
     """
+
+    def check_account(self, href, username, password):
+        """
+        Check if Stormpath authentication works
+
+        Arguments:
+        href -- url of a Stormpath application
+        username or email
+        password
+
+        Returns an account object if successful or None otherwise
+        """
+        client_application = ClientApplicationBuilder().set_application_href(href).build()
+        application = client_application.application
+
+        try:
+            request = UsernamePasswordRequest(username, password)
+            result = application.authenticate_account(request)
+            return result.account
+        except ResourceError:
+            return None
 
     def save_user(self, user, account):
         """
@@ -46,14 +66,15 @@ class StormpathBackend(object):
             user.is_active = (account.status == enabled)
 
         if save:
+            user.password = "STORMPATH"
             user.save()
 
         return user
 
     def authenticate(self, username=None, password=None):
         """
-        Create a new user model if it doesn't already doesn't already exist or
-        return update and existing user to match the Stormpath account.
+        Create a new user model if it doesn't already exist or
+        update and existing user to match the Stormpath account.
 
         The authenticate method takes credentials as keyword arguments.
         Usually, the method is used with a username and password as arguments.
@@ -63,24 +84,16 @@ class StormpathBackend(object):
         STORMPATH_URL = "https://KeyId:KeySecret@api.stormpath.com/v1/applications/APP_UID"
         """
         href = settings.STORMPATH_URL
-        client_application = ClientApplicationBuilder().set_application_href(href).build()
-        application = client_application.application
-
-        try:
-            request = UsernamePasswordRequest(username, password)
-            result = application.authenticate_account(request)
-            account = result.account
-        except ResourceError:
-            return None
-
-        user_model = get_user_model()
-        try:
-            user = user_model.objects.get(
-                Q(username=account.username) | Q(email=account.email))
-        except user_model.DoesNotExist:
-            user = user_model(password="STORMPATH")
-
-        return self.save_user(user, account)
+        account = self.check_account(href, username, password)
+        if account:
+            user_model = get_user_model()
+            try:
+                user = user_model.objects.get(
+                    Q(username=account.username) | Q(email=account.email))
+            except user_model.DoesNotExist:
+                user = user_model(username="", password="STORMPATH")
+            return self.save_user(user, account)
+        return None
 
     def get_user(self, user_id):
         """
