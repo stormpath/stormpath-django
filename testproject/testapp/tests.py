@@ -42,7 +42,7 @@ class BackendTest(TestCase):
     def test_user_creation(self):
 
         user = StormpathBackend().authenticate(self.username, self.password)
-        self.user_model.objects.get(id=user.id)
+        self.assertTrue(self.user_model.objects.filter(id=user.id).exists())
 
     @mock.patch('django_stormpath.backends.StormpathBackend.check_account', allow_account)
     def test_user_update(self):
@@ -56,7 +56,7 @@ class BackendTest(TestCase):
 
         user = StormpathBackend().authenticate(self.username, self.password)
         dbuser = self.user_model.objects.get(id=user.id)
-        self.assertTrue(dbuser.last_name == self.surname)
+        self.assertEqual(dbuser.last_name, self.surname)
 
     @mock.patch('django_stormpath.backends.StormpathBackend.check_account', allow_account)
     def test_db_wasnt_updated(self):
@@ -72,7 +72,7 @@ class BackendTest(TestCase):
         # If Stormpath users haven't changed, the database shouldn't be queried
         with self.assertNumQueries(1):
             dbuser = StormpathBackend().authenticate(self.username, self.password)
-            self.assertTrue(user.id == dbuser.id)
+            self.assertEqual(user.id, dbuser.id)
 
     @mock.patch('django_stormpath.backends.StormpathBackend.check_account', deny_account)
     def test_invalid_credentials(self):
@@ -93,5 +93,5 @@ class BackendTest(TestCase):
         user.save()
 
         dbuser = StormpathBackend().authenticate(self.username, self.password)
-        self.assertTrue(dbuser is None)
-        self.user_model.objects.get(id=user.id)
+        self.assertIsNone(dbuser)
+        self.assertTrue(self.user_model.objects.filter(id=user.id).exists())
