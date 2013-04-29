@@ -13,23 +13,21 @@ except ImportError:
     import mock
 
 
-def allow_account(self, href, username, password):
-    account = Account()
-
-    account.username = "gangelos"
-    account.given_name = "Gabriel"
-    account.surname = "Angelos"
-    account.email = "gabriel@bloodravens.com"
-    account.status = enabled
-
-    return account
-
-
-def deny_account(self, href, username, password):
-    return None
-
-
 class BackendTest(TestCase):
+    def allow_account(self, href, username, password):
+        account = Account()
+
+        account.username = "gangelos"
+        account.given_name = "Gabriel"
+        account.surname = "Angelos"
+        account.email = "gabriel@bloodravens.com"
+        account.password = "A3palto0la"
+        account.status = enabled
+
+        return account
+
+    def deny_account(self, href, username, password):
+        return None
 
     def setUp(self):
         self.username = "gangelos"
@@ -44,13 +42,7 @@ class BackendTest(TestCase):
     def test_user_creation(self):
 
         user = StormpathBackend().authenticate(self.username, self.password)
-
-        self.assertTrue(isinstance(self.user_model.objects.get(
-            username=self.username,
-            first_name=self.given_name,
-            last_name=self.surname,
-            email=self.email,
-            password="STORMPATH"), self.user_model))
+        self.user_model.objects.get(id=user.id)
 
     @mock.patch('django_stormpath.backends.StormpathBackend.check_account', allow_account)
     def test_user_update(self):
@@ -62,14 +54,9 @@ class BackendTest(TestCase):
             password=self.password)
         user.save()
 
-        StormpathBackend().authenticate(self.username, self.password)
-
-        self.assertTrue(isinstance(self.user_model.objects.get(
-            username=self.username,
-            first_name=self.given_name,
-            last_name=self.surname,
-            email=self.email,
-            password="STORMPATH"), self.user_model))
+        user = StormpathBackend().authenticate(self.username, self.password)
+        dbuser = self.user_model.objects.get(id=user.id)
+        self.assertTrue(dbuser.last_name == self.surname)
 
     @mock.patch('django_stormpath.backends.StormpathBackend.check_account', allow_account)
     def test_db_wasnt_updated(self):
@@ -84,14 +71,8 @@ class BackendTest(TestCase):
         # The query should only execute when fetching the Django user
         # If Stormpath users haven't changed, the database shouldn't be queried
         with self.assertNumQueries(1):
-            StormpathBackend().authenticate(self.username, self.password)
-
-        self.assertTrue(isinstance(self.user_model.objects.get(
-            username=self.username,
-            first_name=self.given_name,
-            last_name=self.surname,
-            email=self.email,
-            password="STORMPATH"), self.user_model))
+            dbuser = StormpathBackend().authenticate(self.username, self.password)
+            self.assertTrue(user.id == dbuser.id)
 
     @mock.patch('django_stormpath.backends.StormpathBackend.check_account', deny_account)
     def test_invalid_credentials(self):
@@ -111,11 +92,6 @@ class BackendTest(TestCase):
             password=self.password)
         user.save()
 
-        StormpathBackend().authenticate(self.username, self.password)
-
-        self.assertTrue(isinstance(self.user_model.objects.get(
-            username=self.username,
-            first_name=self.given_name,
-            last_name=self.surname,
-            email=self.email,
-            password=self.password), self.user_model))
+        dbuser = StormpathBackend().authenticate(self.username, self.password)
+        self.assertTrue(dbuser is None)
+        self.user_model.objects.get(id=user.id)
