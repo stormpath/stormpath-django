@@ -58,7 +58,7 @@ For further information please read the [Stormpath Product Guide](http://www.sto
 
 Django-stormpath uses three settings to achieve successful authentication.
 
-    # Add STORMPATH_ID and STORMPATH_SECRET to settings.py:
+    # Add STORMPATH_ID, STORMPATH_SECRET and STORMPATH_APPLICATION to settings.py:
     STORMPATH_ID = "apiKeyId"
     STORMPATH_SECRET = "apiKeySecret"
     STORMPATH_APPLICATION = "https://api.stormpath.com/v1/applications/YOUR_APP_UID_HERE"
