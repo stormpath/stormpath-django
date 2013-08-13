@@ -160,4 +160,6 @@ LOGGING = {
     }
 }
 
-STORMPATH_URL = "https://1WDA3K4XAZAKUFRLBGP9C9SIJ:3xZg5zO4jkEg/4vQLRdHYY44V9HXj5j1+V+Q08npSF0@api.stormpath.com/v1/applications/5axrt89PmoFCDldOxpkXgq"
+STORMPATH_ID = 'apiKeyID'
+STORMPATH_SECRET = 'apiKeySecret'
+STORMPATH_APPLICATION = 'https://api.stormpath.com/v1/applications/APP_UID'

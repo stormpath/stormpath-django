@@ -3,9 +3,6 @@ from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.core.exceptions import ObjectDoesNotExist
 from django_stormpath.backends import StormpathBackend
-from stormpath.resource.accounts import Account
-from stormpath.resource import enabled
-
 
 try:
     from unittest import mock
@@ -14,19 +11,19 @@ except ImportError:
 
 
 class BackendTest(TestCase):
-    def allow_account(self, href, username, password):
-        account = Account()
+    def allow_account(self, key_id, key_secret, href, username, password):
+        account = mock.MagicMock()
 
         account.username = "gangelos"
         account.given_name = "Gabriel"
         account.surname = "Angelos"
         account.email = "gabriel@bloodravens.com"
         account.password = "A3palto0la"
-        account.status = enabled
+        account.is_enabled = mock.MagicMock(return_value=True)
 
         return account
 
-    def deny_account(self, href, username, password):
+    def deny_account(self, key_id, key_secret, href, username, password):
         return None
 
     def setUp(self):
@@ -35,16 +32,20 @@ class BackendTest(TestCase):
         self.surname = "Angelos"
         self.email = "gabriel@bloodravens.com"
         self.password = "A3palto0la"
-        self.href = settings.STORMPATH_URL
+        self.href = settings.STORMPATH_APPLICATION
+        self.key_id = settings.STORMPATH_ID
+        self.key_secret = settings.STORMPATH_SECRET
         self.user_model = get_user_model()
 
-    @mock.patch('django_stormpath.backends.StormpathBackend.check_account', allow_account)
+    @mock.patch('django_stormpath.backends.StormpathBackend.check_account',
+        allow_account)
     def test_user_creation(self):
 
         user = StormpathBackend().authenticate(self.username, self.password)
         self.assertTrue(self.user_model.objects.filter(id=user.id).exists())
 
-    @mock.patch('django_stormpath.backends.StormpathBackend.check_account', allow_account)
+    @mock.patch('django_stormpath.backends.StormpathBackend.check_account',
+        allow_account)
     def test_user_update(self):
         user = self.user_model(
             username=self.username,
@@ -58,7 +59,8 @@ class BackendTest(TestCase):
         dbuser = self.user_model.objects.get(id=user.id)
         self.assertEqual(dbuser.last_name, self.surname)
 
-    @mock.patch('django_stormpath.backends.StormpathBackend.check_account', allow_account)
+    @mock.patch('django_stormpath.backends.StormpathBackend.check_account',
+        allow_account)
     def test_db_wasnt_updated(self):
         user = self.user_model(
             username=self.username,
@@ -74,7 +76,8 @@ class BackendTest(TestCase):
             dbuser = StormpathBackend().authenticate(self.username, self.password)
             self.assertEqual(user.id, dbuser.id)
 
-    @mock.patch('django_stormpath.backends.StormpathBackend.check_account', deny_account)
+    @mock.patch('django_stormpath.backends.StormpathBackend.check_account',
+        deny_account)
     def test_invalid_credentials(self):
 
         StormpathBackend().authenticate(self.username, self.password)
@@ -82,7 +85,8 @@ class BackendTest(TestCase):
         with self.assertRaises(ObjectDoesNotExist):
             self.user_model.objects.get(username=self.username)
 
-    @mock.patch('django_stormpath.backends.StormpathBackend.check_account', deny_account)
+    @mock.patch('django_stormpath.backends.StormpathBackend.check_account',
+        deny_account)
     def test_nonexisting_account(self):
         user = self.user_model(
             username=self.username,
