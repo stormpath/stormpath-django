@@ -45,7 +45,7 @@ setup(
     packages=find_packages(),
     install_requires=[
         "stormpath-sdk>=1.0.0",
-        "django>=1.5.1"
+        "django"
     ],
     cmdclass={
         'test': TestCommand

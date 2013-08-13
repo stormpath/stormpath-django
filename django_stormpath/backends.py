@@ -63,7 +63,7 @@ class StormpathBackend(object):
             user.is_active = (account.is_enabled())
 
         if save:
-            # This is a dummy password
+            # This is a dummy password. It is never used for authentication.
             user.password = "STORMPATH"
             user.save()
 
