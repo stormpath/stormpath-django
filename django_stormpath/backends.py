@@ -1,48 +1,45 @@
 from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.db.models import Q
-from stormpath.client import ClientApplicationBuilder
-from stormpath.resource import ResourceError, enabled
-from stormpath.auth import UsernamePasswordRequest
+from stormpath.client import Client
+from stormpath.error import Error
 
 
 class StormpathBackend(object):
-    """
-    Authenticate against the settings STORMPATH_URL
+    """Authenticate with STORMPATH_setting in settings.py
 
     The methods are authenticate and get_user. All Django auth backends
-    require them. They return a user model object if authentication was successful or None.
-    save_user is a helper function to determine if the user object should be saved.
+    require them. They return a user model object if authentication was
+    successful or None. save_user is a helper function to determine if the user
+    object should be saved.
     """
 
-    def check_account(self, href, username, password):
-        """
-        Check if Stormpath authentication works
+    def check_account(self, key_id, key_secret, href, username, password):
+        """Check if Stormpath authentication works
 
-        Arguments:
-        href -- url of a Stormpath application
-        username or email
-        password
+        :param id: Stormpath Key ID
+        :param secret: Stormpath Key Secret
+        :param href: URL of a Stormpath application
+        :param username: Can be actual username or email
+        :param password: Account password
 
-        Returns an account object if successful or None otherwise
+        Returns an account object if successful or None otherwise.
         """
-        client_application = ClientApplicationBuilder().set_application_href(href).build()
-        application = client_application.application
+        client = Client(id=key_id, secret=key_secret)
+        application = client.applications.get(href)
 
         try:
-            request = UsernamePasswordRequest(username, password)
-            result = application.authenticate_account(request)
-            return result.account
-        except ResourceError:
+            account = application.authenticate_account(username, password)
+            return account
+        except Error:
             return None
 
     def save_user(self, user, account):
-        """
-        Save user fields if Stormpath account fields have changed.
+        """Save user fields if Stormpath account fields have changed.
 
-        Arguments:
-        user -- user model object
-        account -- Stormpath account object as returned by application.authenticate_account
+        :param user: user model object
+        :param account: Stormpath account object as returned by
+            application.authenticate_account
         """
         save = False
         if user.username != account.username:
@@ -61,11 +58,12 @@ class StormpathBackend(object):
             save = True
             user.last_name = account.surname
 
-        if user.is_active != (account.status == enabled):
+        if user.is_active != (account.is_enabled()):
             save = True
-            user.is_active = (account.status == enabled)
+            user.is_active = (account.is_enabled())
 
         if save:
+            # This is a dummy password
             user.password = "STORMPATH"
             user.save()
 
@@ -80,11 +78,17 @@ class StormpathBackend(object):
         Usually, the method is used with a username and password as arguments.
 
         Returns a user model if the Stormpath authentication was successful or
-        None otherwise. It expects a variable STORMPATH_URL to be defined in Django settings:
-        STORMPATH_URL = "https://KeyId:KeySecret@api.stormpath.com/v1/applications/APP_UID"
+        None otherwise. It expects three variable to be defined in Django
+        settings:
+        STORMPATH_ID = "apiKeyId"
+        STORMPATH_SECRET = "apiKeySecret"
+        STORMPATH_URL = "https://api.stormpath.com/v1/applications/APP_UID"
         """
-        href = settings.STORMPATH_URL
-        account = self.check_account(href, username, password)
+        key_id = settings.STORMPATH_ID
+        key_secret = settings.STORMPATH_SECRET
+        app_href = settings.STORMPATH_APPLICATION
+        account = self.check_account(
+            key_id, key_secret, app_href, username, password)
         if account:
             user_model = get_user_model()
             try:
@@ -96,7 +100,8 @@ class StormpathBackend(object):
         return None
 
     def get_user(self, user_id):
-        """
+        """Return a user model object
+
         The method takes a user_id - which could be a username, database ID etc.
         and returns a user model object.
         """

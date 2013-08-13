@@ -27,7 +27,7 @@ class TestCommand(BaseCommand):
 
 setup(
     name='django_stormpath',
-    version='0.0.1',
+    version='0.0.2',
     author='',
     author_email='goran.cetusic@dobarkod.hr',
     description='Django Stormpath API integration',
@@ -44,7 +44,8 @@ setup(
     ],
     packages=find_packages(),
     install_requires=[
-        "stormpath-sdk>=0.2.0",
+        "stormpath-sdk>=1.0.0",
+        "django>=1.5.1"
     ],
     cmdclass={
         'test': TestCommand

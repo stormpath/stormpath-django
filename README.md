@@ -52,12 +52,13 @@ Add "django_stormpath.backends.StormpathBackend" to AUTHENTICATION_BACKENDS in s
     'django_stormpath.backends.StormpathBackend',
     )
 
-
-Stormpath Python SDK has two methods for connecting to its service. One expects a YAML file and the other a variable containing the href of the Stormpath application.
-Django-uses the href variable inside settings.py:
-
-    # Add STORMPATH_URL to settings.py:
-    STORMPATH_URL = "https://apiKeyId:apiKeySecret@api.stormpath.com/v1/applications/YOUR_APP_UID_HERE"
-
-Every Stormpath application has a unique ID. To access the Stormpath service an API key and secret are required.
+To access the Stormpath service an API key and secret are required.
+Also, every Stormpath application has a unique ID so we need to know the application URL to successfully authenticate with Stormpath.
 For further information please read the [Stormpath Product Guide](http://www.stormpath.com/docs/python/product-guide)
+
+Django-stormpath uses three settings to achieve successful authentication.
+
+    # Add STORMPATH_ID and STORMPATH_SECRET to settings.py:
+    STORMPATH_ID = "apiKeyId"
+    STORMPATH_SECRET = "apiKeySecret"
+    STORMPATH_APPLICATION = "https://api.stormpath.com/v1/applications/YOUR_APP_UID_HERE"
