@@ -1,0 +1,11 @@
+language: python
+python:
+  - "2.7"
+  - "3.3"
+install:
+    - "pip install git+git://github.com/stormpath/stormpath-sdk-python.git@development#stormpath"
+    - "pip install ."
+script: python setup.py test
+branches:
+  only:
+    - development

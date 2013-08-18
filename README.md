@@ -18,6 +18,9 @@ Python. Please note that at least version 1.0.0 of stormpath-sdk is required.
     git clone https://github.com/stormpath/stormpath-django.git
     cd django-stormpath
 
+    # Run the tests
+    python setup.py test
+
     # Build
     python setup.py build
 
