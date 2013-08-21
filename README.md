@@ -45,11 +45,10 @@ If the credentials are OK, there are two possible scenarios:
 
 Add "django_stormpath" to your INSTALLED_APPS in settings.py.
 
-Add "django_stormpath.backends.StormpathBackend" to AUTHENTICATION_BACKENDS in settings.py
+Add "django_stormpath.backends.StormpathBackend" to AUTHENTICATION_BACKENDS in settings.py.
 
     AUTHENTICATION_BACKENDS = (
-    'django.contrib.auth.backends.ModelBackend',
-    'django_stormpath.backends.StormpathBackend',
+        'django_stormpath.backends.StormpathBackend',
     )
 
 To access the Stormpath service an API key and secret are required.
