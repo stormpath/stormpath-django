@@ -33,6 +33,7 @@ setup(
     description='Django Stormpath API integration',
     license='MIT',
     url='http://goodcode.io/',
+    zip_safe=False,
     classifiers=[
         "Development Status :: 4 - Beta",
         "Environment :: Web Environment",
