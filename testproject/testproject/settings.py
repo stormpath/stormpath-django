@@ -163,3 +163,5 @@ LOGGING = {
 STORMPATH_ID = 'apiKeyID'
 STORMPATH_SECRET = 'apiKeySecret'
 STORMPATH_APPLICATION = 'https://api.stormpath.com/v1/applications/APP_UID'
+
+AUTH_USER_MODEL = 'django_stormpath.StormpathUser'

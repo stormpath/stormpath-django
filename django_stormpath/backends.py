@@ -95,7 +95,8 @@ class StormpathBackend(object):
                 user = user_model.objects.get(
                     Q(username=account.username) | Q(email=account.email))
             except user_model.DoesNotExist:
-                user = user_model(username="", password="STORMPATH")
+                user = user_model(username="", password="STORMPATH",
+                    url=account.href)
             return self.save_user(user, account)
         return None
 
