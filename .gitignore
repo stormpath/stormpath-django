@@ -1,3 +1,6 @@
-__pycache__
+*.log
+*.pot
 *.pyc
+local_settings.py
+__pycache__
 *.db
