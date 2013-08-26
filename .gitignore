@@ -1,6 +1,30 @@
-*.log
-*.pot
-*.pyc
-local_settings.py
-__pycache__
-*.db
+*.py[co]
+
+# Packages
+*.egg
+*.egg-info
+dist
+build
+
+# Installer logs
+pip-log.txt
+
+# Unit test / coverage reports
+.coverage
+.tox
+
+# tools
+.idea
+*.iml
+
+# Distutils
+MANIFEST
+
+# Other
+.DS_Store
+*.swp
+
+# Sphinx
+/docs/_build/
+/docs/_static/
+/docs/_templates/
