@@ -70,8 +70,7 @@ class StormpathBackend(object):
         return user
 
     def authenticate(self, username=None, password=None):
-        """
-        Create a new user model if it doesn't already exist or
+        """Create a new user model if it doesn't already exist or
         update and existing user to match the Stormpath account.
 
         The authenticate method takes credentials as keyword arguments.
@@ -79,10 +78,11 @@ class StormpathBackend(object):
 
         Returns a user model if the Stormpath authentication was successful or
         None otherwise. It expects three variable to be defined in Django
-        settings:
-        STORMPATH_ID = "apiKeyId"
-        STORMPATH_SECRET = "apiKeySecret"
-        STORMPATH_URL = "https://api.stormpath.com/v1/applications/APP_UID"
+        settings: \n
+            STORMPATH_ID = "apiKeyId" \n
+            STORMPATH_SECRET = "apiKeySecret" \n
+            STORMPATH_APPLICATION =
+            "https://api.stormpath.com/v1/applications/APP_UID"
         """
         key_id = settings.STORMPATH_ID
         key_secret = settings.STORMPATH_SECRET
