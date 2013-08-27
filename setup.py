@@ -25,6 +25,21 @@ class TestCommand(BaseCommand):
         if ret != 0:
             sys.exit(-1)
 
+class DocCommand(BaseCommand):
+
+    description = "generate documentation"
+
+    def run(self):
+        os.environ['DJANGO_SETTINGS_MODULE'] = \
+            'testproject.testproject.settings'
+        try:
+            os.chdir('docs')
+            ret = os.system('make html')
+            sys.exit(ret)
+        except OSError as e:
+            print(e)
+            sys.exit(-1)
+
 setup(
     name='django_stormpath',
     version='0.0.2',
@@ -49,6 +64,7 @@ setup(
         "django"
     ],
     cmdclass={
-        'test': TestCommand
+        'test': TestCommand,
+        'docs': DocCommand
     },
 )
