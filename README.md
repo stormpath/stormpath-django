@@ -72,6 +72,10 @@ in settings.py.
         'django_stormpath.backends.StormpathBackend',
     )
 
+Set `django_stormpath.StormpathUser` as the user model:
+
+    AUTH_USER_MODEL = 'django_stormpath.StormpathUser'
+
 To access the Stormpath service an API key and secret are required. Also, every
 Stormpath application has a unique ID so we need to know the application URL to
 successfully authenticate with Stormpath. For further information please read

@@ -1,3 +1,19 @@
+"""Custom Django User models for Stormpath.
+
+Any application that uses django_stormpath must provide a user model with a
+url field. The url is used in the authentication backend to keep track which
+remote Stormpath user the local user represents. It is meant to be used in an
+application that modifies user data on Stormpath. The user classes provided here
+are convenient to inherit from in custom user models in applications but the
+only requirement is that the user model has an url which is not provided by
+the default Django User model and the user model has to be set as the default.
+
+* Example (settings.py):
+
+    AUTH_MODEL_USER = 'django_stormpath.StormpathUser'
+
+"""
+
 from django.db import models
 from django.contrib.auth.models import (AbstractUser,
     BaseUserManager, AbstractBaseUser, PermissionsMixin)
