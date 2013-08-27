@@ -1,19 +1,14 @@
 """Example forms that can be used for CRUD actions in applications.
 """
 
-
 from django import forms
 from django.contrib.auth import get_user_model
-from django.utils.safestring import mark_safe
 from stormpath.client import Client
 from stormpath.error import Error
 from django.conf import settings
 from django.forms.forms import NON_FIELD_ERRORS
 from django.forms import ValidationError
 
-class HorizontalRadioRenderer(forms.RadioSelect.renderer):
-  def render(self):
-    return mark_safe(u'\n'.join(u'%s\n' % w for w in self))
 
 CLIENT = None
 APPLICATION = None
@@ -39,29 +34,17 @@ class UserCreateForm(forms.ModelForm):
     """User creation form.
 
     Creates a new user on Stormpath and locally.
-    Adds additional checkboxes for user groups.
-
     """
-
-
-    ACC_CHOICES = (('Admins', 'Administrator',),
-        ('Premiums', 'Premium',),
-        ('Basics', 'Basic'))
 
     password = forms.CharField(label='Password',
         widget=forms.PasswordInput)
     password2 = forms.CharField(label='Password confirmation',
         widget=forms.PasswordInput)
-    account_type = forms.ChoiceField(
-        widget=forms.RadioSelect(renderer=HorizontalRadioRenderer),
-        choices=ACC_CHOICES,
-        initial='Basics')
 
     class Meta:
         model = get_user_model()
         fields = ("username", "email",
-            "first_name", "last_name", "password", "password2",
-            "account_type")
+            "first_name", "last_name", "password", "password2")
 
     def clean_username(self):
         username = self.cleaned_data.get('username')
@@ -81,7 +64,6 @@ class UserCreateForm(forms.ModelForm):
 
     def save(self, commit=True):
         data = self.cleaned_data
-        account_type = data['account_type']
         stormpath_data = {}
 
         stormpath_data['username'] = data['username']
@@ -91,21 +73,10 @@ class UserCreateForm(forms.ModelForm):
         stormpath_data['password'] = data['password']
 
         try:
-            account = get_application().accounts.create(stormpath_data)
+            self.account = get_application().accounts.create(stormpath_data)
         except Error as e:
             self._errors[NON_FIELD_ERRORS] = self.error_class([e.message])
             raise ValidationError(e.message)
-
-        if account_type == 'Admins':
-            admin_group = get_client().groups.get(
-                settings.STORMPATH_ADMINISTRATORS)
-            account.add_group(admin_group)
-            account.save()
-        elif account_type == 'Premiums':
-            premium_group = get_client().groups.get(settings.STORMPATH_PREMIUMS)
-            account.add_group(premium_group)
-            account.save()
-
 
 class UserUpdateForm(forms.ModelForm):
     """Update Stormpath user form.
@@ -118,11 +89,11 @@ class UserUpdateForm(forms.ModelForm):
     def save(self):
         data = self.cleaned_data
         try:
-            account = get_client().accounts.get(self.instance.url)
-            account.given_name = data['first_name']
-            account.surname = data['last_name']
-            account.email = data['email']
-            account.save()
+            self.account = get_client().accounts.get(self.instance.url)
+            self.account.given_name = data['first_name']
+            self.account.surname = data['last_name']
+            self.account.email = data['email']
+            self.account.save()
         except Error as e:
             self._errors[NON_FIELD_ERRORS] = self.error_class([e.message])
             raise ValidationError(e.message)
@@ -164,9 +135,9 @@ class PasswordResetForm(forms.Form):
 
     def save(self, token):
         try:
-            account = get_application().verify_password_reset_token(token)
-            account.password = self.cleaned_data['new_password1']
-            account.save()
+            self.account = get_application().verify_password_reset_token(token)
+            self.account.password = self.cleaned_data['new_password1']
+            self.account.save()
         except:
             message = "Invalid credentials!"
             self._errors[NON_FIELD_ERRORS] = self.error_class([message])
