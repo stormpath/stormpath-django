@@ -14,3 +14,10 @@ django_stormpath Package
 .. automodule:: django_stormpath.models
     :members:
     :show-inheritance:
+
+:mod:`forms` Module
+--------------------
+
+.. automodule:: django_stormpath.forms
+    :members:
+    :show-inheritance:

@@ -1,3 +1,7 @@
+"""Example forms that can be used for CRUD actions in applications.
+"""
+
+
 from django import forms
 from django.contrib.auth import get_user_model
 from django.utils.safestring import mark_safe
@@ -11,12 +15,34 @@ class HorizontalRadioRenderer(forms.RadioSelect.renderer):
   def render(self):
     return mark_safe(u'\n'.join(u'%s\n' % w for w in self))
 
-CLIENT = Client(api_key={'id': settings.STORMPATH_ID,
-    'secret': settings.STORMPATH_SECRET})
-APPLICATION = CLIENT.applications.get(settings.STORMPATH_APPLICATION)
+CLIENT = None
+APPLICATION = None
+
+def get_client():
+    global CLIENT
+    if not CLIENT:
+        CLIENT = Client(api_key={'id': settings.STORMPATH_ID,
+            'secret': settings.STORMPATH_SECRET})
+
+    return CLIENT
+
+def get_application():
+    global APPLICATION
+    if not APPLICATION:
+        APPLICATION = get_client().applications.get(
+            settings.STORMPATH_APPLICATION)
+
+    return APPLICATION
 
 
 class UserCreateForm(forms.ModelForm):
+    """User creation form.
+
+    Creates a new user on Stormpath and locally.
+    Adds additional checkboxes for user groups.
+
+    """
+
 
     ACC_CHOICES = (('Admins', 'Administrator',),
         ('Premiums', 'Premium',),
@@ -39,7 +65,7 @@ class UserCreateForm(forms.ModelForm):
 
     def clean_username(self):
         username = self.cleaned_data.get('username')
-        accounts = APPLICATION.accounts.search({
+        accounts = get_application().accounts.search({
             'username': username})
         if not len(accounts):
             get_user_model().objects.filter(username=username).delete()
@@ -65,22 +91,26 @@ class UserCreateForm(forms.ModelForm):
         stormpath_data['password'] = data['password']
 
         try:
-            account = APPLICATION.accounts.create(stormpath_data)
+            account = get_application().accounts.create(stormpath_data)
         except Error as e:
             self._errors[NON_FIELD_ERRORS] = self.error_class([e.message])
             raise ValidationError(e.message)
 
         if account_type == 'Admins':
-            admin_group = CLIENT.groups.get(settings.STORMPATH_ADMINISTRATORS)
+            admin_group = get_client().groups.get(
+                settings.STORMPATH_ADMINISTRATORS)
             account.add_group(admin_group)
             account.save()
         elif account_type == 'Premiums':
-            premium_group = CLIENT.groups.get(settings.STORMPATH_PREMIUMS)
+            premium_group = get_client().groups.get(settings.STORMPATH_PREMIUMS)
             account.add_group(premium_group)
             account.save()
 
 
 class UserUpdateForm(forms.ModelForm):
+    """Update Stormpath user form.
+    """
+
     class Meta:
         model = get_user_model()
         fields = ("first_name", "last_name", "email")
@@ -88,7 +118,7 @@ class UserUpdateForm(forms.ModelForm):
     def save(self):
         data = self.cleaned_data
         try:
-            account = CLIENT.accounts.get(self.instance.url)
+            account = get_client().accounts.get(self.instance.url)
             account.given_name = data['first_name']
             account.surname = data['last_name']
             account.email = data['email']
@@ -101,17 +131,23 @@ class UserUpdateForm(forms.ModelForm):
 
 
 class PasswordResetEmailForm(forms.Form):
+    """Form for password reset email.
+    """
+
     email = forms.CharField(max_length=255)
 
     def save(self):
         try:
-            APPLICATION.send_password_reset_email(self.cleaned_data['email'])
+            get_application().send_password_reset_email(
+                self.cleaned_data['email'])
         except Error as e:
             self._errors[NON_FIELD_ERRORS] = self.error_class([e.message])
             raise ValidationError(e.message)
 
 
 class PasswordResetForm(forms.Form):
+    """Form for new password input.
+    """
 
     new_password1 = forms.CharField(label="New password",
                                     widget=forms.PasswordInput)
@@ -128,7 +164,7 @@ class PasswordResetForm(forms.Form):
 
     def save(self, token):
         try:
-            account = APPLICATION.verify_password_reset_token(token)
+            account = get_application().verify_password_reset_token(token)
             account.password = self.cleaned_data['new_password1']
             account.save()
         except:
