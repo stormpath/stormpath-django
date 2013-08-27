@@ -138,7 +138,6 @@ class PasswordResetForm(forms.Form):
             self.account = get_application().verify_password_reset_token(token)
             self.account.password = self.cleaned_data['new_password1']
             self.account.save()
-        except:
-            message = "Invalid credentials!"
-            self._errors[NON_FIELD_ERRORS] = self.error_class([message])
-            raise ValidationError(message)
+        except Error as e:
+            self._errors[NON_FIELD_ERRORS] = self.error_class([e.message])
+            raise ValidationError(e.message)
