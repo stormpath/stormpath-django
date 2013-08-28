@@ -75,8 +75,8 @@ class UserCreateForm(forms.ModelForm):
         try:
             self.account = get_application().accounts.create(stormpath_data)
         except Error as e:
-            self._errors[NON_FIELD_ERRORS] = self.error_class([e.message])
-            raise ValidationError(e.message)
+            self._errors[NON_FIELD_ERRORS] = self.error_class([str(e)])
+            raise ValidationError(str(e))
 
 class UserUpdateForm(forms.ModelForm):
     """Update Stormpath user form.
@@ -95,8 +95,8 @@ class UserUpdateForm(forms.ModelForm):
             self.account.email = data['email']
             self.account.save()
         except Error as e:
-            self._errors[NON_FIELD_ERRORS] = self.error_class([e.message])
-            raise ValidationError(e.message)
+            self._errors[NON_FIELD_ERRORS] = self.error_class([str(e)])
+            raise ValidationError(str(e))
 
         super(UserUpdateForm, self).save()
 
@@ -112,8 +112,8 @@ class PasswordResetEmailForm(forms.Form):
             get_application().send_password_reset_email(
                 self.cleaned_data['email'])
         except Error as e:
-            self._errors[NON_FIELD_ERRORS] = self.error_class([e.message])
-            raise ValidationError(e.message)
+            self._errors[NON_FIELD_ERRORS] = self.error_class([str(e)])
+            raise ValidationError(str(e))
 
 
 class PasswordResetForm(forms.Form):
@@ -139,5 +139,5 @@ class PasswordResetForm(forms.Form):
             self.account.password = self.cleaned_data['new_password1']
             self.account.save()
         except Error as e:
-            self._errors[NON_FIELD_ERRORS] = self.error_class([e.message])
-            raise ValidationError(e.message)
+            self._errors[NON_FIELD_ERRORS] = self.error_class([str(e)])
+            raise ValidationError(str(e))
