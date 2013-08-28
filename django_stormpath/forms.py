@@ -13,6 +13,7 @@ from django.forms import ValidationError
 CLIENT = None
 APPLICATION = None
 
+
 def get_client():
     global CLIENT
     if not CLIENT:
@@ -20,6 +21,7 @@ def get_client():
             'secret': settings.STORMPATH_SECRET})
 
     return CLIENT
+
 
 def get_application():
     global APPLICATION
@@ -77,6 +79,7 @@ class UserCreateForm(forms.ModelForm):
         except Error as e:
             self._errors[NON_FIELD_ERRORS] = self.error_class([str(e)])
             raise ValidationError(str(e))
+
 
 class UserUpdateForm(forms.ModelForm):
     """Update Stormpath user form.
