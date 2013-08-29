@@ -73,7 +73,9 @@ class BackendTest(TestCase):
         # The query should only execute when fetching the Django user
         # If Stormpath users haven't changed, the database shouldn't be queried
         with self.assertNumQueries(1):
-            dbuser = StormpathBackend().authenticate(self.username, self.password)
+            dbuser = StormpathBackend().authenticate(
+                self.username,
+                self.password)
             self.assertEqual(user.id, dbuser.id)
 
     @mock.patch('django_stormpath.backends.StormpathBackend.check_account',

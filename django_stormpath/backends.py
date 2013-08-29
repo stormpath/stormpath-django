@@ -103,8 +103,8 @@ class StormpathBackend(object):
     def get_user(self, user_id):
         """Return a user model object
 
-        The method takes a user_id - which could be a username, database ID etc.
-        and returns a user model object.
+        The method takes a user_id - which could be a username, database ID
+        etc. and returns a user model object.
         """
         try:
             user_model = get_user_model()

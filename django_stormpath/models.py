@@ -3,9 +3,9 @@
 Any application that uses django_stormpath must provide a user model with a
 url field. The url is used in the authentication backend to keep track which
 remote Stormpath user the local user represents. It is meant to be used in an
-application that modifies user data on Stormpath. The user classes provided here
-are convenient to inherit from in custom user models in applications but the
-only requirement is that the user model has an url which is not provided by
+application that modifies user data on Stormpath. The user classes provided
+here are convenient to inherit from in custom user models in applications but
+the only requirement is that the user model has an url which is not provided by
 the default Django User model and the user model has to be set as the default.
 
 * Example (settings.py):
@@ -17,6 +17,7 @@ the default Django User model and the user model has to be set as the default.
 from django.db import models
 from django.contrib.auth.models import (AbstractUser,
     BaseUserManager, AbstractBaseUser, PermissionsMixin)
+
 
 class StormpathUserManager(BaseUserManager):
 
@@ -44,6 +45,7 @@ class StormpathUserManager(BaseUserManager):
         user.save(using=self._db)
         return user
 
+
 class StormpathBaseUser(AbstractBaseUser, PermissionsMixin):
 
     url = models.CharField(max_length=255, null=True, blank=True)
@@ -53,8 +55,7 @@ class StormpathBaseUser(AbstractBaseUser, PermissionsMixin):
     email = models.EmailField(verbose_name='email address',
         max_length=255,
         unique=True,
-        db_index=True,
-    )
+        db_index=True)
 
     USERNAME_FIELD = 'username'
     REQUIRED_FIELDS = ['email', 'first_name', 'last_name']
@@ -73,6 +74,7 @@ class StormpathBaseUser(AbstractBaseUser, PermissionsMixin):
 
     def __unicode__(self):
         return self.get_full_name()
+
 
 class StormpathUser(AbstractUser):
     url = models.CharField(max_length=255, null=True, blank=True)

@@ -25,6 +25,7 @@ class TestCommand(BaseCommand):
         if ret != 0:
             sys.exit(-1)
 
+
 class DocCommand(BaseCommand):
 
     description = "generate documentation"

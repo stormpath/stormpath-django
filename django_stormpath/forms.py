@@ -7,11 +7,11 @@ from stormpath.client import Client
 from stormpath.error import Error
 from django.conf import settings
 from django.forms.forms import NON_FIELD_ERRORS
-from django.forms import ValidationError
 
 
 CLIENT = None
 APPLICATION = None
+
 
 def get_client():
     global CLIENT
@@ -20,6 +20,7 @@ def get_client():
             'secret': settings.STORMPATH_SECRET})
 
     return CLIENT
+
 
 def get_application():
     global APPLICATION
@@ -75,8 +76,8 @@ class UserCreateForm(forms.ModelForm):
         try:
             self.account = get_application().accounts.create(stormpath_data)
         except Error as e:
-            self._errors[NON_FIELD_ERRORS] = self.error_class([e.message])
-            raise ValidationError(e.message)
+            self._errors[NON_FIELD_ERRORS] = self.error_class([str(e)])
+
 
 class UserUpdateForm(forms.ModelForm):
     """Update Stormpath user form.
@@ -94,11 +95,9 @@ class UserUpdateForm(forms.ModelForm):
             self.account.surname = data['last_name']
             self.account.email = data['email']
             self.account.save()
+            super(UserUpdateForm, self).save()
         except Error as e:
-            self._errors[NON_FIELD_ERRORS] = self.error_class([e.message])
-            raise ValidationError(e.message)
-
-        super(UserUpdateForm, self).save()
+            self._errors[NON_FIELD_ERRORS] = self.error_class([str(e)])
 
 
 class PasswordResetEmailForm(forms.Form):
@@ -112,8 +111,7 @@ class PasswordResetEmailForm(forms.Form):
             get_application().send_password_reset_email(
                 self.cleaned_data['email'])
         except Error as e:
-            self._errors[NON_FIELD_ERRORS] = self.error_class([e.message])
-            raise ValidationError(e.message)
+            self._errors[NON_FIELD_ERRORS] = self.error_class([str(e)])
 
 
 class PasswordResetForm(forms.Form):
@@ -138,7 +136,5 @@ class PasswordResetForm(forms.Form):
             self.account = get_application().verify_password_reset_token(token)
             self.account.password = self.cleaned_data['new_password1']
             self.account.save()
-        except:
-            message = "Invalid credentials!"
-            self._errors[NON_FIELD_ERRORS] = self.error_class([message])
-            raise ValidationError(message)
+        except Error as e:
+            self._errors[NON_FIELD_ERRORS] = self.error_class([str(e)])
