@@ -7,7 +7,6 @@ from stormpath.client import Client
 from stormpath.error import Error
 from django.conf import settings
 from django.forms.forms import NON_FIELD_ERRORS
-from django.forms import ValidationError
 
 
 CLIENT = None
@@ -78,7 +77,6 @@ class UserCreateForm(forms.ModelForm):
             self.account = get_application().accounts.create(stormpath_data)
         except Error as e:
             self._errors[NON_FIELD_ERRORS] = self.error_class([str(e)])
-            raise ValidationError(str(e))
 
 
 class UserUpdateForm(forms.ModelForm):
@@ -97,11 +95,9 @@ class UserUpdateForm(forms.ModelForm):
             self.account.surname = data['last_name']
             self.account.email = data['email']
             self.account.save()
+            super(UserUpdateForm, self).save()
         except Error as e:
             self._errors[NON_FIELD_ERRORS] = self.error_class([str(e)])
-            raise ValidationError(str(e))
-
-        super(UserUpdateForm, self).save()
 
 
 class PasswordResetEmailForm(forms.Form):
@@ -116,7 +112,6 @@ class PasswordResetEmailForm(forms.Form):
                 self.cleaned_data['email'])
         except Error as e:
             self._errors[NON_FIELD_ERRORS] = self.error_class([str(e)])
-            raise ValidationError(str(e))
 
 
 class PasswordResetForm(forms.Form):
@@ -143,4 +138,3 @@ class PasswordResetForm(forms.Form):
             self.account.save()
         except Error as e:
             self._errors[NON_FIELD_ERRORS] = self.error_class([str(e)])
-            raise ValidationError(str(e))
