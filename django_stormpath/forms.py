@@ -140,3 +140,5 @@ class PasswordResetForm(forms.Form):
             self.account.save()
         except Error as e:
             self._errors[NON_FIELD_ERRORS] = self.error_class([str(e)])
+            return None
+        return self.account
