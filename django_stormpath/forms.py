@@ -37,28 +37,14 @@ class UserCreateForm(forms.ModelForm):
     """
 
     password = forms.CharField(label='Password',
-        widget=forms.PasswordInput)
+        widget=forms.PasswordInput, required=False)
     password2 = forms.CharField(label='Password confirmation',
-        widget=forms.PasswordInput)
+        widget=forms.PasswordInput, required=False)
 
     class Meta:
         model = get_user_model()
         fields = ("username", "email",
             "first_name", "last_name", "password", "password2")
-
-    def clean_username(self):
-        """Clean method for username.
-
-        If the user exists on Stormpath, report it. Otherwise, if a user
-        doesn't exist on Stormpath, delete the local user so a new one can be
-        created.
-        """
-        username = self.cleaned_data.get('username')
-        accounts = get_application().accounts.search({
-            'username': username})
-        if not len(accounts):
-            get_user_model().objects.filter(username=username).delete()
-        return username
 
     def clean_password2(self):
         password = self.cleaned_data.get("password")
@@ -87,6 +73,16 @@ class UserCreateForm(forms.ModelForm):
         except Error as e:
             raise forms.ValidationError(str(e))
         return data
+
+    def save(self, commit=False):
+        username = self.cleaned_data['username']
+        accounts = get_application().accounts.search({
+            'username': username})
+        if len(accounts):
+            get_user_model().objects.filter(username=username).delete()
+            user = super(UserCreateForm, self).save(commit=False)
+            user.url = self.account.href
+            user.save()
 
 
 class UserUpdateForm(forms.ModelForm):
@@ -134,7 +130,7 @@ class PasswordResetForm(forms.Form):
     new_password1 = forms.CharField(label="New password",
                                     widget=forms.PasswordInput)
     new_password2 = forms.CharField(label="New password confirmation",
-                                    widget=forms.PasswordInput)
+                                    widget=forms.PasswordInput, required=False)
 
     def clean_new_password2(self):
         password1 = self.cleaned_data.get('new_password1')

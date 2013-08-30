@@ -94,6 +94,7 @@ class StormpathBackend(object):
             try:
                 user = user_model.objects.get(
                     Q(username=account.username) | Q(email=account.email))
+                user.url = account.href
             except user_model.DoesNotExist:
                 user = user_model(username="", password="STORMPATH",
                     url=account.href)
