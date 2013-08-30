@@ -6,7 +6,6 @@ from django.contrib.auth import get_user_model
 from stormpath.client import Client
 from stormpath.error import Error
 from django.conf import settings
-from django.forms.forms import NON_FIELD_ERRORS
 
 
 CLIENT = None
@@ -144,13 +143,3 @@ class PasswordResetForm(forms.Form):
             if password1 != password2:
                 raise forms.ValidationError("The two passwords didn't match.")
         return password2
-
-    def save(self, token):
-        try:
-            self.account = get_application().verify_password_reset_token(token)
-            self.account.password = self.cleaned_data['new_password1']
-            self.account.save()
-        except Error as e:
-            self._errors[NON_FIELD_ERRORS] = self.error_class([str(e)])
-            return None
-        return self.account
