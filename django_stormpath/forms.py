@@ -48,6 +48,12 @@ class UserCreateForm(forms.ModelForm):
             "first_name", "last_name", "password", "password2")
 
     def clean_username(self):
+        """Clean method for username.
+
+        If the user exists on Stormpath, report it. Otherwise, if a user
+        doesn't exist on Stormpath, delete the local user so a new one can be
+        created.
+        """
         username = self.cleaned_data.get('username')
         accounts = get_application().accounts.search({
             'username': username})
@@ -64,6 +70,10 @@ class UserCreateForm(forms.ModelForm):
         return password2
 
     def clean(self):
+        """Checks if Stormpath user creation went through without errors.
+
+        Otherwise, raise a ValidationError
+        """
         data = self.cleaned_data
         stormpath_data = {}
 
@@ -89,6 +99,8 @@ class UserUpdateForm(forms.ModelForm):
         fields = ("first_name", "last_name", "email")
 
     def clean(self):
+        """Checks if user update was successful.
+        """
         data = self.cleaned_data
         try:
             self.account = get_client().accounts.get(self.instance.url)
