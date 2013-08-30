@@ -116,8 +116,12 @@ class PasswordResetEmailForm(forms.Form):
 
     def clean(self):
         try:
-            get_application().send_password_reset_email(
-                self.cleaned_data['email'])
+            email = self.cleaned_data['email']
+        except KeyError:
+            raise forms.ValidationError("Please provide an email address.")
+
+        try:
+            get_application().send_password_reset_email(email)
         except Error as e:
             raise forms.ValidationError(str(e))
         return self.cleaned_data
@@ -130,7 +134,7 @@ class PasswordResetForm(forms.Form):
     new_password1 = forms.CharField(label="New password",
                                     widget=forms.PasswordInput)
     new_password2 = forms.CharField(label="New password confirmation",
-                                    widget=forms.PasswordInput, required=False)
+                                    widget=forms.PasswordInput)
 
     def clean_new_password2(self):
         password1 = self.cleaned_data.get('new_password1')
