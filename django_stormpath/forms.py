@@ -54,11 +54,29 @@ class UserCreateForm(forms.ModelForm):
             raise forms.ValidationError(msg)
         return password2
 
-    def clean(self):
-        """Checks if Stormpath user creation went through without errors.
+    def clean_username(self):
+        try:
+            accounts = get_application().accounts.search({
+                'username': self.cleaned_data['username']})
+            if len(accounts):
+                msg = "User with that username already exists."
+                raise forms.ValidationError(msg)
+        except Error as e:
+            raise forms.ValidationError(str(e))
+        return self.cleaned_data['username']
 
-        Otherwise, raise a ValidationError
-        """
+    def clean_email(self):
+        try:
+            accounts = get_application().accounts.search({
+                'email': self.cleaned_data['email']})
+            if len(accounts):
+                msg = "User with that email already exists."
+                raise forms.ValidationError(msg)
+        except Error as e:
+            raise forms.ValidationError(str(e))
+        return self.cleaned_data['email']
+
+    def save(self, commit=False):
         data = self.cleaned_data
         stormpath_data = {}
 
@@ -68,21 +86,11 @@ class UserCreateForm(forms.ModelForm):
         stormpath_data['email'] = data['email']
         stormpath_data['password'] = data['password']
 
-        try:
-            self.account = get_application().accounts.create(stormpath_data)
-        except Error as e:
-            raise forms.ValidationError(str(e))
-        return data
-
-    def save(self, commit=False):
-        username = self.cleaned_data['username']
-        accounts = get_application().accounts.search({
-            'username': username})
-        if len(accounts):
-            get_user_model().objects.filter(username=username).delete()
-            user = super(UserCreateForm, self).save(commit=False)
-            user.url = self.account.href
-            user.save()
+        self.account = get_application().accounts.create(stormpath_data)
+        get_user_model().objects.filter(username=data['username']).delete()
+        user = super(UserCreateForm, self).save(commit=False)
+        user.url = self.account.href
+        user.save()
 
 
 class UserUpdateForm(forms.ModelForm):
@@ -93,19 +101,16 @@ class UserUpdateForm(forms.ModelForm):
         model = get_user_model()
         fields = ("first_name", "last_name", "email")
 
-    def clean(self):
-        """Checks if user update was successful.
+    def save(self):
+        """Update user information.
         """
         data = self.cleaned_data
-        try:
-            self.account = get_client().accounts.get(self.instance.url)
-            self.account.given_name = data['first_name']
-            self.account.surname = data['last_name']
-            self.account.email = data['email']
-            self.account.save()
-        except Error as e:
-            raise forms.ValidationError(str(e))
-        return data
+
+        self.account = get_client().accounts.get(self.instance.url)
+        self.account.given_name = data['first_name']
+        self.account.surname = data['last_name']
+        self.account.email = data['email']
+        self.account.save()
 
 
 class PasswordResetEmailForm(forms.Form):
@@ -116,15 +121,13 @@ class PasswordResetEmailForm(forms.Form):
 
     def clean(self):
         try:
-            email = self.cleaned_data['email']
+            self.cleaned_data['email']
+            return self.cleaned_data
         except KeyError:
             raise forms.ValidationError("Please provide an email address.")
 
-        try:
-            get_application().send_password_reset_email(email)
-        except Error as e:
-            raise forms.ValidationError(str(e))
-        return self.cleaned_data
+    def save(self):
+        get_application().send_password_reset_email(self.cleaned_data['email'])
 
 
 class PasswordResetForm(forms.Form):
@@ -143,3 +146,8 @@ class PasswordResetForm(forms.Form):
             if password1 != password2:
                 raise forms.ValidationError("The two passwords didn't match.")
         return password2
+
+    def save(self, token):
+        account = get_application().verify_password_reset_token(token)
+        account.password = self.cleaned_data['new_password1']
+        account.save()
