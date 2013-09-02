@@ -6,7 +6,6 @@ from django.contrib.auth import get_user_model
 from stormpath.client import Client
 from stormpath.error import Error
 from django.conf import settings
-from django.forms.forms import NON_FIELD_ERRORS
 
 
 CLIENT = None
@@ -38,22 +37,14 @@ class UserCreateForm(forms.ModelForm):
     """
 
     password = forms.CharField(label='Password',
-        widget=forms.PasswordInput)
+        widget=forms.PasswordInput, required=False)
     password2 = forms.CharField(label='Password confirmation',
-        widget=forms.PasswordInput)
+        widget=forms.PasswordInput, required=False)
 
     class Meta:
         model = get_user_model()
         fields = ("username", "email",
             "first_name", "last_name", "password", "password2")
-
-    def clean_username(self):
-        username = self.cleaned_data.get('username')
-        accounts = get_application().accounts.search({
-            'username': username})
-        if not len(accounts):
-            get_user_model().objects.filter(username=username).delete()
-        return username
 
     def clean_password2(self):
         password = self.cleaned_data.get("password")
@@ -63,7 +54,29 @@ class UserCreateForm(forms.ModelForm):
             raise forms.ValidationError(msg)
         return password2
 
-    def save(self, commit=True):
+    def clean_username(self):
+        try:
+            accounts = get_application().accounts.search({
+                'username': self.cleaned_data['username']})
+            if len(accounts):
+                msg = "User with that username already exists."
+                raise forms.ValidationError(msg)
+        except Error as e:
+            raise forms.ValidationError(str(e))
+        return self.cleaned_data['username']
+
+    def clean_email(self):
+        try:
+            accounts = get_application().accounts.search({
+                'email': self.cleaned_data['email']})
+            if len(accounts):
+                msg = "User with that email already exists."
+                raise forms.ValidationError(msg)
+        except Error as e:
+            raise forms.ValidationError(str(e))
+        return self.cleaned_data['email']
+
+    def save(self, commit=False):
         data = self.cleaned_data
         stormpath_data = {}
 
@@ -73,10 +86,11 @@ class UserCreateForm(forms.ModelForm):
         stormpath_data['email'] = data['email']
         stormpath_data['password'] = data['password']
 
-        try:
-            self.account = get_application().accounts.create(stormpath_data)
-        except Error as e:
-            self._errors[NON_FIELD_ERRORS] = self.error_class([str(e)])
+        self.account = get_application().accounts.create(stormpath_data)
+        get_user_model().objects.filter(username=data['username']).delete()
+        user = super(UserCreateForm, self).save(commit=False)
+        user.url = self.account.href
+        user.save()
 
 
 class UserUpdateForm(forms.ModelForm):
@@ -88,16 +102,15 @@ class UserUpdateForm(forms.ModelForm):
         fields = ("first_name", "last_name", "email")
 
     def save(self):
+        """Update user information.
+        """
         data = self.cleaned_data
-        try:
-            self.account = get_client().accounts.get(self.instance.url)
-            self.account.given_name = data['first_name']
-            self.account.surname = data['last_name']
-            self.account.email = data['email']
-            self.account.save()
-            super(UserUpdateForm, self).save()
-        except Error as e:
-            self._errors[NON_FIELD_ERRORS] = self.error_class([str(e)])
+
+        self.account = get_client().accounts.get(self.instance.url)
+        self.account.given_name = data['first_name']
+        self.account.surname = data['last_name']
+        self.account.email = data['email']
+        self.account.save()
 
 
 class PasswordResetEmailForm(forms.Form):
@@ -106,12 +119,15 @@ class PasswordResetEmailForm(forms.Form):
 
     email = forms.CharField(max_length=255)
 
-    def save(self):
+    def clean(self):
         try:
-            get_application().send_password_reset_email(
-                self.cleaned_data['email'])
-        except Error as e:
-            self._errors[NON_FIELD_ERRORS] = self.error_class([str(e)])
+            self.cleaned_data['email']
+            return self.cleaned_data
+        except KeyError:
+            raise forms.ValidationError("Please provide an email address.")
+
+    def save(self):
+        get_application().send_password_reset_email(self.cleaned_data['email'])
 
 
 class PasswordResetForm(forms.Form):
@@ -132,9 +148,6 @@ class PasswordResetForm(forms.Form):
         return password2
 
     def save(self, token):
-        try:
-            self.account = get_application().verify_password_reset_token(token)
-            self.account.password = self.cleaned_data['new_password1']
-            self.account.save()
-        except Error as e:
-            self._errors[NON_FIELD_ERRORS] = self.error_class([str(e)])
+        account = get_application().verify_password_reset_token(token)
+        account.password = self.cleaned_data['new_password1']
+        account.save()
