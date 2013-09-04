@@ -37,9 +37,9 @@ class UserCreateForm(forms.ModelForm):
     """
 
     password = forms.CharField(label='Password',
-        widget=forms.PasswordInput, required=False)
+        widget=forms.PasswordInput)
     password2 = forms.CharField(label='Password confirmation',
-        widget=forms.PasswordInput, required=False)
+        widget=forms.PasswordInput)
 
     class Meta:
         model = get_user_model()
@@ -47,14 +47,25 @@ class UserCreateForm(forms.ModelForm):
             "first_name", "last_name", "password", "password2")
 
     def clean_password2(self):
+        """Check if passwords match.
+        """
         password = self.cleaned_data.get("password")
         password2 = self.cleaned_data.get("password2")
-        if password and password2 and password != password2:
+
+        if password != password2:
             msg = "Passwords don't match"
             raise forms.ValidationError(msg)
+
         return password2
 
     def clean_username(self):
+        """Check if username exists on Stormpath.
+
+        We don't want the form to validate if a user with the same username
+        exists on Stormpath. We ignore the status of the local user because we
+        delete ther user on save to keep in sync with Stormpath.
+        """
+
         try:
             accounts = get_application().accounts.search({
                 'username': self.cleaned_data['username']})
@@ -66,6 +77,11 @@ class UserCreateForm(forms.ModelForm):
         return self.cleaned_data['username']
 
     def clean_email(self):
+        """Check if email exists on Stormpath.
+
+        The email address is unique accross all Stormpath applications.
+        The username is only unique within a Stormpath application.
+        """
         try:
             accounts = get_application().accounts.search({
                 'email': self.cleaned_data['email']})
@@ -77,6 +93,12 @@ class UserCreateForm(forms.ModelForm):
         return self.cleaned_data['email']
 
     def save(self, commit=False):
+        """Create Stormpath user.
+
+        Creates the Stormpath user and local user. Because the form validated,
+        which means the user doesn't exist on Stormpath, we delete the local
+        user without checking. It's important to set the url of the user.
+        """
         data = self.cleaned_data
         stormpath_data = {}
 
