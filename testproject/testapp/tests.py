@@ -19,6 +19,7 @@ class BackendTest(TestCase):
         account.surname = "Angelos"
         account.email = "gabriel@bloodravens.com"
         account.password = "A3palto0la"
+        account.href = "https://api.stormpath.com/va/accounts/123"
         account.is_enabled = mock.MagicMock(return_value=True)
 
         return account
@@ -52,7 +53,8 @@ class BackendTest(TestCase):
             first_name=self.given_name,
             last_name="FAKE",
             email=self.email,
-            password=self.password)
+            password=self.password,
+            url=self.href)
         user.save()
 
         user = StormpathBackend().authenticate(self.username, self.password)
