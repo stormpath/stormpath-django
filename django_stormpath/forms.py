@@ -65,7 +65,6 @@ class UserCreateForm(forms.ModelForm):
         exists on Stormpath. We ignore the status of the local user because we
         delete ther user on save to keep in sync with Stormpath.
         """
-
         try:
             accounts = get_application().accounts.search({
                 'username': self.cleaned_data['username']})
@@ -79,7 +78,7 @@ class UserCreateForm(forms.ModelForm):
     def clean_email(self):
         """Check if email exists on Stormpath.
 
-        The email address is unique accross all Stormpath applications.
+        The email address is unique across all Stormpath applications.
         The username is only unique within a Stormpath application.
         """
         try:
@@ -112,6 +111,7 @@ class UserCreateForm(forms.ModelForm):
         get_user_model().objects.filter(username=data['username']).delete()
         user = super(UserCreateForm, self).save(commit=False)
         user.url = self.account.href
+        user.password = "STORMPATH"
         user.save()
 
 
