@@ -122,7 +122,7 @@ class UserCreateTest(TestCase):
             'password2': 'password', 'password': 'password',
             'email': self.email, 'first_name': self.given_name})
 
-        form.is_valid()
+        self.assertTrue(form.is_valid())
         search = get_application.return_value.accounts.search
         search.assert_any_call({'username': self.username})
         search.assert_any_call({'email': self.email})
@@ -151,21 +151,20 @@ class UserCreateTest(TestCase):
             'password2': 'password', 'password': 'password2',
             'email': self.email, 'first_name': self.given_name})
 
-        form.is_valid()
+        self.assertFalse(form.is_valid())
         with self.assertRaises(ValueError):
             form.save()
 
-    @mock.patch('django_stormpath.forms.Client')
-    def test_user_exists(self, client):
+    @mock.patch('django_stormpath.forms.get_application')
+    def test_user_exists(self, get_application):
         form = UserCreateForm({
             'last_name': self.surname, 'username': self.username,
             'password2': 'password', 'password': 'password',
             'email': self.email, 'first_name': self.given_name})
 
-        form.is_valid()
-        accounts = client.return_value.applications.get.return_value.accounts
-        accounts.search.return_value.__len__.return_value = 1
-        form.save()
+        accounts = get_application.return_value.accounts.search.return_value
+        accounts.__len__.return_value = 1
+        self.assertFalse(form.is_valid())
 
     def tearDown(self):
         self.user_model.objects.all().delete()
