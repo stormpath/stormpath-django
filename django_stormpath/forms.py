@@ -117,6 +117,9 @@ class UserCreateForm(forms.ModelForm):
 
 class UserUpdateForm(forms.ModelForm):
     """Update Stormpath user form.
+
+    The form must have the instance object of the user set in order to read
+    the url of the Stormpath user.
     """
 
     class Meta:
@@ -127,7 +130,6 @@ class UserUpdateForm(forms.ModelForm):
         """Update user information.
         """
         data = self.cleaned_data
-
         self.account = get_client().accounts.get(self.instance.url)
         self.account.given_name = data['first_name']
         self.account.surname = data['last_name']

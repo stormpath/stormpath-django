@@ -3,7 +3,8 @@ from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.core.exceptions import ObjectDoesNotExist
 from django_stormpath.backends import StormpathBackend
-from django_stormpath.forms import UserCreateForm
+from django_stormpath.forms import (UserCreateForm, UserUpdateForm,
+    PasswordResetEmailForm, PasswordResetForm)
 try:
     from unittest import mock
 except ImportError:
@@ -168,3 +169,55 @@ class UserCreateTest(TestCase):
 
     def tearDown(self):
         self.user_model.objects.all().delete()
+
+
+class UserUpdateTest(TestCase):
+    def setUp(self):
+        self.url = "https://api.stormpath.com/v1/accounts/123"
+
+    @mock.patch('django_stormpath.forms.get_client')
+    def test_update_form(self, client):
+        form = UserUpdateForm({'last_name': "Picard",
+                'email': 'jlpicard@enterprise.com', 'first_name': 'Jean-Luc'},
+                instance=mock.MagicMock(url=self.url))
+        form.is_valid()
+        form.save()
+        client.return_value.accounts.get.assert_called_once_with(self.url)
+        self.assertEqual(form.account.email, "jlpicard@enterprise.com")
+        self.assertEqual(form.account.given_name, "Jean-Luc")
+        self.assertEqual(form.account.surname, "Picard")
+        form.account.save.assert_called_once_with()
+
+    @mock.patch('django_stormpath.forms.get_client')
+    def test_invalid_empty_data(self, client):
+        form = UserUpdateForm({'email': 'jlpicard@enterprise.com',
+            'first_name': 'Jean-Luc', 'last_name': ''},
+            instance=mock.MagicMock(url=self.url))
+
+        self.assertTrue(form.is_valid())
+
+
+class PasswordResetTest(TestCase):
+    @mock.patch('django_stormpath.forms.get_application')
+    def test_reset_password_email(self, application):
+        form = PasswordResetEmailForm({'email': 'jlpicard@'})
+        self.assertTrue(form.is_valid())
+        form.save()
+        reset = application.return_value.send_password_reset_email
+        reset.assert_called_once_with("jlpicard@")
+        form = PasswordResetEmailForm({'email': ''})
+        self.assertFalse(form.is_valid())
+
+
+    @mock.patch('django_stormpath.forms.get_application')
+    def test_password_reset_form(self, application):
+        form = PasswordResetForm({'new_password2': 'password',
+            'new_password1': 'password'})
+        self.assertTrue(form.is_valid())
+        form.save("TOKE")
+        verify_token = application.return_value.verify_password_reset_token
+        verify_token.assert_called_once_with("TOKE")
+
+        form = PasswordResetForm({'new_password2': 'password',
+            'new_password1': ''})
+        self.assertFalse(form.is_valid())
