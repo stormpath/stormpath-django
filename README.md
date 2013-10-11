@@ -8,11 +8,11 @@ authentication and access controls. It works with Python 3.3 and 2.7.
 ## Installation and requirements
 
 The only requirement needed to run django-stormpath is stormpath-sdk for
-Python. Please note that at least version 1.0.0 of stormpath-sdk is required.
+Python. Please note that at least version 1.0.0 beta of stormpath-sdk is
+required.
 
-    # Install the required stormpath-sdk directly from GitHub (until it is
-    # released on PyPI)
-    pip install git+git://github.com/stormpath/stormpath-sdk-python.git@development#stormpath
+    # Install the required stormpath-sdk beta
+    pip install stormpath-sdk --pre
 
     # Dowload from GitHub
     git clone https://github.com/stormpath/stormpath-django.git
@@ -94,5 +94,3 @@ set in Django settings:
 Copyright &copy; 2013 Stormpath, inc. You may use and/or modify Stormpath Django
 plugin under the terms of Apache License version 2.0. Please see the
 [LICENSE](LICENSE) file for details.
-
-<!-- Small change to test Travis build trigger: -->
