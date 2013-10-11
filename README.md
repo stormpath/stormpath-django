@@ -94,3 +94,5 @@ set in Django settings:
 Copyright &copy; 2013 Stormpath, inc. You may use and/or modify Stormpath Django
 plugin under the terms of Apache License version 2.0. Please see the
 [LICENSE](LICENSE) file for details.
+
+<!-- Small change to test Travis build trigger: -->
