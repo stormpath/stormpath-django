@@ -89,7 +89,7 @@ set in Django settings:
     STORMPATH_APPLICATION = "https://api.stormpath.com/v1/applications/YOUR_APP_UID_HERE"
 
 
-## Copyright and LIcense
+## Copyright and License
 
 Copyright &copy; 2013 Stormpath, inc. You may use and/or modify Stormpath Django
 plugin under the terms of Apache License version 2.0. Please see the
