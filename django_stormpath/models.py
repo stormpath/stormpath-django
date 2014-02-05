@@ -48,6 +48,9 @@ class StormpathUserManager(BaseUserManager):
 
 class StormpathBaseUser(AbstractBaseUser, PermissionsMixin):
 
+    class Meta:
+        abstract = True
+
     url = models.CharField(max_length=255, null=True, blank=True)
     username = models.CharField(max_length=255)
     first_name = models.CharField(max_length=255)
