@@ -7,7 +7,7 @@ authentication and access controls. It works with Python 3.3 and 2.7.
 
 ## Installation and requirements
 
-The only requirement needed to run django-stormpath is Stormpath SDK for
+The only requirement needed to run stormpath-django is Stormpath SDK for
 Python. Please note that at least version 1.0.1 of Stormpath is
 required.
 
