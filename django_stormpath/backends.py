@@ -29,8 +29,8 @@ class StormpathBackend(object):
         application = client.applications.get(href)
 
         try:
-            account = application.authenticate_account(username, password)
-            return account
+            result = application.authenticate_account(username, password)
+            return result.account
         except Error:
             return None
 

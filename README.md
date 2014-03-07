@@ -7,16 +7,13 @@ authentication and access controls. It works with Python 3.3 and 2.7.
 
 ## Installation and requirements
 
-The only requirement needed to run django-stormpath is stormpath-sdk for
-Python. Please note that at least version 1.0.0 beta of stormpath-sdk is
+The only requirement needed to run stormpath-django is Stormpath SDK for
+Python. Please note that at least version 1.0.1 of Stormpath is
 required.
 
-    # Install the required stormpath-sdk beta
-    pip install stormpath-sdk --pre
-
-    # Dowload from GitHub
+    # Download from GitHub
     git clone https://github.com/stormpath/stormpath-django.git
-    cd django-stormpath
+    cd stormpath-django
 
     # Run the tests
     python setup.py test
@@ -36,7 +33,7 @@ out of backends to check. This allows us to use Stormpath auth alongside
 regular and other Django auth backends.
 
 When a user tries to log in and Stormpath is used as the authentication backend
-Django-stormpath always asks the Stormpath service if the user's credentials
+django_stormpath always asks the Stormpath service if the user's credentials
 (username or email and password) are correct. If the credentials are OK, there
 are two possible scenarios:
 
@@ -51,12 +48,13 @@ are two possible scenarios:
     - user is logged in if account is enabled
 
 
-* Note that if an account on Stormpath can be disabled, enabled, locked and
+* Note that an account on Stormpath can be disabled, enabled, locked and
   unverified. When a user is created or updated, the is_active field is set
   to True if the Stormpath account is enabled and False if otherwise.
 
 * The user will never be deleted from Django database even if he/she was
   deleted from Stormpath
+
 * The `is_staff`/`is_superuser` fields aren't changed so a user won't be able
   to log into Django Admin unless set manually or by other auth backends
 
