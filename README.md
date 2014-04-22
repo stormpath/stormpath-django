@@ -2,6 +2,8 @@
 
 [![Build Status](https://travis-ci.org/stormpath/stormpath-django.png?branch=master)](https://travis-ci.org/stormpath/stormpath-django)
 
+**This integration is UNDER DEVELOPMENT - please use at your own risk**
+
 A Django application that uses Stormpath SDK API calls to provide
 authentication and access controls. It works with Python 3.3 and 2.7.
 
