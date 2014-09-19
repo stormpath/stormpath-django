@@ -28,3 +28,6 @@ MANIFEST
 /docs/_build/
 /docs/_static/
 /docs/_templates/
+
+/testproject/.env
+/testproject/dev.db
