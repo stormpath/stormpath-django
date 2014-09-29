@@ -45,9 +45,13 @@ are two possible scenarios:
     - user is logged in if account is enabled
 
 
-* Note that an account on Stormpath can be disabled, enabled, locked and
+* Note: that an account on Stormpath can be disabled, enabled, locked and
   unverified. When a user is created or updated, the is_active field is set
   to True if the Stormpath account is enabled and False if otherwise.
+
+* Note: For a Stormpath user to be able to log into the django admin interface
+  it must specify the `is_superuser` and `is_staff` properties in the Accounts
+  CustomData.
 
 ## Usage
 
