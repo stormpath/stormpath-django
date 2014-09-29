@@ -11,9 +11,9 @@ from django.conf import settings
 from django.db import models, IntegrityError, transaction
 from django.contrib.auth.models import (BaseUserManager,
         AbstractBaseUser, PermissionsMixin)
+from django.contrib.auth import get_user_model
 from django.forms import model_to_dict
 from django.core.exceptions import ObjectDoesNotExist
-from django.contrib.auth.hashers import is_password_usable
 
 from stormpath.client import Client
 from stormpath.error import Error as StormpathError
@@ -27,7 +27,10 @@ APPLICATION = CLIENT.applications.get(
 
 class StormpathUserManager(BaseUserManager):
 
-    def create_user(self, email, given_name, surname, password):
+    def create(self, *args, **kwargs):
+        self.create_user(*args, **kwargs)
+
+    def create_user(self, email, given_name, surname, password, **kwargs):
 
         if not email:
             raise ValueError("Users must have an email address")
@@ -68,7 +71,10 @@ class StormpathBaseUser(AbstractBaseUser, PermissionsMixin):
         unique=True,
         db_index=True)
 
-    STORMPATH_BASE_FIELDS = ['href', 'username', 'given_name', 'surname', 'middle_name', 'email']
+    STORMPATH_BASE_FIELDS = ['href', 'username', 'given_name', 'surname', 'middle_name', 'email', 'password']
+    EXCLUDE_FIELDS = ['href', 'last_login']
+
+    PASSWORD_FIELD = 'password'
 
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = ['given_name', 'surname']
@@ -80,15 +86,24 @@ class StormpathBaseUser(AbstractBaseUser, PermissionsMixin):
     objects = StormpathUserManager()
 
     def _mirror_data_from_db_user(self, account, data):
-        del data['href']
-        del data['last_login']
+        for field in self.EXCLUDE_FIELDS:
+            try:
+                del data[field]
+            except KeyError:
+                pass
         for key in data:
             if key in self.STORMPATH_BASE_FIELDS:
                 account[key] = data[key]
             else:
-                if key != 'password':
-                    account.custom_data[key] = data[key]
+                account.custom_data[key] = data[key]
+
+        account.status = account.STATUS_DISABLED if data['is_active'] is False else account.STATUS_ENABLED
+
         return account
+
+    def _mirror_data_from_stormpath_user(self, account):
+        for field in self.STORMPATH_BASE_FIELDS:
+            self.__setattr__(field, account[field])
 
     def _create_stormpath_user(self, data, raw_password):
         data['password'] = raw_password
@@ -161,7 +176,7 @@ class StormpathBaseUser(AbstractBaseUser, PermissionsMixin):
         try:
             return self.raw_password
         except AttributeError:
-            return None
+            return self.password
 
     def set_password(self, raw_password):
         """We don't want to keep passwords locally"""

@@ -127,7 +127,6 @@ INSTALLED_APPS = (
 )
 
 AUTHENTICATION_BACKENDS = (
-    'django.contrib.auth.backends.ModelBackend',
     'django_stormpath.backends.StormpathBackend',
 )
 
