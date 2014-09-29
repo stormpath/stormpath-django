@@ -26,7 +26,7 @@ class StormpathUserAdmin(UserAdmin):
     )
     add_fieldsets = (
         (None, {"classes": ("wide",),
-        "fields": ("given_name", "surname", "email", "password", "password2")}),
+        "fields": ("given_name", "surname", "email", "password1", "password2")}),
     )
 
 # Register the new CustomUserAdmin

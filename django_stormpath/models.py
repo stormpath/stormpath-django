@@ -91,6 +91,11 @@ class StormpathBaseUser(AbstractBaseUser, PermissionsMixin):
                 del data[field]
             except KeyError:
                 pass
+        try:
+            if data['password'] is None:
+                del data['password']
+        except KeyError:
+            pass
         for key in data:
             if key in self.STORMPATH_BASE_FIELDS:
                 account[key] = data[key]
@@ -101,9 +106,10 @@ class StormpathBaseUser(AbstractBaseUser, PermissionsMixin):
 
         return account
 
-    def _mirror_data_from_stormpath_user(self, account):
+    def _mirror_data_from_stormpath_account(self, account):
         for field in self.STORMPATH_BASE_FIELDS:
-            self.__setattr__(field, account[field])
+            if field != 'password':
+                self.__setattr__(field, account[field])
 
     def _create_stormpath_user(self, data, raw_password):
         data['password'] = raw_password
@@ -176,7 +182,7 @@ class StormpathBaseUser(AbstractBaseUser, PermissionsMixin):
         try:
             return self.raw_password
         except AttributeError:
-            return self.password
+            return None
 
     def set_password(self, raw_password):
         """We don't want to keep passwords locally"""

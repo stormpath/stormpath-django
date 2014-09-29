@@ -16,7 +16,7 @@ class StormpathUserCreationForm(forms.ModelForm):
     Creates a new user on Stormpath and locally.
     """
 
-    password = forms.CharField(label='Password',
+    password1 = forms.CharField(label='Password',
         widget=forms.PasswordInput)
     password2 = forms.CharField(label='Password confirmation',
         widget=forms.PasswordInput)
@@ -29,10 +29,9 @@ class StormpathUserCreationForm(forms.ModelForm):
     def clean_password2(self):
         """Check if passwords match.
         """
-        password = self.cleaned_data.get("password")
+        password1 = self.cleaned_data.get("password1")
         password2 = self.cleaned_data.get("password2")
-
-        if password != password2:
+        if password1 != password2:
             msg = "Passwords don't match."
             raise forms.ValidationError(msg)
 
@@ -70,6 +69,13 @@ class StormpathUserCreationForm(forms.ModelForm):
         except Error as e:
             raise forms.ValidationError(str(e))
         return self.cleaned_data['email']
+
+    def save(self, commit=True):
+        user = super(StormpathUserCreationForm, self).save(commit=False)
+        user.set_password(self.cleaned_data["password1"])
+        if commit:
+            user.save()
+        return user
 
 
 class StormpathUserChangeForm(forms.ModelForm):
