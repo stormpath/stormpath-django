@@ -109,6 +109,10 @@ class StormpathBaseUser(AbstractBaseUser, PermissionsMixin):
         for field in self.STORMPATH_BASE_FIELDS:
             if field != 'password':
                 self.__setattr__(field, account[field])
+        for key in account.custom_data.keys():
+            self.__setattr__(key, account.custom_data[key])
+
+        self.is_active = True if account.status == account.STATUS_ENABLED else False
 
     def _create_stormpath_user(self, data, raw_password):
         data['password'] = raw_password
