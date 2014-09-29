@@ -62,7 +62,7 @@ setup(
     packages=find_packages(),
     install_requires=[
         "stormpath>=1.2.5",
-        "django"
+        "django>=1.6"
     ],
     cmdclass={
         'test': TestCommand,
