@@ -41,8 +41,13 @@ class StormpathBackend(ModelBackend):
             try:
                 user = UserModel.objects.get(
                     Q(username=account.username) | Q(email=account.email))
+                user._mirror_data_from_stormpath_account(account)
+                user._save_db_only()
                 return user
             except UserModel.DoesNotExist:
-                pass
+                user = UserModel()
+                user._mirror_data_from_stormpath_account(account)
+                user._save_db_only()
+                return user
         return None
 

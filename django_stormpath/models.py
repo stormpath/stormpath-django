@@ -3,15 +3,14 @@
 Any application that uses django_stormpath must provide a user model with a
 href field. The href is used in the authentication backend to keep track which
 remote Stormpath user the local user represents. It is meant to be used in an
-application that modifies user data on Stormpath. The user classes provided
-here are convenient to inherit from in custom user models in applications.
+application that modifies user data on Stormpath. If needing to add more
+fields please extend the StormpathUser class from this module.
 """
 
 from django.conf import settings
 from django.db import models, IntegrityError, transaction
 from django.contrib.auth.models import (BaseUserManager,
         AbstractBaseUser, PermissionsMixin)
-from django.contrib.auth import get_user_model
 from django.forms import model_to_dict
 from django.core.exceptions import ObjectDoesNotExist
 
@@ -168,6 +167,9 @@ class StormpathBaseUser(AbstractBaseUser, PermissionsMixin):
             if accounts:
                 accounts[0].delete()
             raise
+
+    def _save_db_only(self, *args, **kwargs):
+        super(StormpathBaseUser, self).save(*args, **kwargs)
 
     def _remove_raw_password(self):
         """We need to send a raw password to Stormpath. After an Account is saved on Stormpath
