@@ -109,6 +109,9 @@ class StormpathBaseUser(AbstractBaseUser, PermissionsMixin):
 
     def _mirror_data_from_stormpath_account(self, account):
         for field in self.STORMPATH_BASE_FIELDS:
+            # The password is not sent via the API
+            # so we take care here to not try and
+            # mirror it because it's not there
             if field != 'password':
                 self.__setattr__(field, account[field])
         for key in account.custom_data.keys():
@@ -128,13 +131,16 @@ class StormpathBaseUser(AbstractBaseUser, PermissionsMixin):
         else:
             # don't set the password if it hasn't changed
             del data['password']
-        accounts = APPLICATION.accounts.search({'email': data.get('email')})
-        if accounts:
-            acc = accounts[0]
+        try:
+            acc = APPLICATION.accounts.get(data.get('href'))
+            # materialize it
+            acc.email
+
             acc = self._mirror_data_from_db_user(acc, data)
             acc.save()
             return acc
-        raise self.DoesNotExist('Could not find Stormpath User.')
+        except StormpathError:
+            raise self.DoesNotExist('Could not find Stormpath User.')
 
     def get_full_name(self):
         return "{0} {1}".format(self.given_name, self.surname)
@@ -169,6 +175,8 @@ class StormpathBaseUser(AbstractBaseUser, PermissionsMixin):
         except StormpathError:
             raise
         except Exception:
+            # we're not sure if we have a href yet, hence we
+            # filter by email
             accounts = APPLICATION.accounts.search({'email': self.email})
             if accounts:
                 accounts[0].delete()
@@ -207,13 +215,12 @@ class StormpathBaseUser(AbstractBaseUser, PermissionsMixin):
 
     def delete(self, *args, **kwargs):
         with transaction.atomic():
-            email = self.email
+            href = self.href
             super(StormpathBaseUser, self).delete(*args, **kwargs)
             try:
-                accounts = APPLICATION.accounts.search({'email': email})
-                if accounts:
-                    accounts[0].delete()
-            except:
+                account = APPLICATION.accounts.get(href)
+                account.delete()
+            except StormpathError:
                 raise
 
 
