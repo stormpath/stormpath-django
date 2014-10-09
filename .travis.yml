@@ -11,6 +11,5 @@ install:
 script: python setup.py test
 
 env:
-    - DJANGO=1.5
     - DJANGO=1.6
     - DJANGO=1.7
