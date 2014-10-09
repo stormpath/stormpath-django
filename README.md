@@ -20,7 +20,7 @@ authentication and access controls. It works with Python 3.x and 2.7.x.
     python setup.py install
 
     # Or install via pip
-    pip install django-stormpath
+    pip install stormpath-django
 
 
 ## How it works
@@ -30,7 +30,7 @@ to communicate with the Stormpath REST API and authenticate users.
 
 When a user tries to log in and Stormpath is used as the authentication backend
 django_stormpath always asks the Stormpath service if the user's credentials
-(username or email and password) are correct, infact passwords aren't even stored
+(username or email and password) are correct, in fact passwords aren't even stored
 in the local database. If the credentials are OK, there
 are two possible scenarios:
 
