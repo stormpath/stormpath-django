@@ -24,6 +24,10 @@ APPLICATION = CLIENT.applications.get(
         href=settings.STORMPATH_APPLICATION)
 
 
+class StormpathPermissionsMixin(PermissionsMixin):
+    pass
+
+
 class StormpathUserManager(BaseUserManager):
 
     def create(self, *args, **kwargs):
@@ -55,7 +59,7 @@ class StormpathUserManager(BaseUserManager):
         return user
 
 
-class StormpathBaseUser(AbstractBaseUser, PermissionsMixin):
+class StormpathBaseUser(AbstractBaseUser, StormpathPermissionsMixin):
 
     class Meta:
         abstract = True
