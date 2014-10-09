@@ -84,24 +84,26 @@ class StormpathBaseUser(AbstractBaseUser, PermissionsMixin):
 
     objects = StormpathUserManager()
 
+    DJANGO_PREFIX = 'spDjango_'
+
     def _mirror_data_from_db_user(self, account, data):
         for field in self.EXCLUDE_FIELDS:
-            try:
+            if field in data:
                 del data[field]
-            except KeyError:
-                pass
-        try:
-            if data['password'] is None:
-                del data['password']
-        except KeyError:
-            pass
+
+        if 'password' in data:
+            del data['password']
+
+        account.status = account.STATUS_DISABLED if data['is_active'] is False else account.STATUS_ENABLED
+
+        if 'is_active' in data:
+            del data['is_active']
+
         for key in data:
             if key in self.STORMPATH_BASE_FIELDS:
                 account[key] = data[key]
             else:
-                account.custom_data[key] = data[key]
-
-        account.status = account.STATUS_DISABLED if data['is_active'] is False else account.STATUS_ENABLED
+                account.custom_data[self.DJANGO_PREFIX + key] = data[key]
 
         return account
 
@@ -110,7 +112,7 @@ class StormpathBaseUser(AbstractBaseUser, PermissionsMixin):
             if field != 'password':
                 self.__setattr__(field, account[field])
         for key in account.custom_data.keys():
-            self.__setattr__(key, account.custom_data[key])
+            self.__setattr__(key.split(self.DJANGO_PREFIX)[0], account.custom_data[key])
 
         self.is_active = True if account.status == account.STATUS_ENABLED else False
 
