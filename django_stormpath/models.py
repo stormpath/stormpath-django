@@ -75,7 +75,7 @@ class StormpathBaseUser(AbstractBaseUser, StormpathPermissionsMixin):
         db_index=True)
 
     STORMPATH_BASE_FIELDS = ['href', 'username', 'given_name', 'surname', 'middle_name', 'email', 'password']
-    EXCLUDE_FIELDS = ['href', 'last_login']
+    EXCLUDE_FIELDS = ['href', 'last_login', 'groups', 'id', 'stormpathpermissionsmixin_ptr', 'user_permissions']
 
     PASSWORD_FIELD = 'password'
 
@@ -123,9 +123,23 @@ class StormpathBaseUser(AbstractBaseUser, StormpathPermissionsMixin):
 
         self.is_active = True if account.status == account.STATUS_ENABLED else False
 
+    def _save_sp_group_memberships(self, account):
+        try:
+            db_groups = self.groups.values_list('name', flat=True)
+            for g in db_groups:
+                if not account.has_group(g):
+                    account.add_group(g)
+
+            for gm in account.group_memberships:
+                if gm.group.name not in db_groups:
+                    gm.delete()
+        except Exception:
+            raise IntegrityError("Unable to save group memberships.")
+
     def _create_stormpath_user(self, data, raw_password):
         data['password'] = raw_password
         account = APPLICATION.accounts.create(data)
+        self._save_sp_group_memberships(account)
         return account
 
     def _update_stormpath_user(self, data, raw_password):
@@ -142,6 +156,7 @@ class StormpathBaseUser(AbstractBaseUser, StormpathPermissionsMixin):
 
             acc = self._mirror_data_from_db_user(acc, data)
             acc.save()
+            self._save_sp_group_memberships(acc)
             return acc
         except StormpathError:
             raise self.DoesNotExist('Could not find Stormpath User.')
