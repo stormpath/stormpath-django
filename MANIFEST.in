@@ -1,1 +1,1 @@
-include django_stormpath/*.py
+include stormpath_django/*.py

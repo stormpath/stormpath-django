@@ -42,7 +42,7 @@ class DocCommand(BaseCommand):
             sys.exit(-1)
 
 setup(
-    name='django_stormpath',
+    name='stormpath_django',
     version='0.0.3',
     author='',
     author_email='goran.cetusic@dobarkod.hr',

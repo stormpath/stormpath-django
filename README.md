@@ -29,7 +29,7 @@ Stormpath Django integration provides an AUTHENTICATION_BACKEND which is used
 to communicate with the Stormpath REST API and authenticate users.
 
 When a user tries to log in and Stormpath is used as the authentication backend
-django_stormpath always asks the Stormpath service if the user's credentials
+stormpath_django always asks the Stormpath service if the user's credentials
 (username or email and password) are correct, in fact passwords aren't even stored
 in the local database. If the credentials are OK, there
 are two possible scenarios:
@@ -55,18 +55,18 @@ are two possible scenarios:
 
 ## Usage
 
-Add `django_stormpath` to your `INSTALLED_APPS` in settings.py.
+Add `stormpath_django` to your `INSTALLED_APPS` in settings.py.
 
-Add `django_stormpath.backends.StormpathBackend` to `AUTHENTICATION_BACKENDS`
+Add `stormpath_django.backends.StormpathBackend` to `AUTHENTICATION_BACKENDS`
 in settings.py.
 
     AUTHENTICATION_BACKENDS = (
-        'django_stormpath.backends.StormpathBackend',
+        'stormpath_django.backends.StormpathBackend',
     )
 
-Set `django_stormpath.StormpathUser` as the user model:
+Set `stormpath_django.StormpathUser` as the user model:
 
-    AUTH_USER_MODEL = 'django_stormpath.StormpathUser'
+    AUTH_USER_MODEL = 'stormpath_django.StormpathUser'
 
 To access the Stormpath service an API key and secret are required. Also, every
 Stormpath application has a unique ID so we need to know the application URL to
