@@ -45,10 +45,10 @@ setup(
     name='stormpath_django',
     version='0.0.3',
     author='',
-    author_email='goran.cetusic@dobarkod.hr',
+    author_email='python@stormpath.com',
     description='Django Stormpath API integration',
     license='Apache',
-    url='http://stormpath.com/',
+    url='https://github.com/stormpath/stormpath-django',
     zip_safe=False,
     classifiers=[
         "Development Status :: 4 - Beta",
