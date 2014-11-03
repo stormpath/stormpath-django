@@ -1,6 +1,7 @@
 from uuid import uuid4
 
 from django.test import TestCase
+from django.db import IntegrityError
 from django.contrib.auth import get_user_model
 from django.contrib.auth.models import Group
 from stormpath_django.models import CLIENT
@@ -124,7 +125,7 @@ class TestUserCreation(LiveTestBase):
         })
 
         g1 = self.app.groups.create({'name': 'testGroup'})
-        g2 = self.app.groups.create({'name': 'testGroup2'})
+        g2 = self.app.groups.create({'name': 'testGroup2'})  # noqa
 
         acc.add_group(g1)
         acc.save()
@@ -137,4 +138,22 @@ class TestUserCreation(LiveTestBase):
         self.assertEqual(1, UserModel.objects.count())
         self.assertEqual(2, Group.objects.count())
         self.assertEqual(1, user.groups.filter(name=g1.name).count())
+
+    def test_groups_get_created_on_stormpath(self):
+        self.assertEqual(0, Group.objects.count())
+        Group.objects.create(name='testGroup')
+
+        self.assertEqual(1, Group.objects.count())
+        self.assertEqual(1, len(self.app.groups))
+
+    def test_group_creation_errors_are_handled(self):
+        self.assertEqual(0, Group.objects.count())
+        Group.objects.create(name='testGroup')
+
+        self.assertEqual(1, Group.objects.count())
+        self.assertEqual(1, len(self.app.groups))
+
+        self.app.groups.create({'name': 'exists'})
+
+        self.assertRaises(IntegrityError, Group.objects.create, **{'name': 'exists'})
 

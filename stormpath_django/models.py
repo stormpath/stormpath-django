@@ -13,9 +13,14 @@ from django.contrib.auth.models import (BaseUserManager,
         AbstractBaseUser, PermissionsMixin)
 from django.forms import model_to_dict
 from django.core.exceptions import ObjectDoesNotExist
+from django.db.models.signals import pre_save
+from django.contrib.auth.models import Group
+from django.dispatch import receiver
+
 
 from stormpath.client import Client
 from stormpath.error import Error as StormpathError
+
 
 CLIENT = Client(id=settings.STORMPATH_ID, secret=settings.STORMPATH_SECRET)
 APPLICATION = CLIENT.applications.get(settings.STORMPATH_APPLICATION)
@@ -242,4 +247,12 @@ class StormpathBaseUser(AbstractBaseUser, StormpathPermissionsMixin):
 
 class StormpathUser(StormpathBaseUser):
     pass
+
+
+@receiver(pre_save, sender=Group)
+def save_group_to_stormpath(sender, instance, **kwargs):
+    try:
+        APPLICATION.groups.create({'name': instance.name})
+    except StormpathError as e:
+        raise IntegrityError(e)
 
