@@ -17,11 +17,8 @@ from django.core.exceptions import ObjectDoesNotExist
 from stormpath.client import Client
 from stormpath.error import Error as StormpathError
 
-CLIENT = Client(
-        id=settings.STORMPATH_ID,
-        secret=settings.STORMPATH_SECRET)
-APPLICATION = CLIENT.applications.get(
-        href=settings.STORMPATH_APPLICATION)
+CLIENT = Client(id=settings.STORMPATH_ID, secret=settings.STORMPATH_SECRET)
+APPLICATION = CLIENT.applications.get(settings.STORMPATH_APPLICATION)
 
 
 class StormpathPermissionsMixin(PermissionsMixin):
@@ -33,7 +30,7 @@ class StormpathUserManager(BaseUserManager):
     def create(self, *args, **kwargs):
         self.create_user(*args, **kwargs)
 
-    def create_user(self, email, given_name, surname, password, **kwargs):
+    def create_user(self, email, given_name, surname, password):
 
         if not email:
             raise ValueError("Users must have an email address")

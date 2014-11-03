@@ -1,10 +1,18 @@
+import logging
+
 from django.contrib.auth import get_user_model
 from django.db.models import Q
 from django.contrib.auth.backends import ModelBackend
 from django.contrib.auth.models import Group
 from stormpath.error import Error
 
-from .models import APPLICATION
+log = logging.getLogger(__name__)
+
+
+def get_application():
+    """Helper function. Needed for easier testing"""
+    from .models import APPLICATION
+    return APPLICATION
 
 
 class StormpathBackend(ModelBackend):
@@ -18,10 +26,12 @@ class StormpathBackend(ModelBackend):
 
         Returns an account object if successful or None otherwise.
         """
+        APPLICATION = get_application()
         try:
             result = APPLICATION.authenticate_account(username, password)
             return result.account
-        except Error:
+        except Error as e:
+            log.debug(e)
             return None
 
     def _get_group_difference(self, sp_groups):
@@ -33,9 +43,10 @@ class StormpathBackend(ModelBackend):
         missing_from_sp = db_groups.difference(sp_groups)
         return (missing_from_db, missing_from_sp)
 
-    def _mirror_db_groups_to_stormpath(self):
+    def _mirror_groups_from_stormpath(self):
         """Helper method for saving to the local db groups
         that are missing but are on Stormpath"""
+        APPLICATION = get_application()
         sp_groups = [g.name for g in APPLICATION.groups]
         missing_from_db, missing_from_sp = self._get_group_difference(sp_groups)
         if missing_from_db:
@@ -63,7 +74,7 @@ class StormpathBackend(ModelBackend):
                 user = UserModel.objects.get(
                     Q(username=account.username) | Q(email=account.email))
                 user._mirror_data_from_stormpath_account(account)
-                self._mirror_db_groups_to_stormpath()
+                self._mirror_groups_from_stormpath()
                 users_sp_groups = [g.name for g in account.groups]
                 user.groups = Group.objects.filter(name__in=users_sp_groups)
                 user._save_db_only()
@@ -71,6 +82,7 @@ class StormpathBackend(ModelBackend):
             except UserModel.DoesNotExist:
                 user = UserModel()
                 user._mirror_data_from_stormpath_account(account)
+                self._mirror_groups_from_stormpath()
                 user._save_db_only()
                 users_sp_groups = [g.name for g in account.groups]
                 user.groups = Group.objects.filter(name__in=users_sp_groups)
