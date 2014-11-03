@@ -164,3 +164,5 @@ STORMPATH_SECRET = os.environ['STORMPATH_API_KEY_SECRET']
 STORMPATH_APPLICATION = os.environ['STORMPATH_APPLICATION']
 
 AUTH_USER_MODEL = 'stormpath_django.StormpathUser'
+
+TEST_RUNNER = 'django.test.runner.DiscoverRunner'
