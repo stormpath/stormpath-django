@@ -1,7 +1,7 @@
 from uuid import uuid4
 
 from django.test import TestCase
-from django.db import IntegrityError
+from django.db import IntegrityError, transaction
 from django.contrib.auth import get_user_model
 from django.contrib.auth.models import Group
 from stormpath_django.models import CLIENT
@@ -156,4 +156,25 @@ class TestUserCreation(LiveTestBase):
         self.app.groups.create({'name': 'exists'})
 
         self.assertRaises(IntegrityError, Group.objects.create, **{'name': 'exists'})
+        self.assertEqual(1, Group.objects.count())
+        self.assertEqual(2, len(self.app.groups))
+
+    def test_group_creation_error_on_local_db(self):
+        self.assertEqual(0, Group.objects.count())
+        Group.objects.create(name='testGroup')
+
+        self.assertEqual(1, Group.objects.count())
+        self.assertEqual(1, len(self.app.groups))
+
+        # we delete the image from stormpath
+        self.app.groups.search({'name': 'testGroup'})[0].delete()
+
+        # and try to re-create a duplicate locally
+        with transaction.atomic():
+            # we need to do manual commits here because django won't let us
+            # do more queries until we commit
+            self.assertRaises(IntegrityError,
+            Group.objects.create, **{'name': 'testGroup'})
+        self.assertEqual(1, Group.objects.count())
+        self.assertEqual(1, len(self.app.groups))
 
