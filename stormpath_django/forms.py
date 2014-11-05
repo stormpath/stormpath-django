@@ -88,3 +88,42 @@ class StormpathUserChangeForm(forms.ModelForm):
     password = ReadOnlyPasswordHashField(help_text=("Passwords are not stored in the local database "
                          "but only on Stormpath. You can change the password using <a href=\"password/\">this form</a>."))
 
+
+class PasswordResetEmailForm(forms.Form):
+    """Form for password reset email.
+    """
+
+    email = forms.CharField(max_length=255)
+
+    def clean(self):
+        try:
+            self.cleaned_data['email']
+            return self.cleaned_data
+        except KeyError:
+            raise forms.ValidationError("Please provide an email address.")
+
+    def save(self):
+        APPLICATION.send_password_reset_email(self.cleaned_data['email'])
+
+
+class PasswordResetForm(forms.Form):
+    """Form for new password input.
+    """
+
+    new_password1 = forms.CharField(label="New password",
+                                    widget=forms.PasswordInput)
+    new_password2 = forms.CharField(label="New password confirmation",
+                                    widget=forms.PasswordInput)
+
+    def clean_new_password2(self):
+        password1 = self.cleaned_data.get('new_password1')
+        password2 = self.cleaned_data.get('new_password2')
+        if password1 and password2:
+            if password1 != password2:
+                raise forms.ValidationError("The two passwords didn't match.")
+        return password2
+
+    def save(self, token):
+        APPLICATION.reset_account_password(token,
+            self.cleaned_data['new_password1'])
+
