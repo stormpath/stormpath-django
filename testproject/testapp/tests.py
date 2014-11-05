@@ -365,7 +365,7 @@ class TestForms(LiveTestBase):
         self.assertRaises(ValueError, form.save)
 
     def test_saving_user_form(self):
-        data = {'email': 'john.doe@example.com',
+        data = {'email': 'john.doe123@example.com',
                 'username': 'johndoe',
                 'given_name': 'John',
                 'surname': 'Doe',

@@ -132,6 +132,8 @@ class StormpathBaseUser(AbstractBaseUser, StormpathPermissionsMixin):
                 if not account.has_group(g):
                     account.add_group(g)
 
+            account.save()
+
             for gm in account.group_memberships:
                 if gm.group.name not in db_groups:
                     gm.delete()
