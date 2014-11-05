@@ -1,11 +1,18 @@
 language: python
 python:
-  - "2.7"
-  - "3.3"
-  - "3.4"
-  - "pypy"
-install:
-    - "pip install --upgrade pip"
-    - "pip install stormpath-sdk --pre"
-    - "pip install ."
-script: python setup.py test
+- '2.7'
+- '3.2'
+- '3.3'
+- '3.4'
+- pypy
+install: pip install . --use-mirrors
+script:
+- test -z "$STORMPATH_API_KEY_SECRET" || python setup.py test
+branches:
+  only:
+  - master
+  - develop
+env:
+  global:
+  - secure: gko6nu8HDi0hi784QkSKK/PhZZvDqdIeMrsY7+vN6f2xmWlDhxRLJG7TQ9YvAtHVzyhrfYeYZpoAhfD3f4tA/e7R2PdnOx3aJskxYxgMeQYj1wJOYa65+dqpXBQhtDF9BL4hPdC4F74NkDWVEUnxO6j1diLwyXiQwo0u9c3HBHA=
+  - secure: OWcPeI6KxsUulFM7SxcTR2oHhrVJeyWZweBHg9/hZPfKQ7zzLfmsfjYyyXREKXwm4nwOwwwOyQ4Dx+bjwzZJWBBB/or2vCSNV2/gL12MCUnWPNMA9f7NA/6o26ry81FV6TnOca+ogAd+oeYEk/hoB2Ikl4yvKl/sCT15JHWxHj0=

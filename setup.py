@@ -3,6 +3,7 @@
 from setuptools import setup, find_packages, Command
 import os
 import sys
+import subprocess
 
 
 class BaseCommand(Command):
@@ -22,8 +23,17 @@ class TestCommand(BaseCommand):
     def run(self):
         os.chdir('testproject')
         ret = os.system('make test')
-        if ret != 0:
-            sys.exit(-1)
+        sys.exit(ret)
+
+
+class TestDepCommand(BaseCommand):
+
+    description = "install test dependencies"
+
+    def run(self):
+        cmd = ["pip", "install", "coverage"]
+        ret = subprocess.call(cmd)
+        sys.exit(ret)
 
 
 class DocCommand(BaseCommand):
@@ -42,13 +52,13 @@ class DocCommand(BaseCommand):
             sys.exit(-1)
 
 setup(
-    name='django_stormpath',
+    name='stormpath_django',
     version='0.0.3',
     author='',
-    author_email='goran.cetusic@dobarkod.hr',
+    author_email='python@stormpath.com',
     description='Django Stormpath API integration',
     license='Apache',
-    url='http://stormpath.com/',
+    url='https://github.com/stormpath/stormpath-django',
     zip_safe=False,
     classifiers=[
         "Development Status :: 4 - Beta",
@@ -61,11 +71,12 @@ setup(
     ],
     packages=find_packages(),
     install_requires=[
-        "stormpath",
-        "django"
+        "stormpath>=1.2.6",
+        "django>=1.6"
     ],
     cmdclass={
         'test': TestCommand,
+        'testdep': TestDepCommand,
         'docs': DocCommand
     },
 )

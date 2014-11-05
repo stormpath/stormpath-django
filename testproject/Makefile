@@ -1,5 +1,5 @@
 SETTINGS=--settings=testproject.settings
-MANAGE=python manage.py
+MANAGE=coverage run --source=stormpath_django manage.py
 
 test:
-	$(MANAGE) test $(SETTINGS) testapp
+	$(MANAGE) test $(SETTINGS) testapp && coverage html

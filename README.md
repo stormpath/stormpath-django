@@ -5,38 +5,39 @@
 **This integration is UNDER DEVELOPMENT - please use at your own risk**
 
 A Django application that uses Stormpath SDK API calls to provide
-authentication and access controls. It works with Python 3.3 and 2.7.
+authentication and access controls. It works with Python 3.x and 2.7.x.
 
 ## Installation and requirements
-
-The only requirement needed to run stormpath-django is Stormpath SDK for
-Python. Please note that at least version 1.0.1 of Stormpath is
-required.
 
     # Download from GitHub
     git clone https://github.com/stormpath/stormpath-django.git
     cd stormpath-django
 
-    # Run the tests
-    python setup.py test
-
-    # Build
-    python setup.py build
-
     # Install it
     python setup.py install
+
+    # Install test deps
+    python setup.py testdep
+
+    # Run the tests
+    # NOTE: requires STORMPATH_API_KEY_ID, STORMPATH_API_KEY_SECRET
+    # and STORMPATH_APPLICATION env vars to be set
+    # (or placed in a .env file alongside testproject/manage.py)
+    python setup.py test
+
+    # Or install via pip
+    pip install stormpath-django
 
 
 ## How it works
 
-When authenticating a user, Django checks the credentials in order in which
-they are added in settings.py until a user is either authenticated or it ran
-out of backends to check. This allows us to use Stormpath auth alongside
-regular and other Django auth backends.
+Stormpath Django integration provides an AUTHENTICATION_BACKEND which is used
+to communicate with the Stormpath REST API and authenticate users.
 
 When a user tries to log in and Stormpath is used as the authentication backend
-django_stormpath always asks the Stormpath service if the user's credentials
-(username or email and password) are correct. If the credentials are OK, there
+stormpath_django always asks the Stormpath service if the user's credentials
+(username or email and password) are correct, in fact passwords aren't even stored
+in the local database. If the credentials are OK, there
 are two possible scenarios:
 
 1. User doesn't exist in Django's database (PostgreSQL, MySQL, Oracle etc.)
@@ -50,31 +51,28 @@ are two possible scenarios:
     - user is logged in if account is enabled
 
 
-* Note that an account on Stormpath can be disabled, enabled, locked and
+* Note: that an account on Stormpath can be disabled, enabled, locked and
   unverified. When a user is created or updated, the is_active field is set
   to True if the Stormpath account is enabled and False if otherwise.
 
-* The user will never be deleted from Django database even if he/she was
-  deleted from Stormpath
-
-* The `is_staff`/`is_superuser` fields aren't changed so a user won't be able
-  to log into Django Admin unless set manually or by other auth backends
-
+* Note: For a Stormpath user to be able to log into the django admin interface
+  it must specify the `is_superuser` and `is_staff` properties in the Accounts
+  CustomData.
 
 ## Usage
 
-Add `django_stormpath` to your `INSTALLED_APPS` in settings.py.
+Add `stormpath_django` to your `INSTALLED_APPS` in settings.py.
 
-Add `django_stormpath.backends.StormpathBackend` to `AUTHENTICATION_BACKENDS`
+Add `stormpath_django.backends.StormpathBackend` to `AUTHENTICATION_BACKENDS`
 in settings.py.
 
     AUTHENTICATION_BACKENDS = (
-        'django_stormpath.backends.StormpathBackend',
+        'stormpath_django.backends.StormpathBackend',
     )
 
-Set `django_stormpath.StormpathUser` as the user model:
+Set `stormpath_django.StormpathUser` as the user model:
 
-    AUTH_USER_MODEL = 'django_stormpath.StormpathUser'
+    AUTH_USER_MODEL = 'stormpath_django.StormpathUser'
 
 To access the Stormpath service an API key and secret are required. Also, every
 Stormpath application has a unique ID so we need to know the application URL to
@@ -87,6 +85,36 @@ set in Django settings:
     STORMPATH_ID = "yourApiKeyId"
     STORMPATH_SECRET = "yourApiKeySecret"
     STORMPATH_APPLICATION = "https://api.stormpath.com/v1/applications/YOUR_APP_UID_HERE"
+
+
+Example: Creating a user:
+
+    from django.contrib.auth import get_user_model
+
+    UserModel = get_user_model()
+    UserModel.objects.create(
+        email='john.doe@example.com',
+        given_name='John',
+        surname='Doe',
+        password='password123!')
+
+The above method just calls the `create_user` method
+
+    UserModel.create_user('john.doe@example', 'John', 'Doe', 'Password123!')
+
+For creating a superuser use:
+
+    UserModel.create_user('john.doe@example', 'John', 'Doe', 'Password123!')
+
+The above method will set `is_admin`, `is_staff` and `is_superuser` to `True`
+on the newly created user. All extra parameters like the aforementioned flags are saved
+on Stormpath in the Accounts CustomData Resource and can be inspected outside of
+django using, for instance, the `stormpath-cli` tool.
+
+Note: When doing the initial `syncdb` call (or `manage.py createsuperuser`)
+an Account is also created on Stormpath. In fact every time the `save` method
+is called on the UserModel instance it is saved/updated on Stormpath as well.
+This includes working with the django built-in admin interface.
 
 
 ## Copyright and License
