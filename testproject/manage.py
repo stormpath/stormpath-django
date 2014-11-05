@@ -7,8 +7,9 @@ def set_env():
         with open('.env') as f:
             lines = f.readlines()
             for line in lines:
-                k, v = line.split('=')
-                os.environ[k] = v.strip()
+                if not line.isspace() and not line.startswith("#"):
+                    k, v = line.split('=')
+                    os.environ[k] = v.strip()
     except IOError:
         pass
 
