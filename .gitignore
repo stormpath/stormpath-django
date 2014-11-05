@@ -31,3 +31,4 @@ MANIFEST
 
 /testproject/.env
 /testproject/dev.db
+/testproject/htmlcov

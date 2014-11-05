@@ -3,6 +3,7 @@
 from setuptools import setup, find_packages, Command
 import os
 import sys
+import subprocess
 
 
 class BaseCommand(Command):
@@ -22,6 +23,16 @@ class TestCommand(BaseCommand):
     def run(self):
         os.chdir('testproject')
         ret = os.system('make test')
+        sys.exit(ret)
+
+
+class TestDepCommand(BaseCommand):
+
+    description = "install test dependencies"
+
+    def run(self):
+        cmd = ["pip", "install", "coverage"]
+        ret = subprocess.call(cmd)
         sys.exit(ret)
 
 
@@ -65,6 +76,7 @@ setup(
     ],
     cmdclass={
         'test': TestCommand,
+        'testdep': TestDepCommand,
         'docs': DocCommand
     },
 )

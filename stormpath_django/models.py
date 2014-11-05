@@ -13,7 +13,7 @@ from django.contrib.auth.models import (BaseUserManager,
         AbstractBaseUser, PermissionsMixin)
 from django.forms import model_to_dict
 from django.core.exceptions import ObjectDoesNotExist
-from django.db.models.signals import pre_save
+from django.db.models.signals import pre_save, pre_delete
 from django.contrib.auth.models import Group
 from django.dispatch import receiver
 
@@ -253,6 +253,14 @@ class StormpathUser(StormpathBaseUser):
 def save_group_to_stormpath(sender, instance, **kwargs):
     try:
         APPLICATION.groups.create({'name': instance.name})
+    except StormpathError as e:
+        raise IntegrityError(e)
+
+
+@receiver(pre_delete, sender=Group)
+def delete_group_from_stormpath(sender, instance, **kwargs):
+    try:
+        APPLICATION.groups.search({'name': instance.name})[0].delete()
     except StormpathError as e:
         raise IntegrityError(e)
 

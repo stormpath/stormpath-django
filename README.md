@@ -13,11 +13,17 @@ authentication and access controls. It works with Python 3.x and 2.7.x.
     git clone https://github.com/stormpath/stormpath-django.git
     cd stormpath-django
 
-    # Run the tests
-    python setup.py test
-
     # Install it
     python setup.py install
+
+    # Install test deps
+    python setup.py testdep
+
+    # Run the tests
+    # NOTE: requires STORMPATH_API_KEY_ID, STORMPATH_API_KEY_SECRET
+    # and STORMPATH_APPLICATION env vars to be set
+    # (or placed in a .env file alongside testproject/manage.py)
+    python setup.py test
 
     # Or install via pip
     pip install stormpath-django

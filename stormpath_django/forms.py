@@ -24,7 +24,7 @@ class StormpathUserCreationForm(forms.ModelForm):
     class Meta:
         model = get_user_model()
         fields = ("username", "email",
-            "given_name", "surname", "password", "password2")
+            "given_name", "surname", "password1", "password2")
 
     def clean_password2(self):
         """Check if passwords match.
