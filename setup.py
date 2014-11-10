@@ -23,7 +23,10 @@ class TestCommand(BaseCommand):
     def run(self):
         os.chdir('testproject')
         ret = os.system('make test')
-        sys.exit(ret)
+        if ret != 0:
+            sys.exit(-1)
+        else:
+            sys.exit(0)
 
 
 class TestDepCommand(BaseCommand):
