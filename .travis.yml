@@ -6,6 +6,7 @@ python:
   - '3.4'
   - pypy
 install: pip install . --use-mirrors
+before_script: python setup.py testdep
 script:
   - python setup.py test
 env:
