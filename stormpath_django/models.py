@@ -16,13 +16,16 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.db.models.signals import pre_save, pre_delete
 from django.contrib.auth.models import Group
 from django.dispatch import receiver
-
+from django import VERSION as django_version
 
 from stormpath.client import Client
 from stormpath.error import Error as StormpathError
 
+from stormpath_django import __version__
 
-CLIENT = Client(id=settings.STORMPATH_ID, secret=settings.STORMPATH_SECRET)
+USER_AGENT = 'stormpath-django/%s django/%s' % (__version__, django_version)
+
+CLIENT = Client(id=settings.STORMPATH_ID, secret=settings.STORMPATH_SECRET, user_agent=USER_AGENT)
 APPLICATION = CLIENT.applications.get(settings.STORMPATH_APPLICATION)
 
 
