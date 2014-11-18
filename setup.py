@@ -1,7 +1,8 @@
+from os import chdir, environ, system
+from subprocess import call
+from sys import exit
+
 from setuptools import setup, find_packages, Command
-import os
-import sys
-import subprocess
 
 
 class BaseCommand(Command):
@@ -16,68 +17,69 @@ class BaseCommand(Command):
 
 class TestCommand(BaseCommand):
 
-    description = "run self-tests"
+    description = 'run self-tests'
 
     def run(self):
-        os.chdir('testproject')
-        ret = os.system('make test')
+        chdir('testproject')
+        ret = system('make test')
+
         if ret != 0:
-            sys.exit(-1)
+            exit(-1)
         else:
-            sys.exit(0)
+            exit(0)
 
 
 class TestDepCommand(BaseCommand):
 
-    description = "install test dependencies"
+    description = 'install test dependencies'
 
     def run(self):
-        cmd = ["pip", "install", "coverage"]
-        ret = subprocess.call(cmd)
-        sys.exit(ret)
+        cmd = ['pip', 'install', 'coverage']
+        ret = call(cmd)
+        exit(ret)
 
 
 class DocCommand(BaseCommand):
 
-    description = "generate documentation"
+    description = 'generate documentation'
 
     def run(self):
-        os.environ['DJANGO_SETTINGS_MODULE'] = \
-            'testproject.testproject.settings'
+        environ['DJANGO_SETTINGS_MODULE'] = 'testproject.testproject.settings'
         try:
-            os.chdir('docs')
-            ret = os.system('make html')
-            sys.exit(ret)
+            chdir('docs')
+            ret = system('make html')
+            exit(ret)
         except OSError as e:
             print(e)
-            sys.exit(-1)
+            exit(-1)
+
 
 setup(
-    name='django-stormpath',
-    version='0.0.3',
-    author='',
-    author_email='python@stormpath.com',
-    description='Django Stormpath API integration',
-    license='Apache',
-    url='https://github.com/stormpath/stormpath-django',
-    zip_safe=False,
-    classifiers=[
-        "Development Status :: 4 - Beta",
-        "Environment :: Web Environment",
-        "Framework :: Django",
-        "Intended Audience :: Developers",
-        "License :: OSI Approved :: Apache License",
-        "Programming Language :: Python",
-        "Topic :: Software Development :: Libraries :: Python Modules",
+    name = 'django-stormpath',
+    version = '0.0.3',
+    author = 'Stormpath, Inc.',
+    author_email = 'python@stormpath.com',
+    description = 'Stormpath integration for Django.',
+    license = 'Apache',
+    url = 'https://github.com/stormpath/stormpath-django',
+    zip_safe = False,
+    classifiers = [
+        'Development Status :: 4 - Beta',
+        'Environment :: Web Environment',
+        'Framework :: Django',
+        'Intended Audience :: Developers',
+        'License :: OSI Approved :: Apache License',
+        'Programming Language :: Python',
+        'Topic :: Software Development :: Libraries :: Python Modules',
     ],
-    packages=find_packages(),
-    install_requires=[
-        "stormpath>=1.2.6",
-        "django>=1.6"
+    packages = find_packages(),
+    install_requires = [
+        'stormpath>=1.2.6',
+        'django>=1.6',
     ],
-    cmdclass={
+    cmdclass = {
         'test': TestCommand,
         'testdep': TestDepCommand,
-        'docs': DocCommand
+        'docs': DocCommand,
     },
 )
