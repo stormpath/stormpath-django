@@ -56,7 +56,7 @@ class DocCommand(BaseCommand):
 
 setup(
     name = 'django-stormpath',
-    version = '0.0.3',
+    version = '0.0.1',
     author = 'Stormpath, Inc.',
     author_email = 'python@stormpath.com',
     description = 'Stormpath integration for Django.',
