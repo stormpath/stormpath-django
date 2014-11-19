@@ -2,23 +2,15 @@
 import os
 import sys
 
-def set_env():
-    try:
-        with open('.env') as f:
-            lines = f.readlines()
-            for line in lines:
-                if not line.isspace() and not line.startswith("#"):
-                    k, v = line.split('=')
-                    os.environ[k] = v.strip()
-    except IOError:
-        pass
+from testproject.utils import set_env
 
 sys.path.insert(0, os.path.abspath(
-    os.path.join(os.path.dirname(__file__),"..")))
+    os.path.join(os.path.dirname(__file__), "..")))
 
 if __name__ == "__main__":
     os.environ.setdefault("DJANGO_SETTINGS_MODULE", "testproject.settings")
-    set_env()
+    set_env('.env')
     from django.core.management import execute_from_command_line
 
     execute_from_command_line(sys.argv)
+

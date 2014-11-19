@@ -44,7 +44,7 @@ class DocCommand(BaseCommand):
     description = 'generate documentation'
 
     def run(self):
-        environ['DJANGO_SETTINGS_MODULE'] = 'testproject.testproject.settings'
+        environ['DJANGO_SETTINGS_MODULE'] = 'testproject.settings'
         try:
             chdir('docs')
             ret = system('make html')
