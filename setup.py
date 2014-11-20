@@ -4,6 +4,8 @@ from sys import exit
 
 from setuptools import setup, find_packages, Command
 
+from stormpath_django import __version__
+
 
 class BaseCommand(Command):
     user_options = []
@@ -44,7 +46,7 @@ class DocCommand(BaseCommand):
     description = 'generate documentation'
 
     def run(self):
-        environ['DJANGO_SETTINGS_MODULE'] = 'testproject.testproject.settings'
+        environ['DJANGO_SETTINGS_MODULE'] = 'testproject.settings'
         try:
             chdir('docs')
             ret = system('make html')
@@ -56,7 +58,7 @@ class DocCommand(BaseCommand):
 
 setup(
     name = 'django-stormpath',
-    version = '0.0.1',
+    version = __version__,
     author = 'Stormpath, Inc.',
     author_email = 'python@stormpath.com',
     description = 'Stormpath integration for Django.',
