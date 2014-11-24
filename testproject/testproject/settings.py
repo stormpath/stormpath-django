@@ -128,6 +128,7 @@ INSTALLED_APPS = (
 
 AUTHENTICATION_BACKENDS = (
     'stormpath_django.backends.StormpathBackend',
+    'stormpath_django.backends.StormpathIdSiteBackend'
 )
 
 # A sample logging configuration. The only tangible logging
@@ -163,6 +164,10 @@ STORMPATH_ID = os.environ['STORMPATH_API_KEY_ID']
 STORMPATH_SECRET = os.environ['STORMPATH_API_KEY_SECRET']
 STORMPATH_APPLICATION = os.environ['STORMPATH_APPLICATION']
 
+STORMPATH_ID_SITE_CALLBACK_URI = 'http://localhost:8000/stormpath-id-site-callback'
+
 AUTH_USER_MODEL = 'stormpath_django.StormpathUser'
 
 TEST_RUNNER = 'django.test.runner.DiscoverRunner'
+
+LOGIN_REDIRECT_URL = '/'
