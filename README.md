@@ -116,6 +116,26 @@ an Account is also created on Stormpath. In fact every time the `save` method
 is called on the UserModel instance it is saved/updated on Stormpath as well.
 This includes working with the django built-in admin interface.
 
+## ID Site
+
+For using Stormpath's [ID Site feature](http://docs.stormpath.com/guides/using-id-site/) we
+must add another `AUTHENTICATION_BACKEND`
+
+    AUTHENTICATION_BACKENDS = (
+        'stormpath_django.backends.StormpathIdSiteBackend',
+    )
+
+The following settings:
+
+    STORMPATH_ID_SITE_CALLBACK_URI = 'must_be_the_same_as_in_id_site_dashboard'
+    LOGIN_REDIRECT_URL = '/redirect/here'
+
+And of course include the url mappings in your projects main `urls.py` like so:
+
+    url(r'', include(stormpath_django.urls)),
+
+An example of how to use the available url mappings can be found here: `testproject/testapp/templates/testapp/index.html`.
+
 
 ## Copyright and License
 
