@@ -1,6 +1,6 @@
 """Custom Django User models for Stormpath.
 
-Any application that uses stormpath_django must provide a user model with a
+Any application that uses django_stormpath must provide a user model with a
 href field. The href is used in the authentication backend to keep track which
 remote Stormpath user the local user represents. It is meant to be used in an
 application that modifies user data on Stormpath. If needing to add more
@@ -21,7 +21,7 @@ from django import VERSION as django_version
 from stormpath.client import Client
 from stormpath.error import Error as StormpathError
 
-from stormpath_django import __version__
+from django_stormpath import __version__
 
 USER_AGENT = 'stormpath-django/%s django/%s' % (__version__, django_version)
 

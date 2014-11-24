@@ -11,7 +11,7 @@ ID_SITE_STATUS_AUTHENTICATED = 'AUTHENTICATED'
 ID_SITE_STATUS_LOGOUT = 'LOGOUT'
 ID_SITE_STATUS_REGISTERED = 'REGISTERED'
 
-ID_SITE_AUTH_BACKEND = 'stormpath_django.backends.StormpathIdSiteBackend'
+ID_SITE_AUTH_BACKEND = 'django_stormpath.backends.StormpathIdSiteBackend'
 
 
 def _get_django_user(account):

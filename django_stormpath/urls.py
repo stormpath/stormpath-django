@@ -1,6 +1,6 @@
 from django.conf.urls import patterns, url
 
-urlpatterns = patterns('stormpath_django.views',
+urlpatterns = patterns('django_stormpath.views',
          url(r'^login/$', 'stormpath_id_site_login',
              name='stormpath_id_site_login'),
          url(r'^logout/$', 'stormpath_id_site_logout',

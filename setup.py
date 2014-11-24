@@ -4,7 +4,7 @@ from sys import exit
 
 from setuptools import setup, find_packages, Command
 
-from stormpath_django import __version__
+from django_stormpath import __version__
 
 
 class BaseCommand(Command):

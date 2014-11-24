@@ -35,7 +35,7 @@ Stormpath Django integration provides an AUTHENTICATION_BACKEND which is used
 to communicate with the Stormpath REST API and authenticate users.
 
 When a user tries to log in and Stormpath is used as the authentication backend
-stormpath_django always asks the Stormpath service if the user's credentials
+django_stormpath always asks the Stormpath service if the user's credentials
 (username or email and password) are correct, in fact passwords aren't even stored
 in the local database. If the credentials are OK, there
 are two possible scenarios:
@@ -61,18 +61,18 @@ are two possible scenarios:
 
 ## Usage
 
-Add `stormpath_django` to your `INSTALLED_APPS` in settings.py.
+Add `django_stormpath` to your `INSTALLED_APPS` in settings.py.
 
-Add `stormpath_django.backends.StormpathBackend` to `AUTHENTICATION_BACKENDS`
+Add `django_stormpath.backends.StormpathBackend` to `AUTHENTICATION_BACKENDS`
 in settings.py.
 
     AUTHENTICATION_BACKENDS = (
-        'stormpath_django.backends.StormpathBackend',
+        'django_stormpath.backends.StormpathBackend',
     )
 
-Set `stormpath_django.StormpathUser` as the user model:
+Set `django_stormpath.StormpathUser` as the user model:
 
-    AUTH_USER_MODEL = 'stormpath_django.StormpathUser'
+    AUTH_USER_MODEL = 'django_stormpath.StormpathUser'
 
 To access the Stormpath service an API key and secret are required. Also, every
 Stormpath application has a unique ID so we need to know the application URL to
@@ -122,7 +122,7 @@ For using Stormpath's [ID Site feature](http://docs.stormpath.com/guides/using-i
 must add another `AUTHENTICATION_BACKEND`
 
     AUTHENTICATION_BACKENDS = (
-        'stormpath_django.backends.StormpathIdSiteBackend',
+        'django_stormpath.backends.StormpathIdSiteBackend',
     )
 
 The following settings:
@@ -132,7 +132,7 @@ The following settings:
 
 And of course include the url mappings in your projects main `urls.py` like so:
 
-    url(r'', include(stormpath_django.urls)),
+    url(r'', include(django_stormpath.urls)),
 
 An example of how to use the available url mappings can be found here: `testproject/testapp/templates/testapp/index.html`.
 

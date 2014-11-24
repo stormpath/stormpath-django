@@ -1,4 +1,4 @@
-# Django settings for stormpath_django project.
+# Django settings for django_stormpath project.
 
 import os
 import sys
@@ -122,13 +122,13 @@ INSTALLED_APPS = (
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django.contrib.admin',
-    'stormpath_django',
+    'django_stormpath',
     'testapp'
 )
 
 AUTHENTICATION_BACKENDS = (
-    'stormpath_django.backends.StormpathBackend',
-    'stormpath_django.backends.StormpathIdSiteBackend'
+    'django_stormpath.backends.StormpathBackend',
+    'django_stormpath.backends.StormpathIdSiteBackend'
 )
 
 # A sample logging configuration. The only tangible logging
@@ -166,7 +166,7 @@ STORMPATH_APPLICATION = os.environ['STORMPATH_APPLICATION']
 
 STORMPATH_ID_SITE_CALLBACK_URI = 'http://localhost:8000/stormpath-id-site-callback'
 
-AUTH_USER_MODEL = 'stormpath_django.StormpathUser'
+AUTH_USER_MODEL = 'django_stormpath.StormpathUser'
 
 TEST_RUNNER = 'django.test.runner.DiscoverRunner'
 
