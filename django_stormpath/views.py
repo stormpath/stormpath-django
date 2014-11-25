@@ -40,4 +40,3 @@ def stormpath_id_site_logout(request):
             state=request.GET.get('state'),
             logout=True)
     return redirect(rdr)
-
