@@ -55,6 +55,27 @@ class StormpathBackend(ModelBackend):
                 groups_to_create.append(Group(name=g_name))
             Group.objects.bulk_create(groups_to_create)
 
+    def _create_or_get_user(self, account):
+        UserModel = get_user_model()
+        try:
+            user = UserModel.objects.get(
+                Q(username=account.username) | Q(email=account.email))
+            user._mirror_data_from_stormpath_account(account)
+            self._mirror_groups_from_stormpath()
+            users_sp_groups = [g.name for g in account.groups]
+            user.groups = Group.objects.filter(name__in=users_sp_groups)
+            user._save_db_only()
+            return user
+        except UserModel.DoesNotExist:
+            user = UserModel()
+            user._mirror_data_from_stormpath_account(account)
+            self._mirror_groups_from_stormpath()
+            user._save_db_only()
+            users_sp_groups = [g.name for g in account.groups]
+            user.groups = Group.objects.filter(name__in=users_sp_groups)
+            user._save_db_only()
+            return user
+
     def authenticate(self, username=None, password=None):
         """The authenticate method takes credentials as keyword arguments,
         usually username/email and password.
@@ -68,25 +89,16 @@ class StormpathBackend(ModelBackend):
             "https://api.stormpath.com/v1/applications/APP_UID"
         """
         account = self._stormpath_authenticate(username, password)
-        if account:
-            UserModel = get_user_model()
-            try:
-                user = UserModel.objects.get(
-                    Q(username=account.username) | Q(email=account.email))
-                user._mirror_data_from_stormpath_account(account)
-                self._mirror_groups_from_stormpath()
-                users_sp_groups = [g.name for g in account.groups]
-                user.groups = Group.objects.filter(name__in=users_sp_groups)
-                user._save_db_only()
-                return user
-            except UserModel.DoesNotExist:
-                user = UserModel()
-                user._mirror_data_from_stormpath_account(account)
-                self._mirror_groups_from_stormpath()
-                user._save_db_only()
-                users_sp_groups = [g.name for g in account.groups]
-                user.groups = Group.objects.filter(name__in=users_sp_groups)
-                user._save_db_only()
-                return user
-        return None
+        if account is None:
+            return None
+        return self._create_or_get_user(account)
+
+
+class StormpathIdSiteBackend(StormpathBackend):
+    """Used for authenticating with ID Site"""
+
+    def authenticate(self, account=None):
+        if account is None:
+            return None
+        return self._create_or_get_user(account)
 

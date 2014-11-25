@@ -21,7 +21,7 @@ import django
 # documentation root, use os.path.abspath to make it absolute, like shown here.
 sys.path.insert(0, os.path.abspath('..'))
 sys.path.insert(0, os.path.abspath('../testproject'))
-from stormpath_django import __version__, __short_version__
+from django_stormpath import __version__, __short_version__
 
 from testproject.utils import set_env
 
