@@ -11,7 +11,7 @@ Contents:
 .. toctree::
    :maxdepth: 2
 
-   stormpath_django
+   django_stormpath
 
 Indices and tables
 ==================

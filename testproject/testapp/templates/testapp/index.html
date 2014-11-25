@@ -1,0 +1,9 @@
+{% if user.is_authenticated %}
+<h3>Logged in as: {{ user.email }}</h3>
+<p><a href="{% url 'stormpath_id_site_logout' %}">Logout</a></p>
+{% else %}
+<h3>Not logged in.</h3>
+<p><a href="{% url 'stormpath_id_site_login' %}">Login</a></p>
+<p><a href="{% url 'stormpath_id_site_register' %}">Register</a></p>
+<p><a href="{% url 'stormpath_id_site_forgot_password' %}">Forgot password</a></p>
+{% endif %}

@@ -1,23 +1,23 @@
-stormpath_django Package
+django_stormpath Package
 ========================
 
 :mod:`backends` Module
 ----------------------
 
-.. automodule:: stormpath_django.backends
+.. automodule:: django_stormpath.backends
     :members:
     :show-inheritance:
 
 :mod:`models` Module
 --------------------
 
-.. automodule:: stormpath_django.models
+.. automodule:: django_stormpath.models
     :members:
     :show-inheritance:
 
 :mod:`forms` Module
 --------------------
 
-.. automodule:: stormpath_django.forms
+.. automodule:: django_stormpath.forms
     :members:
     :show-inheritance:

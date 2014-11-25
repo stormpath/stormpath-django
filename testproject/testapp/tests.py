@@ -7,10 +7,10 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.contrib.auth.models import Group
 from django.forms import ValidationError
 
-from stormpath_django.models import CLIENT
-import stormpath_django
-from stormpath_django.backends import StormpathBackend
-from stormpath_django.forms import *
+from django_stormpath.models import CLIENT
+import django_stormpath
+from django_stormpath.backends import StormpathBackend
+from django_stormpath.forms import *
 
 from stormpath.error import Error as StormpathError
 
@@ -26,7 +26,7 @@ class LiveTestBase(TestCase):
         self.app = CLIENT.applications.create(
                 {'name': self.prefix + 'testapp'},
                 create_directory=True)
-        stormpath_django.models.APPLICATION = self.app
+        django_stormpath.models.APPLICATION = self.app
 
     def get_random_name(self):
         return self.prefix + uuid4().hex
