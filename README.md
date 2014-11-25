@@ -9,24 +9,8 @@ authentication and access controls. It works with Python 3.x and 2.7.x.
 
 ## Installation and requirements
 
-    # Download from GitHub
-    git clone https://github.com/stormpath/stormpath-django.git
-    cd stormpath-django
-
-    # Install it
-    python setup.py install
-
-    # Install test deps
-    python setup.py testdep
-
-    # Run the tests
-    # NOTE: requires STORMPATH_API_KEY_ID, STORMPATH_API_KEY_SECRET
-    # and STORMPATH_APPLICATION env vars to be set
-    # (or placed in a .env file alongside testproject/manage.py)
-    python setup.py test
-
-    # Or install via pip
-    pip install stormpath-django
+    # Install via pip:
+    $ pip install django-stormpath
 
 
 ## How it works
@@ -82,9 +66,9 @@ the [Stormpath Product Guide](http://www.stormpath.com/docs/python/product-guide
 The service API key and secret, as well as the appplication URL need to be
 set in Django settings:
 
-    STORMPATH_ID = "yourApiKeyId"
-    STORMPATH_SECRET = "yourApiKeySecret"
-    STORMPATH_APPLICATION = "https://api.stormpath.com/v1/applications/YOUR_APP_UID_HERE"
+    STORMPATH_ID = 'yourApiKeyId'
+    STORMPATH_SECRET = 'yourApiKeySecret'
+    STORMPATH_APPLICATION = 'https://api.stormpath.com/v1/applications/YOUR_APP_UID_HERE'
 
 
 Example: Creating a user:
