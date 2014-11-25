@@ -31,4 +31,3 @@ class StormpathUserAdmin(UserAdmin):
 
 # Register the new CustomUserAdmin
 admin.site.register(StormpathUser, StormpathUserAdmin)
-
