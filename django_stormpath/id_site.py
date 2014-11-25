@@ -45,7 +45,7 @@ def handle_id_site_callback(request, id_site_response):
 
 
 CALLBACK_ACTIONS = {
-        ID_SITE_STATUS_AUTHENTICATED: _handle_authenticated,
-        ID_SITE_STATUS_LOGOUT: _handle_logout,
-        ID_SITE_STATUS_REGISTERED: _handle_registered
+    ID_SITE_STATUS_AUTHENTICATED: _handle_authenticated,
+    ID_SITE_STATUS_LOGOUT: _handle_logout,
+    ID_SITE_STATUS_REGISTERED: _handle_registered,
 }
