@@ -126,4 +126,3 @@ class PasswordResetForm(forms.Form):
     def save(self, token):
         APPLICATION.reset_account_password(token,
             self.cleaned_data['new_password1'])
-
