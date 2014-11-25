@@ -1,1 +1,1 @@
-include django_stormpath/*.py
+include README.rst django_stormpath/*.py
