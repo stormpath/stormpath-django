@@ -49,4 +49,3 @@ CALLBACK_ACTIONS = {
         ID_SITE_STATUS_LOGOUT: _handle_logout,
         ID_SITE_STATUS_REGISTERED: _handle_registered
 }
-
