@@ -65,8 +65,6 @@ If a user's credentials are valid, there are two possible scenarios:
     An account on Stormpath can be disabled, enabled, locked and unverified.
     When a user is created or updated, the ``is_active`` field is set to
     ``True`` if the Stormpath account is enabled and ``False`` otherwise.
-
- .. note::
     For a Stormpath user to be able to log into the Django admin interface
     it must specify the ``is_superuser`` and ``is_staff`` properties in the
     Stormpath Account's customData resource.
