@@ -198,3 +198,25 @@ Copyright &copy; 2014 Stormpath, inc.  You may use and/or modify this library
 under the terms of Apache License version 2.0.  Please see the
 `LICENSE <https://github.com/stormpath/stormpath-django/blob/develop/LICENSE>`_
 file for details.
+
+
+Change Log
+----------
+
+All library changes, in descending order.
+
+
+Version 0.0.2
+*************
+
+**Released on November 26, 2014.**
+
+- Fixing README stuff :(
+
+
+Version 0.0.1
+*************
+
+**Released on November 26, 2014.**
+
+- First release!
