@@ -1,128 +1,202 @@
-# Django plugin for Stormpath
+django-stormpath
+================
 
-[![Build Status](https://travis-ci.org/stormpath/stormpath-django.png?branch=master)](https://travis-ci.org/stormpath/stormpath-django)
+Simple, scalable, user authentication for Django (powered by `Stormpath <https://stormpath.com>`_).
 
-**This integration is UNDER DEVELOPMENT - please use at your own risk**
+.. image:: https://img.shields.io/pypi/v/django-stormpath.svg
+    :alt: django-stormpath Release
+    :target: https://pypi.python.org/pypi/django-stormpath
 
-A Django application that uses Stormpath SDK API calls to provide
-authentication and access controls. It works with Python 3.x and 2.7.x.
+.. image:: https://img.shields.io/pypi/dm/django-stormpath.svg
+    :alt: django-stormpath Downloads
+    :target: https://pypi.python.org/pypi/django-stormpath
 
-## Installation and requirements
+.. image:: https://img.shields.io/travis/stormpath/django-stormpath.svg
+    :alt: django-stormpath Build
+    :target: https://travis-ci.org/stormpath/django-stormpath
 
-    # Install via pip:
+.. note::
+    This is a beta release, if you run into any issues, please file a report on
+    our `Issue Tracker <https://github.com/stormpath/stormpath-django/issues>`_.
+
+
+Meta
+----
+
+This library provides user account storage, authentication, and authorization
+with `Stormpath <https://stormpath.com>`_.
+
+This library works with Python 2.7.x and Python 3.x.
+
+
+Installation
+------------
+
+To install the library, you'll need to use `pip <http://pip.readthedocs.org/en/latest/>`_:
+
+.. code-block:: console
+
     $ pip install django-stormpath
 
 
-## How it works
+How it Works
+------------
 
-Stormpath Django integration provides an AUTHENTICATION_BACKEND which is used
-to communicate with the Stormpath REST API and authenticate users.
+django-stormpath provides an ``AUTHENTICATION_BACKEND`` which is used to
+communicate with the Stormpath REST API.
 
-When a user tries to log in and Stormpath is used as the authentication backend
-django_stormpath always asks the Stormpath service if the user's credentials
-(username or email and password) are correct, in fact passwords aren't even stored
-in the local database. If the credentials are OK, there
-are two possible scenarios:
+When a user tries to log in, and Stormpath is used as the authentication
+backend, django-stormpath always asks the Stormpath service if the user's
+credentials (*username or email and password*) are correct.  Password hashes are
+always stored in Stormpath, and not locally.
 
-1. User doesn't exist in Django's database (PostgreSQL, MySQL, Oracle etc.)
-    - user is created with his username, password, email, first name and last
-      name set to match Stormpath's
-    - user is authenticated if account is enabled
+If a user's credentials are valid, there are two possible scenarios:
+
+1. User doesn't exist in Django's database (*PostgreSQL, MySQL, Oracle etc.*).
+   In this case, a user will be created in the local Django user database with
+   their username, password, email, first name, and last name identical to the
+   Stormpath user's. Then this user will be authenticated.
+
+2. User exists in Django's database.  In this case, if a user's information has
+   changed on Stormpath, the Django user's fields are updated accordingly.
+   After this, the user will be authenticated.
+
+.. note::
+    An account on Stormpath can be disabled, enabled, locked and unverified.
+    When a user is created or updated, the ``is_active`` field is set to
+    ``True`` if the Stormpath account is enabled and ``False`` otherwise.
+
+ .. note::
+    For a Stormpath user to be able to log into the Django admin interface
+    it must specify the ``is_superuser`` and ``is_staff`` properties in the
+    Stormpath Account's customData resource.
 
 
-2. User exists in Django's database
-    - if user's info has changed on Stormpath, Django user fields are updated
-    - user is logged in if account is enabled
+Usage
+-----
 
+First, you need to add ``django_stormpath`` to your ``INSTALLED_APPS`` setting
+in ``settings.py``:
 
-* Note: that an account on Stormpath can be disabled, enabled, locked and
-  unverified. When a user is created or updated, the is_active field is set
-  to True if the Stormpath account is enabled and False if otherwise.
+.. code-block:: python
 
-* Note: For a Stormpath user to be able to log into the django admin interface
-  it must specify the `is_superuser` and `is_staff` properties in the Accounts
-  CustomData.
+    INSTALLED_APPS = (
+        # ...,
+        'django_stormpath',
+    )
 
-## Usage
+Next, you need to add the Stormpath backend into ``AUTHENTICATION_BACKENDS``:
 
-Add `django_stormpath` to your `INSTALLED_APPS` in settings.py.
-
-Add `django_stormpath.backends.StormpathBackend` to `AUTHENTICATION_BACKENDS`
-in settings.py.
+.. code-block:: python
 
     AUTHENTICATION_BACKENDS = (
+        # ...
         'django_stormpath.backends.StormpathBackend',
     )
 
-Set `django_stormpath.StormpathUser` as the user model:
+After that's done, you'll also need to tell Django to use Stormpath's user
+model:
+
+.. code-block:: python
 
     AUTH_USER_MODEL = 'django_stormpath.StormpathUser'
 
-To access the Stormpath service an API key and secret are required. Also, every
-Stormpath application has a unique ID so we need to know the application URL to
-successfully authenticate with Stormpath. For further information please read
-the [Stormpath Product Guide](http://www.stormpath.com/docs/python/product-guide).
+Lastly, you need to specify your Stormpath credentials: your API key and secret,
+as well as your Stormpath Application URL.
 
-The service API key and secret, as well as the appplication URL need to be
-set in Django settings:
+For more information about these things, please see the official
+`guide <http://docs.stormpath.com/python/product-guide/>`_.
+
+To specify your Stormpath credentials, you'll need to add the following settings
+to your ``settings.py``:
+
+.. code-block:: python
 
     STORMPATH_ID = 'yourApiKeyId'
     STORMPATH_SECRET = 'yourApiKeySecret'
     STORMPATH_APPLICATION = 'https://api.stormpath.com/v1/applications/YOUR_APP_UID_HERE'
 
 
-Example: Creating a user:
+Example: Creating a User
+------------------------
+
+To pragmatically create a user, you can use the following code:
+
+.. code-block:: python
 
     from django.contrib.auth import get_user_model
 
     UserModel = get_user_model()
     UserModel.objects.create(
-        email='john.doe@example.com',
-        given_name='John',
-        surname='Doe',
-        password='password123!')
+        email = 'john.doe@example.com',
+        given_name = 'John',
+        surname = 'Doe',
+        password = 'password123!'
+    )
 
-The above method just calls the `create_user` method
+The above example just calls the ``create_user`` method:
+
+.. code-block:: python
 
     UserModel.create_user('john.doe@example', 'John', 'Doe', 'Password123!')
 
-For creating a superuser use:
+To create a super user, you can use ``manage.py``:
 
-    UserModel.create_user('john.doe@example', 'John', 'Doe', 'Password123!')
+.. code-block:: console
 
-The above method will set `is_admin`, `is_staff` and `is_superuser` to `True`
-on the newly created user. All extra parameters like the aforementioned flags are saved
-on Stormpath in the Accounts CustomData Resource and can be inspected outside of
-django using, for instance, the `stormpath-cli` tool.
+    $ python manage.py createsuperuser --username=joe --email=joe@example.com
 
-Note: When doing the initial `syncdb` call (or `manage.py createsuperuser`)
-an Account is also created on Stormpath. In fact every time the `save` method
-is called on the UserModel instance it is saved/updated on Stormpath as well.
-This includes working with the django built-in admin interface.
+This will set ``is_admin``, ``is_staff`` and ``is_superuser`` to ``True`` on
+the newly created user.  All extra parameters like the aforementioned flags are
+saved on Stormpath in the Accounts customData Resource and can be inspected
+outside of Django.
 
-## ID Site
+.. note::
+    When doing the initial ``syncdb`` call (or ``manage.py createsuperuser``)
+    an Account is also created on Stormpath.  Every time the ``save`` method
+    is called on the UserModel instance it is saved/updated on Stormpath as
+    well.  This includes working with the Django built-in admin interface.
 
-For using Stormpath's [ID Site feature](http://docs.stormpath.com/guides/using-id-site/) we
-must add another `AUTHENTICATION_BACKEND`
+
+ID Site
+-------
+
+If you'd like to not worry about building your own registration and login
+screens at all, you can use Stormpath's new `ID site feature
+<http://docs.stormpath.com/guides/using-id-site/>`_.  This is a hosted login
+subdomain which handles authentication for you automatically.
+
+To make this work in Django, you need to specify a few settings: 
+
+.. code-block:: python
 
     AUTHENTICATION_BACKENDS = (
+        # ...
         'django_stormpath.backends.StormpathIdSiteBackend',
     )
 
-The following settings:
-
+    # This should be set to the same URI you've specified in your Stormpath ID
+    # Site dashboard.
     STORMPATH_ID_SITE_CALLBACK_URI = 'must_be_the_same_as_in_id_site_dashboard'
+
+    # The URL you'd like to redirect users to after they've successfully logged
+    # into their account.
     LOGIN_REDIRECT_URL = '/redirect/here'
 
-And of course include the url mappings in your projects main `urls.py` like so:
+Lastly, you've got to include some URLs in your main ``urls.py`` as well:
+
+.. code-block:: python
 
     url(r'', include(django_stormpath.urls)),
 
-An example of how to use the available url mappings can be found here: `testproject/testapp/templates/testapp/index.html`.
+An example of how to use the available URL mappings can be found `here
+<https://github.com/stormpath/stormpath-django/blob/develop/testproject/testapp/templates/testapp/index.html>`_.
 
 
-## Copyright and License
+Copyright and License
+---------------------
 
-Copyright &copy; 2013 Stormpath, inc. You may use and/or modify Stormpath Django
-plugin under the terms of Apache License version 2.0. Please see the
-[LICENSE](LICENSE) file for details.
+Copyright &copy; 2014 Stormpath, inc.  You may use and/or modify this library
+under the terms of Apache License version 2.0.  Please see the
+`LICENSE <https://github.com/stormpath/stormpath-django/blob/develop/LICENSE>`_
+file for details.
