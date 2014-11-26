@@ -11,9 +11,9 @@ Simple, scalable, user authentication for Django (powered by `Stormpath <https:/
     :alt: django-stormpath Downloads
     :target: https://pypi.python.org/pypi/django-stormpath
 
-.. image:: https://img.shields.io/travis/stormpath/django-stormpath.svg
+.. image:: https://img.shields.io/travis/stormpath/stormpath-django.svg
     :alt: django-stormpath Build
-    :target: https://travis-ci.org/stormpath/django-stormpath
+    :target: https://travis-ci.org/stormpath/stormpath-django
 
 .. note::
     This is a beta release, if you run into any issues, please file a report on
