@@ -136,7 +136,7 @@ The above example just calls the ``create_user`` method:
 
 .. code-block:: python
 
-    UserModel.objects.create_user('john.doe@example', 'John', 'Doe', 'Password123!')
+    UserModel.objects.create_user('john.doe@example.com', 'John', 'Doe', 'Password123!')
 
 To create a super user, you can use ``manage.py``:
 
