@@ -136,7 +136,7 @@ The above example just calls the ``create_user`` method:
 
 .. code-block:: python
 
-    UserModel.create_user('john.doe@example', 'John', 'Doe', 'Password123!')
+    UserModel.objects.create_user('john.doe@example', 'John', 'Doe', 'Password123!')
 
 To create a super user, you can use ``manage.py``:
 
@@ -164,7 +164,7 @@ screens at all, you can use Stormpath's new `ID site feature
 <http://docs.stormpath.com/guides/using-id-site/>`_.  This is a hosted login
 subdomain which handles authentication for you automatically.
 
-To make this work in Django, you need to specify a few settings: 
+To make this work in Django, you need to specify a few settings:
 
 .. code-block:: python
 
