@@ -99,6 +99,8 @@ model:
 
     AUTH_USER_MODEL = 'django_stormpath.StormpathUser'
 
+You can read more about how Django's custom user model works `here <https://docs.djangoproject.com/en/1.7/topics/auth/customizing/#specifying-a-custom-user-model> _`.
+
 Lastly, you need to specify your Stormpath credentials: your API key and secret,
 as well as your Stormpath Application URL.
 
@@ -147,7 +149,15 @@ To create a super user, you can use ``manage.py``:
 This will set ``is_admin``, ``is_staff`` and ``is_superuser`` to ``True`` on
 the newly created user.  All extra parameters like the aforementioned flags are
 saved on Stormpath in the Accounts customData Resource and can be inspected
-outside of Django.
+outside of Django. This just calls the ``UserModel.objects.create_superuser`` method
+behind the scenes.
+
+Once you're all set up you can use the ``StormpathUser`` model just as you would the normal
+django user model to form relationships within your models:
+
+    class Book(models.Model):
+        author = models.ForeignKey(settings.AUTH_USER_MODEL)
+
 
 .. note::
     When doing the initial ``syncdb`` call (or ``manage.py createsuperuser``)
