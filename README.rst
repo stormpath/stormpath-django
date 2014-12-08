@@ -201,6 +201,47 @@ An example of how to use the available URL mappings can be found `here
 <https://github.com/stormpath/stormpath-django/blob/develop/testproject/testapp/templates/testapp/index.html>`_.
 
 
+Caching
+-------
+
+The best kind of websites are fast websites. `Django-Stormpath` includes built-in support for caching.
+You can currently use either:
+
+- A local memory cache (default).
+- A [memcached](http://memcached.org/) cache.
+- A [redis](http://redis.io/) cache.
+
+All can be easily configured using django settings.
+
+You need to add the `STORMPATH_CACHE_OPTIONS` to your django project's settings file.
+
+Redis cache example:
+
+     from stormpath.cache.redis_store import RedisStore
+     STORMPATH_CACHE_OPTIONS = {
+        'store': RedisStore,
+        'store_opts': {
+            'host': 'localhost',
+            'port': 6379
+        }
+    }
+
+Memcached cache example:
+
+     from stormpath.cache.memcached_store import MemcachedStore
+     STORMPATH_CACHE_OPTIONS = {
+        'store': MemcachedStore,
+        'store_opts': {
+            'host': 'localhost',
+            'port': 11211
+        }
+     }
+
+If no cache is specified in the django project's settings file then the default `MemoryStore` is used.
+For a full list of options for each cache backend please the official [Python SDK Guide](http://docs.stormpath.com/python/product-guide/#caching)
+as well as the API Docs for [various cache backends](http://docs.stormpath.com/python/apidocs/stormpath.cache.html).
+
+
 Copyright and License
 ---------------------
 
