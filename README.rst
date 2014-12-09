@@ -264,6 +264,17 @@ Change Log
 All library changes, in descending order.
 
 
+Version 0.0.3
+*************
+
+**Released on December 9, 2014.**
+
+- Adding cache support.
+- Fixing docs.
+- Adding docs on caching.
+- Adding support for ID site.
+
+
 Version 0.0.2
 *************
 
