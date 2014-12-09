@@ -1,7 +1,7 @@
 django-stormpath
 ================
 
-Simple, scalable, user authentication for Django (powered by `Stormpath <https://stormpath.com>`_).
+Simple, scalable, user authentication for Django (*powered by `Stormpath <https://stormpath.com>`_*).
 
 .. image:: https://img.shields.io/pypi/v/django-stormpath.svg
     :alt: django-stormpath Release
