@@ -99,6 +99,8 @@ model:
 
     AUTH_USER_MODEL = 'django_stormpath.StormpathUser'
 
+You can read more about how Django's custom user model works `here <https://docs.djangoproject.com/en/1.7/topics/auth/customizing/#specifying-a-custom-user-model> _`.
+
 Lastly, you need to specify your Stormpath credentials: your API key and secret,
 as well as your Stormpath Application URL.
 
@@ -136,7 +138,7 @@ The above example just calls the ``create_user`` method:
 
 .. code-block:: python
 
-    UserModel.create_user('john.doe@example', 'John', 'Doe', 'Password123!')
+    UserModel.objects.create_user('john.doe@example.com', 'John', 'Doe', 'Password123!')
 
 To create a super user, you can use ``manage.py``:
 
@@ -147,7 +149,15 @@ To create a super user, you can use ``manage.py``:
 This will set ``is_admin``, ``is_staff`` and ``is_superuser`` to ``True`` on
 the newly created user.  All extra parameters like the aforementioned flags are
 saved on Stormpath in the Accounts customData Resource and can be inspected
-outside of Django.
+outside of Django. This just calls the ``UserModel.objects.create_superuser`` method
+behind the scenes.
+
+Once you're all set up you can use the ``StormpathUser`` model just as you would the normal
+django user model to form relationships within your models:
+
+    class Book(models.Model):
+        author = models.ForeignKey(settings.AUTH_USER_MODEL)
+
 
 .. note::
     When doing the initial ``syncdb`` call (or ``manage.py createsuperuser``)
@@ -164,7 +174,7 @@ screens at all, you can use Stormpath's new `ID site feature
 <http://docs.stormpath.com/guides/using-id-site/>`_.  This is a hosted login
 subdomain which handles authentication for you automatically.
 
-To make this work in Django, you need to specify a few settings: 
+To make this work in Django, you need to specify a few settings:
 
 .. code-block:: python
 
@@ -189,6 +199,47 @@ Lastly, you've got to include some URLs in your main ``urls.py`` as well:
 
 An example of how to use the available URL mappings can be found `here
 <https://github.com/stormpath/stormpath-django/blob/develop/testproject/testapp/templates/testapp/index.html>`_.
+
+
+Caching
+-------
+
+The best kind of websites are fast websites. `Django-Stormpath` includes built-in support for caching.
+You can currently use either:
+
+- A local memory cache (default).
+- A [memcached](http://memcached.org/) cache.
+- A [redis](http://redis.io/) cache.
+
+All can be easily configured using django settings.
+
+You need to add the `STORMPATH_CACHE_OPTIONS` to your django project's settings file.
+
+Redis cache example:
+
+     from stormpath.cache.redis_store import RedisStore
+     STORMPATH_CACHE_OPTIONS = {
+        'store': RedisStore,
+        'store_opts': {
+            'host': 'localhost',
+            'port': 6379
+        }
+    }
+
+Memcached cache example:
+
+     from stormpath.cache.memcached_store import MemcachedStore
+     STORMPATH_CACHE_OPTIONS = {
+        'store': MemcachedStore,
+        'store_opts': {
+            'host': 'localhost',
+            'port': 11211
+        }
+     }
+
+If no cache is specified in the django project's settings file then the default `MemoryStore` is used.
+For a full list of options for each cache backend please the official [Python SDK Guide](http://docs.stormpath.com/python/product-guide/#caching)
+as well as the API Docs for [various cache backends](http://docs.stormpath.com/python/apidocs/stormpath.cache.html).
 
 
 Copyright and License
