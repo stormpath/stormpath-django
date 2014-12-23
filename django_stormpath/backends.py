@@ -101,3 +101,10 @@ class StormpathIdSiteBackend(StormpathBackend):
         if account is None:
             return None
         return self._create_or_get_user(account)
+
+
+class StormpathSocialBackend(StormpathIdSiteBackend):
+    """Used for authenticating with GOOGLE/FACEBOOK/others"""
+    pass
+
+
