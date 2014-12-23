@@ -128,7 +128,8 @@ INSTALLED_APPS = (
 
 AUTHENTICATION_BACKENDS = (
     'django_stormpath.backends.StormpathBackend',
-    'django_stormpath.backends.StormpathIdSiteBackend'
+    'django_stormpath.backends.StormpathIdSiteBackend',
+    'django_stormpath.backends.StormpathSocialBackend'
 )
 
 # A sample logging configuration. The only tangible logging
@@ -171,3 +172,33 @@ AUTH_USER_MODEL = 'django_stormpath.StormpathUser'
 TEST_RUNNER = 'django.test.runner.DiscoverRunner'
 
 LOGIN_REDIRECT_URL = '/'
+
+
+STORMPATH_ENABLE_GOOGLE = True
+STORMPATH_ENABLE_FACEBOOK = True
+STORMPATH_ENABLE_GITHUB = True
+STORMPATH_ENABLE_LINKEDIN = True
+
+STORMPATH_SOCIAL = {
+        'GOOGLE': {
+            'client_id': os.environ['GOOGLE_CLIENT_ID'],
+            'client_secret': os.environ['GOOGLE_CLIENT_SECRET'],
+        },
+        'FACEBOOK': {
+            'client_id': os.environ['FACEBOOK_CLIENT_ID'],
+            'client_secret': os.environ['FACEBOOK_CLIENT_SECRET']
+        },
+        'GITHUB': {
+            'client_id': os.environ['GITHUB_CLIENT_ID'],
+            'client_secret': os.environ['GITHUB_CLIENT_SECRET']
+        },
+        'LINKEDIN': {
+            'client_id': os.environ['LINKEDIN_CLIENT_ID'],
+            'client_secret': os.environ['LINKEDIN_CLIENT_SECRET']
+        },
+}
+
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+SESSION_COOKIE_SECURE = True
+CSRF_COOKIE_SECURE = True
+
