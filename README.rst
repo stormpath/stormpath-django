@@ -201,6 +201,61 @@ An example of how to use the available URL mappings can be found `here
 <https://github.com/stormpath/stormpath-django/blob/develop/testproject/testapp/templates/testapp/index.html>`_.
 
 
+Social Login
+------------
+
+Django Stormpath supports social login as well. Currently supported Providers are: Google, Github, Linkedin and Facebook.
+First thing that you need to do is add `StormpathSocialBackend` to the list of allowed authentication backends
+in your settings file:
+
+    AUTHENTICATION_BACKENDS = (
+        # ...
+        'django_stormpath.backends.StormpathSocialBackend',
+    )
+
+After that you can enable each provider with the following settings:
+
+    STORMPATH_ENABLE_GOOGLE = True
+    STORMPATH_ENABLE_FACEBOOK = True
+    STORMPATH_ENABLE_GITHUB = True
+    STORMPATH_ENABLE_LINKEDIN = True
+
+    STORMPATH_SOCIAL = {
+            'GOOGLE': {
+                'client_id': os.environ['GOOGLE_CLIENT_ID'],
+                'client_secret': os.environ['GOOGLE_CLIENT_SECRET'],
+            },
+            'FACEBOOK': {
+                'client_id': os.environ['FACEBOOK_CLIENT_ID'],
+                'client_secret': os.environ['FACEBOOK_CLIENT_SECRET']
+            },
+            'GITHUB': {
+                'client_id': os.environ['GITHUB_CLIENT_ID'],
+                'client_secret': os.environ['GITHUB_CLIENT_SECRET']
+            },
+            'LINKEDIN': {
+                'client_id': os.environ['LINKEDIN_CLIENT_ID'],
+                'client_secret': os.environ['LINKEDIN_CLIENT_SECRET']
+            },
+    }
+
+
+And that's it! Now if you navigate to "https://yourdjangoapp.com/social-login/google/" for each provider respectively,
+you will be redirected to that provider for authentication. If you are authenticated succesffully you will be redirected back
+to your django app and logged in automatically. Stormpath django also creates a directory for each social provider automatically
+so you don't need to worry about it.
+
+Please note that the callback URL's for each provider are listed in django stormpath's urls.py file. You will need to use these callback
+urls and set them as redirect URI's when configuring each provider in their respecive dashboards. For intance the callback URL for Google is:
+"https://yourdjangoapp.com/social-login/google/callback".
+
+Note that for OAuth2 to work we need to be using HTTPS. For django to work correctly with HTTPS please set the following settings:
+
+    SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+    SESSION_COOKIE_SECURE = True
+    CSRF_COOKIE_SECURE = True
+
+
 Caching
 -------
 
