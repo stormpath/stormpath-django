@@ -259,20 +259,23 @@ Note that for OAuth2 to work we need to be using HTTPS. For django to work corre
 Caching
 -------
 
-The best kind of websites are fast websites. `Django-Stormpath` includes built-in support for caching.
-You can currently use either:
+The best kind of websites are fast websites.  ``Django-Stormpath`` includes
+built-in support for caching.  You can currently use either:
 
-- A local memory cache (default).
-- A [memcached](http://memcached.org/) cache.
-- A [redis](http://redis.io/) cache.
+- A local memory cache (*default*).
+- A `memcached <http://memcached.org>`_ cache.
+- A `redis <http://redis.io/>`_ cache.
 
-All can be easily configured using django settings.
+All can be easily configured using configuration variables.
 
-You need to add the `STORMPATH_CACHE_OPTIONS` to your django project's settings file.
+There are several configuration settings you can specify to control caching
+behavior.  You need to add the ``STORMPATH_CACHE_OPTIONS`` to your Django
+project's settings file.
 
-Redis cache example:
+Here's an example which shows how to enable caching with redis::
 
      from stormpath.cache.redis_store import RedisStore
+
      STORMPATH_CACHE_OPTIONS = {
         'store': RedisStore,
         'store_opts': {
@@ -281,9 +284,10 @@ Redis cache example:
         }
     }
 
-Memcached cache example:
+Here's an example which shows how to enable caching with memcached::
 
      from stormpath.cache.memcached_store import MemcachedStore
+
      STORMPATH_CACHE_OPTIONS = {
         'store': MemcachedStore,
         'store_opts': {
@@ -292,9 +296,12 @@ Memcached cache example:
         }
      }
 
-If no cache is specified in the django project's settings file then the default `MemoryStore` is used.
-For a full list of options for each cache backend please the official [Python SDK Guide](http://docs.stormpath.com/python/product-guide/#caching)
-as well as the API Docs for [various cache backends](http://docs.stormpath.com/python/apidocs/stormpath.cache.html).
+If no cache is specified, the default, ``MemoryStore``, is used.  This will
+cache all resources in local memory.
+
+For a full list of options available for each cache backend, please see the
+official `Caching Docs <https://docs.stormpath.com/python/product-guide/#caching>`_
+in our Python library.
 
 
 Copyright and License
@@ -310,6 +317,17 @@ Change Log
 ----------
 
 All library changes, in descending order.
+
+
+Version 0.0.3
+*************
+
+**Released on December 9, 2014.**
+
+- Adding cache support.
+- Fixing docs.
+- Adding docs on caching.
+- Adding support for ID site.
 
 
 Version 0.0.2
