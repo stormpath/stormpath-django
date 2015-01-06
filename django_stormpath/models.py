@@ -41,7 +41,7 @@ class StormpathPermissionsMixin(PermissionsMixin):
 class StormpathUserManager(BaseUserManager):
 
     def create(self, *args, **kwargs):
-        self.create_user(*args, **kwargs)
+        return self.create_user(*args, **kwargs)
 
     def create_user(self, email, given_name, surname, password):
 
