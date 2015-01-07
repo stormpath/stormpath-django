@@ -76,7 +76,7 @@ class StormpathBackend(ModelBackend):
             user._save_db_only()
             return user
 
-    def authenticate(self, username=None, password=None, email=None):
+    def authenticate(self, username=None, password=None, **kwargs):
         """The authenticate method takes credentials as keyword arguments,
         usually username/email and password.
 
@@ -88,8 +88,9 @@ class StormpathBackend(ModelBackend):
             STORMPATH_APPLICATION =
             "https://api.stormpath.com/v1/applications/APP_UID"
         """
-        if email is not None:
-            username = email
+        if username is None:
+            UserModel = get_user_model()
+            username = kwargs.get(UserModel.USERNAME_FIELD)
         account = self._stormpath_authenticate(username, password)
         if account is None:
             return None
