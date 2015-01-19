@@ -264,6 +264,19 @@ Change Log
 All library changes, in descending order.
 
 
+Version 0.0.4
+*************
+
+**Released on January 19, 2015.**
+
+- Fixing incompatible arguments being passed from django-rest-framework-jwt to
+  ``StormpathBackend.authenticate()``.
+- Changing unexpected behaviors (*no return value*) of
+  ``StormpathuserManager.create()``.
+
+All fixes thanks to `@skolsuper <https://github.com/skolsuper>`_!
+
+
 Version 0.0.3
 *************
 
