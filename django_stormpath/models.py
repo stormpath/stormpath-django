@@ -174,7 +174,7 @@ class StormpathBaseUser(AbstractBaseUser, StormpathPermissionsMixin):
             raise self.DoesNotExist('Could not find Stormpath User.')
 
     def get_full_name(self):
-        return "{0} {1}".format(self.given_name, self.surname)
+        return "%s %s" % (self.given_name, self.surname)
 
     def get_short_name(self):
         return self.email

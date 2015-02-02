@@ -1,8 +1,13 @@
 from django.conf import settings
 from django.shortcuts import redirect
+from django.http import HttpResponseBadRequest
+from django.core.urlresolvers import reverse
+
+from stormpath.resources.provider import Provider
 
 from .models import APPLICATION
 from .id_site import handle_id_site_callback
+import social
 
 
 def stormpath_id_site_callback(request):
@@ -40,3 +45,16 @@ def stormpath_id_site_logout(request):
             state=request.GET.get('state'),
             logout=True)
     return redirect(rdr)
+
+
+def stormpath_social_login(request, provider):
+    redirect_uri = request.build_absolute_uri(
+            reverse('stormpath_' + provider + '_login_callback', kwargs={'provider': provider}))
+    authorization_url, sate = social.get_authorization_url(provider, redirect_uri)
+    return redirect(authorization_url)
+
+
+def stormpath_social_login_callback(request, provider):
+    rdr = social.handle_social_callback(request, provider)
+    return redirect(rdr)
+
