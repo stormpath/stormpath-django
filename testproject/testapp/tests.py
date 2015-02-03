@@ -5,7 +5,6 @@ from django.db import IntegrityError, transaction
 from django.contrib.auth import get_user_model
 from django.core.exceptions import ObjectDoesNotExist
 from django.contrib.auth.models import Group
-from django.forms import ValidationError
 
 from django_stormpath.models import CLIENT
 import django_stormpath
@@ -376,4 +375,3 @@ class TestForms(LiveTestBase):
         self.assertTrue(is_valid)
         form.save()
         self.assertEqual(1, UserModel.objects.count())
-
