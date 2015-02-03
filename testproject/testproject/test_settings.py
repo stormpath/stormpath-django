@@ -9,4 +9,3 @@ DATABASES = {
 }
 
 STORMPATH_APPLICATION = None  # the test suite generates a random application for it's self
-
