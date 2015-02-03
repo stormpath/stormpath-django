@@ -38,4 +38,3 @@ if getattr(settings, 'STORMPATH_ENABLE_LINKEDIN', False):
         url(r'^social-login/(?P<provider>linkedin)/', 'stormpath_social_login',
             name='stormpath_linkedin_social_login'),
     )
-
