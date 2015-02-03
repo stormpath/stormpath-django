@@ -57,4 +57,3 @@ def stormpath_social_login(request, provider):
 def stormpath_social_login_callback(request, provider):
     rdr = social.handle_social_callback(request, provider)
     return redirect(rdr)
-
