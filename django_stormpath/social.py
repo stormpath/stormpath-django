@@ -178,4 +178,3 @@ def get_authorization_url(provider, redirect_uri):
         return authorization_url, state
     else:
         raise RuntimeError('Invalid Provider %s' % provider)
-
