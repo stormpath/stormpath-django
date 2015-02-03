@@ -109,5 +109,3 @@ class StormpathIdSiteBackend(StormpathBackend):
 class StormpathSocialBackend(StormpathIdSiteBackend):
     """Used for authenticating with GOOGLE/FACEBOOK/others"""
     pass
-
-
