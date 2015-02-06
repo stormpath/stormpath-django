@@ -326,6 +326,16 @@ Change Log
 All library changes, in descending order.
 
 
+Version 0.0.5
+*************
+
+**Released on February 5, 2015.**
+
+- Adding support for social login.
+- Various test fixes.
+- PEP-8.
+
+
 Version 0.0.4
 *************
 
