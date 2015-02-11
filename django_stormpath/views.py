@@ -7,7 +7,7 @@ from stormpath.resources.provider import Provider
 
 from .models import APPLICATION
 from .id_site import handle_id_site_callback
-import social
+from .social import get_authorization_url, handle_social_callback
 
 
 def stormpath_id_site_callback(request):
@@ -50,10 +50,10 @@ def stormpath_id_site_logout(request):
 def stormpath_social_login(request, provider):
     redirect_uri = request.build_absolute_uri(
             reverse('stormpath_' + provider + '_login_callback', kwargs={'provider': provider}))
-    authorization_url, sate = social.get_authorization_url(provider, redirect_uri)
+    authorization_url, sate = get_authorization_url(provider, redirect_uri)
     return redirect(authorization_url)
 
 
 def stormpath_social_login_callback(request, provider):
-    rdr = social.handle_social_callback(request, provider)
+    rdr = handle_social_callback(request, provider)
     return redirect(rdr)
