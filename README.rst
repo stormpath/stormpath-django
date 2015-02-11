@@ -326,6 +326,15 @@ Change Log
 All library changes, in descending order.
 
 
+Version 0.0.6
+*************
+
+**Released on February 11, 2015.**
+
+- PEP-8 fixing imports, and making things python 3 compatible (thanks
+  @rtrajano)!
+
+
 Version 0.0.5
 *************
 
