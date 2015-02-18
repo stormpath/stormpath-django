@@ -195,7 +195,7 @@ Lastly, you've got to include some URLs in your main ``urls.py`` as well:
 
 .. code-block:: python
 
-    url(r'', include(django_stormpath.urls)),
+    url(r'', include('django_stormpath.urls')),
 
 An example of how to use the available URL mappings can be found `here
 <https://github.com/stormpath/stormpath-django/blob/develop/testproject/testapp/templates/testapp/index.html>`_.
