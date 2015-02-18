@@ -326,6 +326,16 @@ Change Log
 All library changes, in descending order.
 
 
+Version 0.0.7
+*************
+
+**Not yet released.**
+
+- Fixing documentation issue in the README -- we had an incorrect code sample
+  setting up urlpatterns.  Thanks `@espenak <https://github.com/espenak>`_ for
+  the find!
+
+
 Version 0.0.6
 *************
 
