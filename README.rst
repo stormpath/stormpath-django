@@ -28,6 +28,12 @@ with `Stormpath <https://stormpath.com>`_.
 
 This library works with Python 2.7.x and Python 3.x.
 
+.. note::
+    This library will NOT work on Google App Engine due to incompatibilities
+    with the
+    `requests <http://stackoverflow.com/questions/9604799/can-python-requests-library-be-used-on-google-app-engine>`_
+    package :(
+
 
 Installation
 ------------
