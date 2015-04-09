@@ -226,6 +226,29 @@ class TestUserAndGroups(LiveTestBase):
         a = self.app.accounts.get(href)
         self.assertRaises(StormpathError, a.__getattr__, 'email')
 
+    def test_deleting_users(self):
+        self.assertEqual(0, UserModel.objects.count())
+        user_1 = self.create_django_user(
+                email='john.doe1@example.com',
+                given_name='John2',
+                surname='Doe',
+                password='TestPassword123!')
+        user_2 = self.create_django_user(
+                email='john.doe2@example.com',
+                given_name='John',
+                surname='Doe',
+                password='TestPassword123!')
+        href_1, href_2 = user_1.href, user_2.href
+        self.assertEqual(
+            set([a.href for a in self.app.accounts]), {href_1, href_2})
+        self.assertEqual(2, UserModel.objects.count())
+        UserModel.objects.delete()
+        self.assertEqual(0, UserModel.objects.count())
+        a = self.app.accounts.get(href_1)
+        self.assertRaises(StormpathError, a.__getattr__, 'email')
+        a = self.app.accounts.get(href_2)
+        self.assertRaises(StormpathError, a.__getattr__, 'email')
+
     def test_deleteing_a_group(self):
         self.assertEqual(0, Group.objects.count())
         Group.objects.create(name='testGroup')
