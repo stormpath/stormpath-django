@@ -237,6 +237,7 @@ class StormpathBaseUser(AbstractBaseUser, StormpathPermissionsMixin):
         self.raw_password = raw_password
 
     def save(self, *args, **kwargs):
+        self.username = getattr(self, self.USERNAME_FIELD)
         # Are we updating an existing User?
         if self.id:
             self._update_for_db_and_stormpath(*args, **kwargs)
