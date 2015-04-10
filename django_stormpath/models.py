@@ -34,10 +34,6 @@ CLIENT = Client(
 APPLICATION = CLIENT.applications.get(settings.STORMPATH_APPLICATION) if settings.STORMPATH_APPLICATION else None
 
 
-class StormpathPermissionsMixin(PermissionsMixin):
-    pass
-
-
 class StormpathUserManager(BaseUserManager):
 
     def create(self, *args, **kwargs):
@@ -69,7 +65,7 @@ class StormpathUserManager(BaseUserManager):
         return user
 
 
-class StormpathBaseUser(AbstractBaseUser, StormpathPermissionsMixin):
+class StormpathBaseUser(AbstractBaseUser, PermissionsMixin):
 
     class Meta:
         abstract = True
