@@ -266,7 +266,26 @@ class StormpathUser(StormpathBaseUser):
 @receiver(pre_save, sender=Group)
 def save_group_to_stormpath(sender, instance, **kwargs):
     try:
-        APPLICATION.groups.create({'name': instance.name})
+        if instance.pk is None:
+            # creating a new group
+            APPLICATION.groups.create({'name': instance.name})
+        else:
+            # updating an existing group
+            old_group = Group.objects.get(pk=instance.pk)
+            remote_groups = APPLICATION.groups.search({'name': old_group.name})
+            if len(remote_groups) is 0:
+                # group existed locally but not on Stormpath, create it
+                APPLICATION.groups.create({'name': instance.name})
+                return
+
+            remote_group = remote_groups[0]
+
+            if remote_group.name == instance.name:
+                return  # nothing changed
+
+            remote_group.name = instance.name
+            remote_group.save()
+
     except StormpathError as e:
         raise IntegrityError(e)
 
