@@ -340,6 +340,8 @@ Version 0.0.7
 - Fixing documentation issue in the README -- we had an incorrect code sample
   setting up urlpatterns.  Thanks `@espenak <https://github.com/espenak>`_ for
   the find!
+- Adding a `StormpathUserManager.delete()` method.  This makes it possible to
+  'cleanly' delete users from both Django and Stormpath.
 
 
 Version 0.0.6
