@@ -343,6 +343,8 @@ Version 0.0.7
 - Adding a `StormpathUserManager.delete()` method.  This makes it possible to
   'cleanly' delete users from both Django and Stormpath.
 - Fixing Group permission editing.  Thanks `@davidmarquis <https://github.com/davidmarquis>`_!
+- Fixing bug with maintaining the username field when editing user objects.
+  Thanks again, `@davidmarquis <https://github.com/davidmarquis>`_!
 
 
 Version 0.0.6
