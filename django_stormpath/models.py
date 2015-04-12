@@ -68,6 +68,10 @@ class StormpathUserManager(BaseUserManager):
         user._remove_raw_password()
         return user
 
+    def delete(self, *args, **kwargs):
+        for user in self.get_queryset():
+            user.delete(*args, **kwargs)
+
 
 class StormpathBaseUser(AbstractBaseUser, StormpathPermissionsMixin):
 
