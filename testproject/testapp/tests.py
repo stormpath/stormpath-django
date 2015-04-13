@@ -23,12 +23,10 @@ class LiveTestBase(TestCase):
         super(LiveTestBase, self).setUp()
         self.prefix = 'stormpath-django-test-%s-' % uuid4().hex
         self.app = CLIENT.applications.create(
-                {'name': self.prefix + 'testapp'},
-                create_directory=True)
+            {'name': self.prefix},
+            create_directory = True
+        )
         django_stormpath.models.APPLICATION = self.app
-
-    def get_random_name(self):
-        return self.prefix + uuid4().hex
 
     def tearDown(self):
         super(LiveTestBase, self).tearDown()
