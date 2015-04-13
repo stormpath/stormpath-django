@@ -39,7 +39,7 @@ CLIENT = Client(
     cache_options = getattr(settings, 'STORMPATH_CACHE_OPTIONS', None)
 )
 
-APPLICATION = CLIENT.applications.get(settings.STORMPATH_APPLICATION)
+APPLICATION = CLIENT.applications.get(settings.STORMPATH_APPLICATION) if settings.STORMPATH_APPLICATION else None
 
 
 class StormpathPermissionsMixin(PermissionsMixin):
@@ -305,4 +305,3 @@ def delete_group_from_stormpath(sender, instance, **kwargs):
         APPLICATION.groups.search({'name': instance.name})[0].delete()
     except StormpathError as e:
         raise IntegrityError(e)
-
