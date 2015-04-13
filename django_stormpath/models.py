@@ -22,6 +22,12 @@ from stormpath.client import Client
 from stormpath.error import Error as StormpathError
 
 from django_stormpath import __version__
+from django_stormpath.helpers import validate_settings
+
+
+# Ensure all user settings have been properly initialized, otherwise we'll
+# throw useful error messages to the user so they know what to fix.
+validate_settings(settings)
 
 
 USER_AGENT = 'stormpath-django/%s django/%s' % (__version__, django_version)
