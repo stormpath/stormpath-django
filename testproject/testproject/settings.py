@@ -3,6 +3,11 @@
 import os
 import sys
 
+from uuid import uuid4
+
+from stormpath.client import Client
+
+
 ROOT_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), '.'))
 sys.path.insert(0, os.path.abspath(os.path.join(ROOT_DIR, '..')))
 
@@ -163,7 +168,12 @@ LOGGING = {
 
 STORMPATH_ID = os.environ['STORMPATH_API_KEY_ID']
 STORMPATH_SECRET = os.environ['STORMPATH_API_KEY_SECRET']
-STORMPATH_APPLICATION = os.environ.get('STORMPATH_APPLICATION')
+
+# Bootstrap a new Stormpath Application on the fly:
+client = Client(id=STORMPATH_ID, secret=STORMPATH_SECRET)
+application = client.applications.create({'name': uuid4().hex})
+
+STORMPATH_APPLICATION = application.href
 
 STORMPATH_ID_SITE_CALLBACK_URI = 'http://localhost:8000/stormpath-id-site-callback'
 
