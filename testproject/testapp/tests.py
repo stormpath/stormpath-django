@@ -6,8 +6,8 @@ from django.contrib.auth import get_user_model
 from django.core.exceptions import ObjectDoesNotExist
 from django.contrib.auth.models import Group
 
-from django_stormpath.models import CLIENT
 import django_stormpath
+from django_stormpath.models import CLIENT
 from django_stormpath.backends import StormpathBackend
 from django_stormpath.forms import *
 
@@ -21,6 +21,7 @@ class LiveTestBase(TestCase):
 
     def setUp(self):
         super(LiveTestBase, self).setUp()
+
         self.prefix = 'stormpath-django-test-%s-' % uuid4().hex
         self.app = CLIENT.applications.create(
             {'name': self.prefix},
