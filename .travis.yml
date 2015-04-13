@@ -8,7 +8,7 @@ python:
 install: pip install . --use-mirrors
 before_script: python setup.py testdep
 script:
-  - test -z "$STORMPATH_API_KEY_SECRET" || python setup.py test
+  - python setup.py test
 env:
   global:
     - secure: hA7wC+KJRcefKIv27dyeefeWjZvhrkx/YJmWiMkw28sCKH0gs/fFnS06M+EODs4Pb72J7S+Mr5a4kJy06EFXKwWHwg0qlErW314kNzC/w9ZOXayIw+YtxYKfip4g/wXUmvOudqC+JpNyenPEIcQmO8hanLlk+Ri1GyIO9GrT8To=
