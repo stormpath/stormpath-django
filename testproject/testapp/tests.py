@@ -34,11 +34,11 @@ class LiveTestBase(TestCase):
 
         # TODO: delete application directories
 
-        for a in self.app.accounts:
-            a.delete()
+        for app in self.app.accounts:
+            app.delete()
 
-        for g in self.app.groups:
-            g.delete()
+        for group in self.app.groups:
+            group.delete()
 
         self.app.delete()
 
