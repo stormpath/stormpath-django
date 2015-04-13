@@ -23,7 +23,7 @@ class TestCommand(BaseCommand):
 
     def run(self):
         chdir('testproject')
-        ret = system('make test')
+        ret = system('coverage run --source=django_stormpath manage.py test --settings=testproject.settings testapp && coverage html')
 
         if ret != 0:
             exit(-1)
