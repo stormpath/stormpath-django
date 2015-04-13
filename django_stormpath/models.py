@@ -39,7 +39,7 @@ CLIENT = Client(
     cache_options = getattr(settings, 'STORMPATH_CACHE_OPTIONS', None)
 )
 
-APPLICATION = CLIENT.applications.get(settings.STORMPATH_APPLICATION) if settings.STORMPATH_APPLICATION else None
+APPLICATION = CLIENT.applications.get(settings.STORMPATH_APPLICATION)
 
 
 class StormpathPermissionsMixin(PermissionsMixin):
