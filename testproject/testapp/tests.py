@@ -31,14 +31,15 @@ class LiveTestBase(TestCase):
 
     def tearDown(self):
         super(LiveTestBase, self).tearDown()
-        for d in CLIENT.directories:
-            if d.name.startswith('stormpath-django'):
-                d.delete()
+
+        # TODO: delete application directories
+
         for a in self.app.accounts:
             a.delete()
 
         for g in self.app.groups:
             g.delete()
+
         self.app.delete()
 
     def create_django_user(self, superuser=False, email=None, password=None,
