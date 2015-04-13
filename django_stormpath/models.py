@@ -30,6 +30,8 @@ from django_stormpath.helpers import validate_settings
 validate_settings(settings)
 
 
+# Initialize our Stormpath Client / Application objects -- this way we have
+# singletons that can be used throughout our Django sessions.
 USER_AGENT = 'stormpath-django/%s django/%s' % (__version__, django_version)
 
 CLIENT = Client(
@@ -39,7 +41,7 @@ CLIENT = Client(
     cache_options = getattr(settings, 'STORMPATH_CACHE_OPTIONS', None)
 )
 
-APPLICATION = CLIENT.applications.get(settings.STORMPATH_APPLICATION) if settings.STORMPATH_APPLICATION else None
+APPLICATION = CLIENT.applications.get(settings.STORMPATH_APPLICATION)
 
 
 class StormpathPermissionsMixin(PermissionsMixin):
