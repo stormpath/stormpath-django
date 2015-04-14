@@ -3,8 +3,6 @@
 import os
 import sys
 
-from uuid import uuid4
-
 from stormpath.client import Client
 
 
@@ -169,11 +167,13 @@ LOGGING = {
 STORMPATH_ID = os.environ['STORMPATH_API_KEY_ID']
 STORMPATH_SECRET = os.environ['STORMPATH_API_KEY_SECRET']
 
-# Bootstrap a new Stormpath Application on the fly:
+# Retrieve our Stormpath built-in application. This won't be used for any
+# testing, but is required for the integration to function.
 client = Client(id=STORMPATH_ID, secret=STORMPATH_SECRET)
-application = client.applications.create({'name': uuid4().hex})
 
-STORMPATH_APPLICATION = application.href
+for application in client.applications.search('stormpath'):
+    if application.name == 'Stormpath':
+        STORMPATH_APPLICATION = application.href
 
 STORMPATH_ID_SITE_CALLBACK_URI = 'http://localhost:8000/stormpath-id-site-callback'
 
