@@ -22,7 +22,7 @@ class LiveTestBase(TestCase):
     def setUp(self):
         super(LiveTestBase, self).setUp()
 
-        self.prefix = 'stormpath-django-test-%s-' % uuid4().hex
+        self.prefix = 'stormpath-django-test-%s' % uuid4().hex
         self.app = CLIENT.applications.create(
             {'name': self.prefix},
             create_directory = True
@@ -32,13 +32,14 @@ class LiveTestBase(TestCase):
     def tearDown(self):
         super(LiveTestBase, self).tearDown()
 
-        # TODO: delete application directories
-
-        for app in self.app.accounts:
-            app.delete()
-
         for group in self.app.groups:
             group.delete()
+
+        for mapping in self.app.account_store_mappings:
+            mapping.account_store.delete()
+
+        for account in self.app.accounts:
+            account.delete()
 
         self.app.delete()
 
