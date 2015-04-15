@@ -75,6 +75,7 @@ setup(
     ],
     packages = find_packages(),
     install_requires = [
+        'requests-oauthlib>=0.4.2',
         'stormpath>=1.2.7',
         'Django>=1.6',
     ],
