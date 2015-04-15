@@ -345,6 +345,8 @@ Version 0.0.7
 - Fixing Group permission editing.  Thanks `@davidmarquis <https://github.com/davidmarquis>`_!
 - Fixing bug with maintaining the username field when editing user objects.
   Thanks again, `@davidmarquis <https://github.com/davidmarquis>`_!
+- Adding in missing dependency: ``requests_oauthlib``.  This is required for our
+  ID site functionality to work, but was missing.
 
 
 Version 0.0.6
