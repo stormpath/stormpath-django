@@ -332,6 +332,21 @@ Change Log
 All library changes, in descending order.
 
 
+Version 1.0.0
+*************
+
+**Released on April 18, 2015.**
+
+- Fixing issue with ``StormpathPermissionsMixin`` by replacing it with the
+  built-in ``PermissionsMixin`` that Django provides.  Thanks again,
+  `@davidmarquis <https://github.com/davidmarquis>`_!
+- The above change is a **breaking** change -- so users of earlier versions of
+  django-stormpath are encouraged to stay on their current release unless they
+  want to manually handle the database migrations.  This breakage is *very rare*
+  for our libraries, but was necessary in this case to fix the underlying
+  library issues.
+
+
 Version 0.0.7
 *************
 
