@@ -44,10 +44,6 @@ CLIENT = Client(
 APPLICATION = CLIENT.applications.get(settings.STORMPATH_APPLICATION)
 
 
-class StormpathPermissionsMixin(PermissionsMixin):
-    pass
-
-
 class StormpathUserManager(BaseUserManager):
 
     def create(self, *args, **kwargs):
@@ -83,7 +79,7 @@ class StormpathUserManager(BaseUserManager):
             user.delete(*args, **kwargs)
 
 
-class StormpathBaseUser(AbstractBaseUser, StormpathPermissionsMixin):
+class StormpathBaseUser(AbstractBaseUser, PermissionsMixin):
 
     class Meta:
         abstract = True
