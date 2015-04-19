@@ -316,13 +316,6 @@ class TestUserAndGroups(LiveTestBase):
         self.assertEqual(0, UserModel.objects.count())
         self.assertEqual(0, len(self.app.accounts))
 
-        # update the in memory user object
-        user.surname = 'test change'
-        self.assertIsNotNone(user.id)
-        self.assertRaises(ObjectDoesNotExist, user.save)
-        self.assertEqual(0, UserModel.objects.count())
-        self.assertEqual(0, len(self.app.accounts))
-
     def test_creating_a_user_with_invalid_password(self):
         self.assertEqual(0, UserModel.objects.count())
         self.assertRaises(StormpathError, self.create_django_user,
