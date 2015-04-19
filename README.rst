@@ -345,6 +345,7 @@ Version 1.0.0
   want to manually handle the database migrations.  This breakage is *very rare*
   for our libraries, but was necessary in this case to fix the underlying
   library issues.
+- Updating broken test case for the new release.
 
 
 Version 0.0.7
