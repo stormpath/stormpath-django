@@ -72,6 +72,11 @@ class StormpathUserManager(BaseUserManager):
         for user in self.get_queryset():
             user.delete(*args, **kwargs)
 
+        # Clear the result cache, in case this QuerySet gets reused.
+        self._result_cache = None
+    delete.alters_data = True
+    delete.queryset_only = True
+
 
 class StormpathBaseUser(AbstractBaseUser, StormpathPermissionsMixin):
 
