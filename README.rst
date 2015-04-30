@@ -332,6 +332,16 @@ Change Log
 All library changes, in descending order.
 
 
+Version 1.0.1
+*************
+
+**Released on April 30, 2015.**
+
+- Adding missing migrations.  This fixes issues when running ``syncdb`` on a
+  new Postgres database.
+- Making the built-in ``delete()`` method remove both copies of the account.
+
+
 Version 1.0.0
 *************
 
