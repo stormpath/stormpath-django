@@ -122,6 +122,16 @@ to your ``settings.py``:
     STORMPATH_SECRET = 'yourApiKeySecret'
     STORMPATH_APPLICATION = 'https://api.stormpath.com/v1/applications/YOUR_APP_UID_HERE'
 
+Once this is done, you're ready to get started!  The next thing you need to do
+is to sync your database and apply any migrations:
+
+.. code-block:: console
+
+    $ python manage.py syncdb
+    $ python manage.py migrate
+
+And that's it!  You're now ready to get started =)
+
 
 Example: Creating a User
 ------------------------
