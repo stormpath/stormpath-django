@@ -43,8 +43,7 @@ class StormpathUserManager(BaseUserManager):
     def create(self, *args, **kwargs):
         return self.create_user(*args, **kwargs)
 
-    def create_user(self, email, given_name, surname, password):
-
+    def _create_user(self, email, given_name, surname, password):
         if not email:
             raise ValueError("Users must have an email address")
 
@@ -58,6 +57,16 @@ class StormpathUserManager(BaseUserManager):
         user.save(using=self._db)
         user._remove_raw_password()
         return user
+
+    def create_user(self, email, given_name=None, surname=None, password=None,
+                    first_name=None, last_name=None):
+        if first_name and not given_name:
+            given_name = first_name
+        if last_name and not surname:
+            surname = last_name
+
+        return self._create_user(email=email, given_name=given_name, surname=surname,
+                          password=password)
 
     def create_superuser(self, **kwargs):
         user = self.create_user(**kwargs)
@@ -103,6 +112,28 @@ class StormpathBaseUser(AbstractBaseUser, StormpathPermissionsMixin):
     objects = StormpathUserManager()
 
     DJANGO_PREFIX = 'spDjango_'
+
+    @property
+    def first_name(self):
+        """This property is added to make Stormpath user compatible
+        with Django user (first_name is used instead of given_name).
+        """
+        return self.given_name
+
+    @first_name.setter
+    def first_name(self, value):
+        self.given_name = value
+
+    @property
+    def last_name(self):
+        """This property is added to make Stormpath user compatible
+        with Django user (last_name is used instead of surname).
+        """
+        return self.surname
+
+    @last_name.setter
+    def last_name(self, value):
+        self.surname = value
 
     def _mirror_data_from_db_user(self, account, data):
         for field in self.EXCLUDE_FIELDS:
