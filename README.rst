@@ -345,7 +345,7 @@ All library changes, in descending order.
 Version 1.0.2
 *************
 
-**Not yet released.**
+**Released on May 12, 2015.**
 
 - Improving Travis CI builds so that tests are run against Django 1.6.x, 1.7.x,
   and 1.8.x.  This will help flush out Django version issues (*hopefully!*).
