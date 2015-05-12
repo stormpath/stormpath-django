@@ -44,13 +44,14 @@ class LiveTestBase(TestCase):
         self.app.delete()
 
     def create_django_user(self, superuser=False, email=None, password=None,
-            custom_data=None, given_name=None, surname=None):
+            custom_data=None, given_name=None, surname=None, first_name=None,
+            last_name=None):
         rnd = uuid4().hex
         if email is None:
             email = rnd + '@example.com'
-        if given_name is None:
+        if given_name is None and first_name is None:
             given_name = 'Given ' + rnd
-        if surname is None:
+        if surname is None and last_name is None:
             surname = 'Sur ' + rnd
         if password is None:
             password = 'W00t123!' + rnd
@@ -60,6 +61,8 @@ class LiveTestBase(TestCase):
             'given_name': given_name,
             'surname': surname,
             'password': password,
+            'first_name': first_name,
+            'last_name': last_name,
         }
 
         if superuser:
@@ -326,6 +329,81 @@ class TestUserAndGroups(LiveTestBase):
 
         self.assertEqual(0, UserModel.objects.count())
         self.assertEqual(0, len(self.app.accounts))
+
+
+class TestDjangoUser(LiveTestBase):
+    def test_creating_a_user(self):
+        user = self.create_django_user(
+                email='john.doe1@example.com',
+                first_name='John',
+                last_name='Doe',
+                password='TestPassword123!')
+        a = self.app.accounts.get(user.href)
+        self.assertEqual(user.href, a.href)
+        self.assertEqual(user.first_name, user.given_name)
+        self.assertEqual(user.first_name, a.given_name)
+        self.assertEqual(user.last_name, user.surname)
+        self.assertEqual(user.last_name, a.surname)
+
+    def test_creating_a_superuser(self):
+        user = self.create_django_user(
+                superuser=True,
+                email='john.doe2@example.com',
+                first_name='John',
+                last_name='Doe',
+                password='TestPassword123!')
+        a = self.app.accounts.get(user.href)
+        self.assertEqual(user.href, a.href)
+        self.assertEqual(user.first_name, user.given_name)
+        self.assertEqual(user.first_name, a.given_name)
+        self.assertEqual(user.last_name, user.surname)
+        self.assertEqual(user.last_name, a.surname)
+        self.assertEqual(a.custom_data['spDjango_is_staff'], True)
+        self.assertEqual(a.custom_data['spDjango_is_superuser'], True)
+
+    def test_updating_a_user(self):
+        user = self.create_django_user(
+                email='john.doe3@example.com',
+                first_name='John',
+                last_name='Doe',
+                password='TestPassword123!')
+        a = self.app.accounts.get(user.href)
+        self.assertEqual(user.href, a.href)
+
+        user.surname = 'Smith'
+        user.save()
+
+        a = self.app.accounts.get(user.href)
+        self.assertEqual(user.surname, a.surname)
+        self.assertEqual(user.last_name, user.surname)
+        self.assertEqual(user.last_name, a.surname)
+
+        user.first_name = 'Jane'
+        user.save()
+
+        a = self.app.accounts.get(user.href)
+        self.assertEqual(user.given_name, a.given_name)
+        self.assertEqual(user.first_name, a.given_name)
+        self.assertEqual(user.first_name, a.given_name)
+
+    def test_authentication_pulls_user_into_local_db(self):
+        self.assertEqual(0, UserModel.objects.count())
+        acc = self.app.accounts.create({
+            'email': 'jd@example.com',
+            'given_name': 'John',
+            'surname': 'Doe',
+            'password': 'TestPassword123!',
+        })
+
+        b = StormpathBackend()
+
+        b.authenticate(acc.email, 'TestPassword123!')
+        self.assertEqual(1, UserModel.objects.count())
+        user = UserModel.objects.get()
+        self.assertEqual(user.first_name, user.given_name)
+        self.assertEqual(user.first_name, acc.given_name)
+        self.assertEqual(user.last_name, user.surname)
+        self.assertEqual(user.last_name, acc.surname)
 
 
 class TestForms(LiveTestBase):
