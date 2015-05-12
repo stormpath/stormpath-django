@@ -351,6 +351,9 @@ Version 1.0.2
   and 1.8.x.  This will help flush out Django version issues (*hopefully!*).
 - Fixing old migration issue.  This should make all new ``syncdb`` commands run
   successfully regardless of database used.
+- Supporting ``User.first_name`` and ``User.last_name`` per Django's
+  conventions.  This makes our user model play nice with third party Django apps
+  =)
 
 
 Version 1.0.1
