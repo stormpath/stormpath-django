@@ -343,6 +343,14 @@ Change Log
 All library changes, in descending order.
 
 
+Version 1.0.3
+*************
+
+**Not yet released.**
+
+- Updating ID site docs slightly.
+
+
 Version 1.0.2
 *************
 
