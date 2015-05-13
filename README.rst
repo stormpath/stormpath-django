@@ -200,8 +200,9 @@ To make this work in Django, you need to specify a few settings:
     )
 
     # This should be set to the same URI you've specified in your Stormpath ID
-    # Site dashboard.
-    STORMPATH_ID_SITE_CALLBACK_URI = 'must_be_the_same_as_in_id_site_dashboard'
+    # Site dashboard.  NOTE: This URL must be *exactly* the same as the one in
+    # your Stormpath ID Site dashboard.
+    STORMPATH_ID_SITE_CALLBACK_URI = 'http://localhost:8000/stormpath-id-site-callback/'
 
     # The URL you'd like to redirect users to after they've successfully logged
     # into their account.
