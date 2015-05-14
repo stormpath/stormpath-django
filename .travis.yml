@@ -19,3 +19,6 @@ env:
     - DJANGO=1.6.11
     - DJANGO=1.7.7
     - DJANGO=1.8
+    exclude:
+      - python: 3.2
+        env: DJANGO=1.6.11
