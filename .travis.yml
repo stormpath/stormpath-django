@@ -13,13 +13,13 @@ script:
   - python setup.py test
 env:
   matrix:
-    - DJANGO="1.6.11"
-    - DJANGO="1.7.7"
-    - DJANGO="1.8"
+    - DJANGO=1.6.11
+    - DJANGO=1.7.7
+    - DJANGO=1.8
   global:
     - secure: B6MEHOMJoQy9HMpb0Fxa7rNpQnOcBCR4cgad7BxtWSiU/vtI4l3iNUz5QtzgZFyhVya3snfBMeNGohMUpTSKr+yRl0rpE4gShVlDMSZwsKdXTqHHzpPp+Don56kKQ9kUthdl3tPmwwbPoatYJ3Jkwi+a3F1a2QLOTp03FGn0rUA=
     - secure: WvMLJkrK6gNa5bIIo3378j/JRu/sJISYDz4D23XBx91SUz32xQtRytQX+Tm5MqlE1963ZDe7jg1WJzBrHQXzRHC+GplrqlP5FtDKhnbUxAX4kqSGzeRWPxiwIwZr5N/iRe5dM3D0MTuT0ClAX2CsVFFWS/u2n3KDta9mkr4e6f8=
 matrix:
-    exclude:
+    allow_failures:
       - python: 3.2
-        env: DJANGO="1.6.11"
+        env: DJANGO=1.6.11
