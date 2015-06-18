@@ -346,9 +346,11 @@ All library changes, in descending order.
 Version 1.0.3
 *************
 
-**Not yet released.**
+**Released on June 18, 2015.**
 
 - Updating ID site docs slightly.
+- Fixing Travis CI builds.
+- Upgrading to the latest Stormpath release.
 
 
 Version 1.0.2
