@@ -26,7 +26,7 @@ Meta
 This library provides user account storage, authentication, and authorization
 with `Stormpath <https://stormpath.com>`_.
 
-This library works with Python 2.7.x and Python 3.3+.
+This library works with Python 2.7.x and Python 3.3+. It supports Django versions 1.6+.
 
 .. note::
     This library will NOT work on Google App Engine due to incompatibilities
