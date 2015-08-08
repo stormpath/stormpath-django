@@ -109,6 +109,150 @@ class TestUserAndGroups(LiveTestBase):
         a = self.app.accounts.get(user.href)
         self.assertEqual(user.surname, a.surname)
 
+    def test_get_with_non_existing(self):
+        UserModel.objects.create_user(
+            email='me@example.com', given_name='Sample', surname='User',
+            password='TestPassword123!')
+        with self.assertRaises(UserModel.DoesNotExist):
+            UserModel.objects.get(email='does.not@exist.com')
+
+    def test_get_with_existing(self):
+        UserModel.objects.create_user(
+            email='me@example.com', given_name='Sample', surname='User',
+            password='TestPassword123!')
+        user = UserModel.objects.get(
+            email='me@example.com', given_name='Sample', surname='User',
+            password='TestPassword123!')
+        self.assertTrue(user)
+
+    def test_get_wrong_password(self):
+        UserModel.objects.create_user(
+            email='me@example.com', given_name='Sample', surname='User',
+            password='TestPassword123!')
+        with self.assertRaises(UserModel.DoesNotExist):
+            UserModel.objects.get(
+                email='me@example.com', given_name='Sample', surname='User',
+                password='wrong')
+
+    def test_get_or_create_user_with_non_existing(self):
+        user, created = UserModel.objects.get_or_create(
+            email='me@example.com', given_name='Sample', surname='User',
+            password='TestPassword123!')
+
+        self.assertTrue(created)
+        self.assertEqual(self.app.accounts.get(user.href).given_name, 'Sample')
+        user = UserModel.objects.get(email='me@example.com')
+        self.assertEqual(user.surname, 'User')
+        self.assertIsNotNone(
+            StormpathBackend().authenticate(
+                'me@example.com', 'TestPassword123!'))
+
+    def test_get_or_create_user_with_wrong_password(self):
+        UserModel.objects.create_user(
+            email='me@example.com', given_name='Sample', surname='User',
+            password='TestPassword123!')
+
+        with self.assertRaises(IntegrityError):
+            user, created = UserModel.objects.get_or_create(
+                email='me@example.com', given_name='Sample', surname='User',
+                password='wrong')
+
+    def test_get_or_create_user_with_existing(self):
+        UserModel.objects.create_user(
+            email='me@example.com', given_name='Sample', surname='User',
+            password='TestPassword123!')
+        user, created = UserModel.objects.get_or_create(
+            email='me@example.com', given_name='Sample', surname='User',
+            password='TestPassword123!')
+
+        self.assertFalse(created)
+        self.assertEqual(self.app.accounts.get(user.href).given_name, 'Sample')
+        user = UserModel.objects.get(email='me@example.com')
+        self.assertEqual(user.surname, 'User')
+        self.assertIsNotNone(
+            StormpathBackend().authenticate(
+                'me@example.com', 'TestPassword123!'))
+
+    def test_update_or_create_user_with_non_existing(self):
+        user, created = UserModel.objects.update_or_create(
+            defaults={'given_name': 'Updated'},
+            email='me@example.com', given_name='Sample', surname='User',
+            password='TestPassword123!')
+
+        self.assertTrue(created)
+        self.assertEqual(
+            self.app.accounts.get(user.href).given_name, 'Updated')
+        user = UserModel.objects.get(email='me@example.com')
+        self.assertEqual(user.given_name, 'Updated')
+        self.assertEqual(user.surname, 'User')
+        self.assertIsNotNone(
+            StormpathBackend().authenticate(
+                'me@example.com', 'TestPassword123!'))
+
+    def test_update_or_create_user_with_wrong_password(self):
+        UserModel.objects.create_user(
+            email='me@example.com', given_name='Sample', surname='User',
+            password='TestPassword123!')
+
+        with self.assertRaises(IntegrityError):
+            user, created = UserModel.objects.update_or_create(
+                defaults={'given_name': 'Updated'},
+                email='me@example.com', given_name='Sample', surname='User',
+                password='123!TestPassword')
+
+    def test_update_or_create_user_with_non_existing_and_password(self):
+        user, created = UserModel.objects.update_or_create(
+            defaults={'given_name': 'Updated', 'password': '123!TestPassword'},
+            email='me@example.com', given_name='Sample', surname='User',
+            password='TestPassword123!')
+
+        self.assertTrue(created)
+        self.assertEqual(
+            self.app.accounts.get(user.href).given_name, 'Updated')
+        user = UserModel.objects.get(email='me@example.com')
+        self.assertEqual(user.given_name, 'Updated')
+        self.assertEqual(user.surname, 'User')
+        self.assertIsNotNone(
+            StormpathBackend().authenticate(
+                'me@example.com', '123!TestPassword'))
+
+    def test_update_or_create_user_with_existing(self):
+        UserModel.objects.create_user(
+            email='me@example.com', given_name='Sample', surname='User',
+            password='TestPassword123!')
+        user, created = UserModel.objects.update_or_create(
+            defaults={'given_name': 'Updated'},
+            email='me@example.com', given_name='Sample', surname='User',
+            password='TestPassword123!')
+
+        self.assertFalse(created)
+        self.assertEqual(
+            self.app.accounts.get(user.href).given_name, 'Updated')
+        user = UserModel.objects.get(email='me@example.com')
+        self.assertEqual(user.given_name, 'Updated')
+        self.assertEqual(user.surname, 'User')
+        self.assertIsNotNone(
+            StormpathBackend().authenticate(
+                'me@example.com', 'TestPassword123!'))
+
+    def test_update_or_create_user_with_existing_and_password(self):
+        UserModel.objects.create_user(
+            email='me@example.com', given_name='Sample', surname='User',
+            password='TestPassword123!')
+        user, created = UserModel.objects.update_or_create(
+            defaults={'given_name': 'Updated', 'password': '123!TestPassword'},
+            email='me@example.com', given_name='Sample', surname='User')
+
+        self.assertFalse(created)
+        self.assertEqual(
+            self.app.accounts.get(user.href).given_name, 'Updated')
+        user = UserModel.objects.get(email='me@example.com')
+        self.assertEqual(user.given_name, 'Updated')
+        self.assertEqual(user.surname, 'User')
+        self.assertIsNotNone(
+            StormpathBackend().authenticate(
+                'me@example.com', '123!TestPassword'))
+
     def test_authentication_pulls_user_into_local_db(self):
         self.assertEqual(0, UserModel.objects.count())
         acc = self.app.accounts.create({
