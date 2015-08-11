@@ -213,8 +213,11 @@ class StormpathBaseUser(AbstractBaseUser, PermissionsMixin):
             acc.save()
             self._save_sp_group_memberships(acc)
             return acc
-        except StormpathError:
-            raise self.DoesNotExist('Could not find Stormpath User.')
+        except StormpathError as e:
+            if e.status == 404:
+                raise self.DoesNotExist('Could not find Stormpath User.')
+            else:
+                raise e
         finally:
             self._remove_raw_password()
 
