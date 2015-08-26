@@ -20,6 +20,7 @@ from django import VERSION as django_version
 
 from stormpath.client import Client
 from stormpath.error import Error as StormpathError
+from stormpath.resources import AccountCreationPolicy
 
 from django_stormpath import __version__
 from django_stormpath.helpers import validate_settings
@@ -42,6 +43,16 @@ CLIENT = Client(
 )
 
 APPLICATION = CLIENT.applications.get(settings.STORMPATH_APPLICATION)
+
+
+def get_default_is_active():
+    """
+    Stormpath user is active by default if e-mail verification is
+    disabled.
+    """
+    directory = APPLICATION.default_account_store_mapping.account_store
+    verif_email = directory.account_creation_policy.verification_email_status
+    return verif_email == AccountCreationPolicy.EMAIL_STATUS_DISABLED
 
 
 class StormpathUserManager(BaseUserManager):
@@ -116,7 +127,8 @@ class StormpathBaseUser(AbstractBaseUser, PermissionsMixin):
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = ['given_name', 'surname']
 
-    is_active = models.BooleanField(default=True)
+    is_active = models.BooleanField(default=get_default_is_active)
+    is_verified = models.BooleanField(default=False)
     is_admin = models.BooleanField(default=False)
     is_staff = models.BooleanField(default=False)
 
@@ -154,7 +166,12 @@ class StormpathBaseUser(AbstractBaseUser, PermissionsMixin):
         if 'password' in data:
             del data['password']
 
-        account.status = account.STATUS_DISABLED if data['is_active'] is False else account.STATUS_ENABLED
+        if data['is_active']:
+            account.status = account.STATUS_ENABLED
+        elif data['is_verified']:
+            account.status = account.STATUS_DISABLED
+        else:
+            account.status = account.STATUS_UNVERIFIED
 
         if 'is_active' in data:
             del data['is_active']
@@ -177,7 +194,13 @@ class StormpathBaseUser(AbstractBaseUser, PermissionsMixin):
         for key in account.custom_data.keys():
             self.__setattr__(key.split(self.DJANGO_PREFIX)[0], account.custom_data[key])
 
-        self.is_active = True if account.status == account.STATUS_ENABLED else False
+        if account.status == account.STATUS_ENABLED:
+            self.is_active = True
+            self.is_verified = not get_default_is_active()
+        else:
+            self.is_active = False
+            if account.status == account.STATUS_UNVERIFIED:
+                self.is_verified = False
 
     def _save_sp_group_memberships(self, account):
         try:

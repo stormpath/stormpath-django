@@ -443,6 +443,67 @@ class TestDjangoUser(LiveTestBase):
         self.assertEqual(user.last_name, user.surname)
         self.assertEqual(user.last_name, acc.surname)
 
+    def test_user_email_verification_enabled(self):
+        directory = self.app.default_account_store_mapping.account_store
+        directory.account_creation_policy.verification_email_status = 'ENABLED'
+        directory.account_creation_policy.save()
+        user = self.create_django_user(
+                email='john.doe3@example.com',
+                first_name='John',
+                last_name='Doe',
+                password='TestPassword123!')
+
+        a = self.app.accounts.get(user.href)
+
+        self.assertFalse(user.is_active)
+        self.assertFalse(user.is_verified)
+        self.assertEqual(a.status, a.STATUS_UNVERIFIED)
+
+        a.status = a.STATUS_ENABLED
+        a.save()
+        sb = StormpathBackend()
+        user = sb._create_or_get_user(a)
+
+        self.assertTrue(user.is_active)
+        self.assertTrue(user.is_verified)
+        self.assertEqual(a.status, a.STATUS_ENABLED)
+
+        a.status = a.STATUS_DISABLED
+        a.save()
+        user = sb._create_or_get_user(a)
+        self.assertFalse(user.is_active)
+        self.assertTrue(user.is_verified)
+        self.assertEqual(a.status, a.STATUS_DISABLED)
+
+    def test_user_email_verification_disabled(self):
+        user = self.create_django_user(
+                email='john.doe3@example.com',
+                first_name='John',
+                last_name='Doe',
+                password='TestPassword123!')
+
+        a = self.app.accounts.get(user.href)
+
+        self.assertTrue(user.is_active)
+        self.assertFalse(user.is_verified)
+        self.assertEqual(a.status, a.STATUS_ENABLED)
+
+        a.status = a.STATUS_DISABLED
+        a.save()
+        sb = StormpathBackend()
+        user = sb._create_or_get_user(a)
+
+        self.assertFalse(user.is_active)
+        self.assertFalse(user.is_verified)
+        self.assertEqual(a.status, a.STATUS_DISABLED)
+
+        a.status = a.STATUS_UNVERIFIED
+        a.save()
+        user = sb._create_or_get_user(a)
+        self.assertFalse(user.is_active)
+        self.assertFalse(user.is_verified)
+        self.assertEqual(a.status, a.STATUS_UNVERIFIED)
+
 
 class TestForms(LiveTestBase):
     def test_user_creation_form_password_missmatch(self):
