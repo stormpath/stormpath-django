@@ -285,6 +285,16 @@ class StormpathBaseUser(AbstractBaseUser, PermissionsMixin):
         self.set_unusable_password()
         self.raw_password = raw_password
 
+    def check_password(self, raw_password):
+        try:
+            acc = APPLICATION.authenticate_account(self.username, raw_password)
+            return acc is not None
+        except StormpathError as e:
+            # explicity check to see if password is incorrect
+            if e.message['code'] == 7100:
+                return False
+            raise e
+
     def save(self, *args, **kwargs):
         self.username = getattr(self, self.USERNAME_FIELD)
         # Are we updating an existing User?

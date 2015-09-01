@@ -368,6 +368,24 @@ class TestUserAndGroups(LiveTestBase):
         self.assertEqual(0, UserModel.objects.count())
         self.assertEqual(0, len(self.app.accounts))
 
+    def test_valid_check_password(self):
+        self.assertEqual(0, UserModel.objects.count())
+        user = self.create_django_user(
+                email='john.doe1@example.com',
+                given_name='John',
+                surname='Doe',
+                password='TestPassword123!')
+        self.assertTrue(user.check_password('TestPassword123!'))
+
+    def test_invalid_check_password(self):
+        self.assertEqual(0, UserModel.objects.count())
+        user = self.create_django_user(
+                email='john.doe1@example.com',
+                given_name='John',
+                surname='Doe',
+                password='TestPassword123!')
+        self.assertFalse(user.check_password('invalidpassword'))
+
 
 class TestDjangoUser(LiveTestBase):
     def test_creating_a_user(self):
