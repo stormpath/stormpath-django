@@ -190,9 +190,6 @@ class StormpathBaseUser(AbstractBaseUser, PermissionsMixin):
             if field in data:
                 del data[field]
 
-        if 'password' in data:
-            del data['password']
-
         account.status = account.STATUS_DISABLED if data['is_active'] is False else account.STATUS_ENABLED
 
         if 'is_active' in data:
@@ -255,8 +252,13 @@ class StormpathBaseUser(AbstractBaseUser, PermissionsMixin):
             acc.save()
             self._save_sp_group_memberships(acc)
             return acc
-        except StormpathError:
-            raise self.DoesNotExist('Could not find Stormpath User.')
+        except StormpathError as e:
+            if e.status == 404:
+                raise self.DoesNotExist('Could not find Stormpath User.')
+            else:
+                raise e
+        finally:
+            self._remove_raw_password()
 
     def get_full_name(self):
         return "%s %s" % (self.given_name, self.surname)

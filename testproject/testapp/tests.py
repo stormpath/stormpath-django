@@ -253,6 +253,44 @@ class TestUserAndGroups(LiveTestBase):
             StormpathBackend().authenticate(
                 'me11@example.com', '123!TestPassword'))
 
+    def test_updating_a_user_with_invalid_fields_should_not_delete_user(self):
+        """
+        Issue https://github.com/stormpath/stormpath-django/issues/49
+        """
+        user = self.create_django_user(
+                email='john.doe3@example.com',
+                given_name='John',
+                surname='Doe',
+                password='TestPassword123!')
+        a = self.app.accounts.get(user.href)
+
+        user.email = ''
+        with self.assertRaises(StormpathError):
+            user.save()
+
+        a = self.app.accounts.get(user.href)
+        self.assertEqual(a.email, 'john.doe3@example.com')
+
+    def test_updating_nonexistent_user_deletes_that_user(self):
+        user = self.create_django_user(
+                email='john.doe3@example.com',
+                given_name='John',
+                surname='Doe',
+                password='TestPassword123!')
+        a = self.app.accounts.get(user.href)
+        self.assertEqual(user.href, a.href)
+
+        a.delete()
+
+        user = UserModel.objects.get(email='john.doe3@example.com')
+        user.given_name = 'Johnny'
+
+        with self.assertRaises(user.DoesNotExist):
+            user.save()
+
+        with self.assertRaises(UserModel.DoesNotExist):
+            UserModel.objects.get(email='john.doe3@example.com')
+
     def test_authentication_pulls_user_into_local_db(self):
         self.assertEqual(0, UserModel.objects.count())
         acc = self.app.accounts.create({
@@ -529,6 +567,27 @@ class TestDjangoUser(LiveTestBase):
         self.assertEqual(user.given_name, a.given_name)
         self.assertEqual(user.first_name, a.given_name)
         self.assertEqual(user.first_name, a.given_name)
+
+    def test_updating_a_users_password(self):
+        user = self.create_django_user(
+                email='john.doe3@example.com',
+                first_name='John',
+                last_name='Doe',
+                password='TestPassword123!')
+        a = self.app.accounts.get(user.href)
+        self.assertEqual(user.href, a.href)
+
+        user.set_password('123!TestPassword')
+        self.assertTrue(hasattr(user, 'raw_password'))
+
+        user.save()
+
+        b = StormpathBackend()
+
+        self.assertFalse(hasattr(user, 'raw_password'))
+        self.assertFalse(user.has_usable_password())
+        self.assertTrue(b.authenticate(a.email, '123!TestPassword'))
+        self.assertFalse(b.authenticate(a.email, 'TestPassword123!'))
 
     def test_authentication_pulls_user_into_local_db(self):
         self.assertEqual(0, UserModel.objects.count())
