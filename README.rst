@@ -343,6 +343,21 @@ Change Log
 All library changes, in descending order.
 
 
+Version 1.0.4
+*************
+
+**Not yet released.**
+
+- Removing Python 3.2 support.  Nobody uses it (*buggy release*).
+- Raising a proper ``DoesNotExist`` exception when a Resource 404 is returned
+  from the Stormpath API.
+- Updating docs to reflect what versions of Django we support (*1.6+*).
+- Allowing users to update a user's password by working around the data
+  mirroring issue with Django.
+- Supporting the ``check_password`` Django API, thanks to an awesome pull
+  request from `smcoll <https://github.com/smcoll>`_.
+
+
 Version 1.0.3
 *************
 
