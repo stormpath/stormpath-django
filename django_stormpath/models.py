@@ -163,9 +163,6 @@ class StormpathBaseUser(AbstractBaseUser, PermissionsMixin):
             if field in data:
                 del data[field]
 
-        if 'password' in data:
-            del data['password']
-
         if data['is_active']:
             account.status = account.STATUS_ENABLED
         elif data['is_verified']:
@@ -244,6 +241,8 @@ class StormpathBaseUser(AbstractBaseUser, PermissionsMixin):
                 raise self.DoesNotExist('Could not find Stormpath User.')
             else:
                 raise e
+        finally:
+            self._remove_raw_password()
 
     def get_full_name(self):
         return "%s %s" % (self.given_name, self.surname)
