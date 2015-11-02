@@ -57,8 +57,47 @@ def get_default_is_active():
 
 class StormpathUserManager(BaseUserManager):
 
+    def get(self, *args, **kwargs):
+        try:
+            password = kwargs.pop('password')
+        except KeyError:
+            password = None
+
+        user = super(StormpathUserManager, self).get(*args, **kwargs)
+
+        if password:
+            try:
+                APPLICATION.authenticate_account(
+                    getattr(user, user.USERNAME_FIELD), password)
+            except StormpathError:
+                raise self.model.DoesNotExist
+
+        return user
+
     def create(self, *args, **kwargs):
         return self.create_user(*args, **kwargs)
+
+    def get_or_create(self, **kwargs):
+        try:
+            return self.get(**kwargs), False
+        except self.model.DoesNotExist:
+            return self.create(**kwargs), True
+
+    def update_or_create(self, defaults=None, **kwargs):
+        defaults = defaults or {}
+        try:
+            user = self.get(**kwargs)
+        except self.model.DoesNotExist:
+            kwargs.update(defaults)
+            return self.create(**kwargs), True
+
+        if 'password' in defaults:
+            user.set_password(defaults.pop('password'))
+        for k, v in defaults.items():
+            setattr(user, k, v)
+        user.save(using=self._db)
+        user._remove_raw_password()
+        return user, False
 
     def _create_user(self, email, given_name, surname, password):
         if not email:
