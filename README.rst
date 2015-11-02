@@ -346,7 +346,7 @@ All library changes, in descending order.
 Version 1.0.4
 *************
 
-**Not yet released.**
+**Released November 2, 2015.**
 
 - Removing Python 3.2 support.  Nobody uses it (*buggy release*).
 - Raising a proper ``DoesNotExist`` exception when a Resource 404 is returned
@@ -356,6 +356,9 @@ Version 1.0.4
   mirroring issue with Django.
 - Supporting the ``check_password`` Django API, thanks to an awesome pull
   request from `smcoll <https://github.com/smcoll>`_.
+- Fixing email verification bug.
+- Adding get-or-create support.
+- Updating stormpath dependency.
 
 
 Version 1.0.3
