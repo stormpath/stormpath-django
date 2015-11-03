@@ -694,8 +694,20 @@ class TestForms(LiveTestBase):
                 'username': 'johndoe',
                 'given_name': 'John',
                 'surname': 'Doe',
-                'password1': 'test',
-                'password2': 'doesntmatch'}
+                'password1': 'TestPassword123!',
+                'password2': 'TestPassword12345!'}
+        form = StormpathUserCreationForm(data)
+        is_valid = form.is_valid()
+        self.assertFalse(is_valid)
+        self.assertRaises(ValueError, form.save)
+
+    def test_user_creation_form_password_invalid(self):
+        data = {'email': 'john.doe@example.com',
+                'username': 'johndoe',
+                'given_name': 'John',
+                'surname': 'Doe',
+                'password1': 'invalid',
+                'password2': 'invalid'}
         form = StormpathUserCreationForm(data)
         is_valid = form.is_valid()
         self.assertFalse(is_valid)
