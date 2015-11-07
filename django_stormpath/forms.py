@@ -27,10 +27,17 @@ class StormpathUserCreationForm(forms.ModelForm):
             "given_name", "surname", "password1", "password2")
 
     def clean_password2(self):
-        """Check if passwords match.
+        """Check if passwords match and are valid.
         """
         password1 = self.cleaned_data.get("password1")
         password2 = self.cleaned_data.get("password2")
+
+        try:
+            directory = APPLICATION.default_account_store_mapping.account_store
+            directory.password_policy.strength.validate_password(password2)
+        except ValueError as e:
+            raise forms.ValidationError(str(e))
+
         if password1 != password2:
             msg = "Passwords don't match."
             raise forms.ValidationError(msg)
@@ -116,8 +123,17 @@ class PasswordResetForm(forms.Form):
                                     widget=forms.PasswordInput)
 
     def clean_new_password2(self):
+        """Check if passwords match and are valid.
+        """
         password1 = self.cleaned_data.get('new_password1')
         password2 = self.cleaned_data.get('new_password2')
+
+        try:
+            directory = APPLICATION.default_account_store_mapping.account_store
+            directory.password_policy.strength.validate_password(password2)
+        except ValueError as e:
+            raise forms.ValidationError(str(e))
+
         if password1 and password2:
             if password1 != password2:
                 raise forms.ValidationError("The two passwords didn't match.")

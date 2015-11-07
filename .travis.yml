@@ -5,7 +5,7 @@ python:
   - '3.4'
   - pypy
 install:
-  - pip install . --use-mirrors
+  - pip install .
   - pip install -q Django==$DJANGO
 before_script: python setup.py testdep
 script:
