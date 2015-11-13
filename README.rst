@@ -343,6 +343,14 @@ Change Log
 All library changes, in descending order.
 
 
+Version 1.0.5
+*************
+
+**Released November 13, 2015.**
+
+- Version bump for Stormpath dependency.
+
+
 Version 1.0.4
 *************
 
