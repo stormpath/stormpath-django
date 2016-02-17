@@ -10,10 +10,14 @@ from .id_site import handle_id_site_callback
 from .social import get_authorization_url, handle_social_callback
 
 
-def stormpath_id_site_callback(request):
-    ret = APPLICATION.handle_id_site_callback(
-            request.build_absolute_uri())
-    return handle_id_site_callback(request, ret)
+def stormpath_callback(request, provider):
+    if provider == 'stormpath':
+        ret = APPLICATION.handle_stormpath_callback(
+                request.build_absolute_uri())
+        return handle_id_site_callback(request, ret)
+
+    rdr = handle_social_callback(request, provider)
+    return redirect(rdr)
 
 
 def stormpath_id_site_login(request):
