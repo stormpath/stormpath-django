@@ -343,6 +343,17 @@ Change Log
 All library changes, in descending order.
 
 
+Version 1.0.6
+*************
+
+**Released February 18, 2016.**
+
+- Version bump for Stormpath dependency.
+- Fixing error handling issues which now work better with underlying Python
+  library fixes.
+- Refactoring our ID site callback handling to use our new Python bindings.
+
+
 Version 1.0.5
 *************
 
