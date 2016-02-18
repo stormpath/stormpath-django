@@ -352,7 +352,7 @@ class StormpathBaseUser(AbstractBaseUser, PermissionsMixin):
             return acc is not None
         except StormpathError as e:
             # explicity check to see if password is incorrect
-            if e.message['code'] == 7100:
+            if e.code == 7100:
                 return False
             raise e
 
