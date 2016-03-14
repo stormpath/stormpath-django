@@ -1,3 +1,4 @@
+from time import sleep
 from uuid import uuid4
 
 from django.test import TestCase
@@ -11,7 +12,23 @@ from django_stormpath.models import CLIENT
 from django_stormpath.backends import StormpathBackend
 from django_stormpath.forms import *
 
+from pydispatch import dispatcher
+
 from stormpath.error import Error as StormpathError
+from stormpath.resources.base import SIGNAL_RESOURCE_CREATED
+
+
+def sleep_receiver_function(signal, sender, data, params):
+    """Sleeps for one second.
+
+    This is used to sleep for a second after every Stormpath resource is
+    created, to avoid test failures.
+    """
+    sleep(1)
+
+
+# Connect the signal.
+dispatcher.connect(sleep_receiver_function, signal=SIGNAL_RESOURCE_CREATED)
 
 
 UserModel = get_user_model()
