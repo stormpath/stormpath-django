@@ -127,6 +127,8 @@ is to sync your database and apply any migrations:
 
 .. code-block:: console
 
+    $ # NOTE: python manage.py syncdb is not required if you're using a newer
+      # version of Django
     $ python manage.py syncdb
     $ python manage.py migrate
 
@@ -201,8 +203,9 @@ To make this work in Django, you need to specify a few settings:
 
     # This should be set to the same URI you've specified in your Stormpath ID
     # Site dashboard.  NOTE: This URL must be *exactly* the same as the one in
-    # your Stormpath ID Site dashboard.
-    STORMPATH_ID_SITE_CALLBACK_URI = 'http://localhost:8000/stormpath-id-site-callback/'
+    # your Stormpath ID Site dashboard (under the Authorized Redirect URLs input
+    # box).
+    STORMPATH_ID_SITE_CALLBACK_URI = 'http://localhost:8000/handle-callback/stormpath/
 
     # The URL you'd like to redirect users to after they've successfully logged
     # into their account.
