@@ -40,3 +40,8 @@ if getattr(settings, 'STORMPATH_ENABLE_LINKEDIN', False):
         url(r'^social-login/(?P<provider>linkedin)/', views.stormpath_social_login,
             name='stormpath_linkedin_social_login'),
     ]
+    
+if django.VERSION[:2] < (1, 8):
+    from django.conf.urls import patterns
+    urlpatterns = patterns('django_stormpath.views', *urlpatterns)
+
