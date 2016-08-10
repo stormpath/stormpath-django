@@ -4,16 +4,24 @@ django-stormpath
 Simple, scalable, user authentication for Django (powered by `Stormpath <https://stormpath.com>`_).
 
 .. image:: https://img.shields.io/pypi/v/django-stormpath.svg
-    :alt: django-stormpath Release
+    :alt: stormpath Release
     :target: https://pypi.python.org/pypi/django-stormpath
 
 .. image:: https://img.shields.io/pypi/dm/django-stormpath.svg
-    :alt: django-stormpath Downloads
+    :alt: stormpath Downloads
     :target: https://pypi.python.org/pypi/django-stormpath
 
+.. image:: https://api.codacy.com/project/badge/Grade/1c14c778d4e24604b48814144db18024
+    :alt: stormpath-django Code Quality
+    :target: https://www.codacy.com/app/r/stormpath-django
+
 .. image:: https://img.shields.io/travis/stormpath/stormpath-django.svg
-    :alt: django-stormpath Build
+    :alt: stormpath-django Build
     :target: https://travis-ci.org/stormpath/stormpath-django
+
+.. image:: https://coveralls.io/repos/github/stormpath/stormpath-django/badge.svg?branch=master
+    :alt: stormpath-django Coverage
+    :target: https://coveralls.io/github/stormpath/stormpath-django?branch=master
 
 .. note::
     This is a beta release, if you run into any issues, please file a report on
