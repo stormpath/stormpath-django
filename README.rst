@@ -352,6 +352,7 @@ Version 1.0.7
   synchronize all remote Stormpath Accounts with the local Django database.
   This helps developers keep things in sync (like in the Django admin).  Thanks
   to `Peter Novotnak <https://github.com/pnovotnak>`_ for the PR!
+- Fixing some old, incorrect setup docs.
 
 
 Version 1.0.6
