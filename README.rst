@@ -127,9 +127,6 @@ is to sync your database and apply any migrations:
 
 .. code-block:: console
 
-    $ # NOTE: python manage.py syncdb is not required if you're using a newer
-      # version of Django
-    $ python manage.py syncdb
     $ python manage.py migrate
 
 And that's it!  You're now ready to get started =)
@@ -178,7 +175,7 @@ django user model to form relationships within your models:
 
 
 .. note::
-    When doing the initial ``syncdb`` call (or ``manage.py createsuperuser``)
+    When doing the initial ``migrate`` call (or ``manage.py createsuperuser``)
     an Account is also created on Stormpath.  Every time the ``save`` method
     is called on the UserModel instance it is saved/updated on Stormpath as
     well.  This includes working with the Django built-in admin interface.
@@ -411,7 +408,7 @@ Version 1.0.2
 
 - Improving Travis CI builds so that tests are run against Django 1.6.x, 1.7.x,
   and 1.8.x.  This will help flush out Django version issues (*hopefully!*).
-- Fixing old migration issue.  This should make all new ``syncdb`` commands run
+- Fixing old migration issue.  This should make all new ``migrate`` commands run
   successfully regardless of database used.
 - Supporting ``User.first_name`` and ``User.last_name`` per Django's
   conventions.  This makes our user model play nice with third party Django apps
@@ -423,7 +420,7 @@ Version 1.0.1
 
 **Released on April 30, 2015.**
 
-- Adding missing migrations.  This fixes issues when running ``syncdb`` on a
+- Adding missing migrations.  This fixes issues when running ``migrate`` on a
   new Postgres database.
 - Making the built-in ``delete()`` method remove both copies of the account.
 
