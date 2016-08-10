@@ -31,16 +31,6 @@ class TestCommand(BaseCommand):
             exit(0)
 
 
-class TestDepCommand(BaseCommand):
-
-    description = 'install test dependencies'
-
-    def run(self):
-        cmd = ['pip', 'install', 'coverage']
-        ret = call(cmd)
-        exit(ret)
-
-
 class DocCommand(BaseCommand):
 
     description = 'generate documentation'
@@ -79,9 +69,11 @@ setup(
         'stormpath>=2.1.8',
         'Django>=1.6',
     ],
+    extras_require = {
+        'test': ['codacy-coverage', 'python-coveralls', 'coverage'],
+    },
     cmdclass = {
         'test': TestCommand,
-        'testdep': TestDepCommand,
         'docs': DocCommand,
     },
 )

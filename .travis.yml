@@ -6,11 +6,15 @@ python:
   - '3.4'
   - pypy
 install:
-  - pip install -e .
+  - pip install -e .[test]
   - pip install -q Django==$DJANGO
 before_script: python setup.py testdep
 script:
   - python setup.py test
+after_success:
+  - coverage xml
+  - coveralls
+  - python-codacy-coverage -r coverage.xml
 env:
   matrix:
     - DJANGO=1.6.11
