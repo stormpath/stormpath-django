@@ -139,6 +139,17 @@ class StormpathUserManager(BaseUserManager):
 
         # Clear the result cache, in case this QuerySet gets reused.
         self._result_cache = None
+
+    def sync_accounts(self):
+        for account in APPLICATION.accounts:
+            try:
+                user = StormpathUser.objects.get(email=account.email)
+            except StormpathUser.DoesNotExist:
+                user = StormpathUser()
+            user._mirror_data_from_stormpath_account(account)
+            user.set_unusable_password()
+            user._save_db_only()
+
     delete.alters_data = True
     delete.queryset_only = True
 

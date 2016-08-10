@@ -1,6 +1,6 @@
 import sys
 
-from django.core.management.base import NoArgsCommand
+from django.core.management.base import BaseCommand
 
 try:
     input = raw_input
@@ -13,10 +13,10 @@ from stormpath.error import Error as StormpathError
 from django_stormpath import social
 
 
-class Command(NoArgsCommand):
+class Command(BaseCommand):
     help = 'Creates a Directory used for logging in with Google, Facebook, Github or Linkedin.'
 
-    def handle_noargs(self, **options):
+    def handle(self, **options):
         providers = [Provider.GOOGLE, Provider.FACEBOOK, Provider.GITHUB, Provider.LINKEDIN]
         print("""
         1. Google
