@@ -8,7 +8,6 @@ python:
 install:
 - pip install -e .[test]
 - pip install -q Django==$DJANGO
-before_script: python setup.py testdep
 script:
 - python setup.py test
 after_success:
