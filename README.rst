@@ -346,6 +346,17 @@ Change Log
 All library changes, in descending order.
 
 
+Version 1.0.7
+*************
+
+**Not yet released.**
+
+- Supporting new Django management command: ``sync_accounts```.  This will
+  synchronize all remote Stormpath Accounts with the local Django database.
+  This helps developers keep things in sync (like in the Django admin).  Thanks
+  to `Peter Novotnak <https://github.com/pnovotnak>`_ for the PR!
+
+
 Version 1.0.6
 *************
 
