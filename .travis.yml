@@ -6,7 +6,7 @@ python:
   - '3.4'
   - pypy
 install:
-  - pip install .
+  - pip install -e .
   - pip install -q Django==$DJANGO
 before_script: python setup.py testdep
 script:
