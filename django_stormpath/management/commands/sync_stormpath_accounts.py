@@ -2,7 +2,7 @@ import sys
 
 import datetime
 
-from django.core.management.base import NoArgsCommand
+from django.core.management.base import BaseCommand
 
 try:
     input = raw_input
@@ -15,7 +15,7 @@ from django_stormpath.models import StormpathUserManager, APPLICATION
 class Command(NoArgsCommand):
     help = 'Syncs remote accounts to the local database.'
 
-    def handle_noargs(self, **options):
+    def handle(self, **options):
         try:
             user_manager = StormpathUserManager()
             start_time = datetime.datetime.now()
