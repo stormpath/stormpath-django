@@ -16,7 +16,6 @@ after_success:
 - python-codacy-coverage -r coverage.xml
 env:
   matrix:
-  - DJANGO=1.7
   - DJANGO=1.8
   - DJANGO=1.9
   - DJANGO=1.10
