@@ -16,21 +16,17 @@ class StormpathUserCreationForm(forms.ModelForm):
     Creates a new user on Stormpath and locally.
     """
 
-    password1 = forms.CharField(label='Password',
-        widget=forms.PasswordInput)
-    password2 = forms.CharField(label='Password confirmation',
-        widget=forms.PasswordInput)
+    password1 = forms.CharField(label='Password', widget=forms.PasswordInput)
+    password2 = forms.CharField(label='Password confirmation', widget=forms.PasswordInput)
 
     class Meta:
         model = get_user_model()
-        fields = ("username", "email",
-            "given_name", "surname", "password1", "password2")
+        fields = ('username', 'email', 'given_name', 'surname', 'password1', 'password2')
 
     def clean_password2(self):
-        """Check if passwords match and are valid.
-        """
-        password1 = self.cleaned_data.get("password1")
-        password2 = self.cleaned_data.get("password2")
+        """Check if passwords match and are valid."""
+        password1 = self.cleaned_data.get('password1')
+        password2 = self.cleaned_data.get('password2')
 
         try:
             directory = APPLICATION.default_account_store_mapping.account_store
@@ -52,13 +48,13 @@ class StormpathUserCreationForm(forms.ModelForm):
         delete ther user on save to keep in sync with Stormpath.
         """
         try:
-            accounts = APPLICATION.accounts.search({
-                'username': self.cleaned_data['username']})
+            accounts = APPLICATION.accounts.search({'username': self.cleaned_data['username']})
             if len(accounts):
                 msg = "User with that username already exists."
                 raise forms.ValidationError(msg)
         except Error as e:
             raise forms.ValidationError(str(e))
+
         return self.cleaned_data['username']
 
     def clean_email(self):
@@ -68,20 +64,22 @@ class StormpathUserCreationForm(forms.ModelForm):
         The username is only unique within a Stormpath application.
         """
         try:
-            accounts = APPLICATION.accounts.search({
-                'email': self.cleaned_data['email']})
+            accounts = APPLICATION.accounts.search({'email': self.cleaned_data['email']})
             if len(accounts):
-                msg = "User with that email already exists."
+                msg = 'User with that email already exists.'
                 raise forms.ValidationError(msg)
         except Error as e:
             raise forms.ValidationError(str(e))
+
         return self.cleaned_data['email']
 
     def save(self, commit=True):
         user = super(StormpathUserCreationForm, self).save(commit=False)
         user.set_password(self.cleaned_data["password1"])
+
         if commit:
             user.save()
+
         return user
 
 
@@ -92,13 +90,11 @@ class StormpathUserChangeForm(forms.ModelForm):
         model = get_user_model()
         exclude = ('password',)
 
-    password = ReadOnlyPasswordHashField(help_text=("Passwords are not stored in the local database "
-                         "but only on Stormpath. You can change the password using <a href=\"password/\">this form</a>."))
+    password = ReadOnlyPasswordHashField(help_text=('Passwords are not stored in the local database but only on Stormpath. You can change the password using <a href="password/">this form</a>.'))
 
 
 class PasswordResetEmailForm(forms.Form):
-    """Form for password reset email.
-    """
+    """Form for password reset email."""
 
     email = forms.CharField(max_length=255)
 
@@ -107,24 +103,20 @@ class PasswordResetEmailForm(forms.Form):
             self.cleaned_data['email']
             return self.cleaned_data
         except KeyError:
-            raise forms.ValidationError("Please provide an email address.")
+            raise forms.ValidationError('Please provide an email address.')
 
     def save(self):
         APPLICATION.send_password_reset_email(self.cleaned_data['email'])
 
 
 class PasswordResetForm(forms.Form):
-    """Form for new password input.
-    """
+    """Form for new password input."""
 
-    new_password1 = forms.CharField(label="New password",
-                                    widget=forms.PasswordInput)
-    new_password2 = forms.CharField(label="New password confirmation",
-                                    widget=forms.PasswordInput)
+    new_password1 = forms.CharField(label='New password', widget=forms.PasswordInput)
+    new_password2 = forms.CharField(label='New password confirmation', widget=forms.PasswordInput)
 
     def clean_new_password2(self):
-        """Check if passwords match and are valid.
-        """
+        """Check if passwords match and are valid."""
         password1 = self.cleaned_data.get('new_password1')
         password2 = self.cleaned_data.get('new_password2')
 
@@ -137,8 +129,8 @@ class PasswordResetForm(forms.Form):
         if password1 and password2:
             if password1 != password2:
                 raise forms.ValidationError("The two passwords didn't match.")
+
         return password2
 
     def save(self, token):
-        APPLICATION.reset_account_password(token,
-            self.cleaned_data['new_password1'])
+        APPLICATION.reset_account_password(token, self.cleaned_data['new_password1'])
