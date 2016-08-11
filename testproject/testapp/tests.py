@@ -40,10 +40,7 @@ class LiveTestBase(TestCase):
         super(LiveTestBase, self).setUp()
 
         self.prefix = 'stormpath-django-test-%s' % uuid4().hex
-        self.app = CLIENT.applications.create(
-            {'name': self.prefix},
-            create_directory = True
-        )
+        self.app = CLIENT.applications.create({'name': self.prefix}, create_directory = True)
         django_stormpath.models.APPLICATION = self.app
 
     def tearDown(self):
