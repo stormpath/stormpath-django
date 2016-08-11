@@ -31,3 +31,4 @@ env:
   - LINKEDIN_CLIENT_SECRET=xxx
   - secure: J24jJ8Sp6e0At5raohFTqx/g2gtBkdTHQ4kk1nvbe/aGrHJbwJNliXEwNftOLm39eyoUyzRx6qXliEGf7Pk7Xwt4xtfcaEq0hnzpdw3CREQOi0h8udY5UIOFGabGPyTjN5lNJTGGINcGl3pjqd1+JCDfnM/nqbTfPQ3wRhKOlbM=
   - secure: WKDRKgGrvuVSzArPkrihdmkQEC9F5NqS4Kf3nC5xFCFuM+HcnhhAXAYk/zaFv7vliy1bm2c6FMbTTtnH4r3qBS7QV0Cj3vPsrZxTGuFsME80/g5eRc30laBlyBV8JiFVPIX9GeoxUiMivuki+ja0MdEvUGP8ERgV1tQcNLEPSh0=
+  - secure: ST9PPcRbrRtS/xeWamdabc+0Q7MpfGd9X0Ewq5MONvfzX1p9Z/6+dZRAmxUw9RJopjBWKSdfkC8rrkPbfFQw9++oRW9YCghHjlq8W7sJU7cN/Fn8BJgOJsxzoXdjOMVqI5Ta7PLHsradcW+VGeIj/5uFPA+amJwv/OW0gUDBrgg=
