@@ -1,4 +1,4 @@
-__version_info__ = ('1', '0', '6')
+__version_info__ = ('1', '0', '7')
 __version__ = '.'.join(__version_info__)
 __short_version__ = '.'.join(__version_info__)
 __author__ = 'Stormpath, Inc.'
