@@ -165,10 +165,15 @@ class StormpathUserManager(BaseUserManager):
         for account in APPLICATION.accounts:
             try:
                 user = StormpathUser.objects.get(email=account.email)
+                created = True
             except StormpathUser.DoesNotExist:
                 user = StormpathUser()
+                created = True
             user._mirror_data_from_stormpath_account(account)
             user.set_unusable_password()
+
+            if created:
+                user._save_db_only()
 
             if sync_groups:
                 users_sp_groups = [g.name for g in account.groups]
