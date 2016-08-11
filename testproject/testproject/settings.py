@@ -3,6 +3,8 @@
 import os
 import sys
 
+from uuid import uuid4
+
 from stormpath.client import Client
 
 
@@ -171,10 +173,11 @@ STORMPATH_SECRET = os.environ['STORMPATH_API_KEY_SECRET']
 # testing, but is required for the integration to function.
 client = Client(id=STORMPATH_ID, secret=STORMPATH_SECRET)
 
-for application in client.applications.search('stormpath'):
-    if application.name == 'Stormpath':
-        STORMPATH_APPLICATION = application.href
+application = client.applications.create({
+    'name': 'django-test-{}'.format(uuid4().hex),
+}, create_directory=True)
 
+STORMPATH_APPLICATION = application.href
 STORMPATH_ID_SITE_CALLBACK_URI = 'http://localhost:8000/stormpath-id-site-callback'
 
 AUTH_USER_MODEL = 'django_stormpath.StormpathUser'
@@ -182,7 +185,6 @@ AUTH_USER_MODEL = 'django_stormpath.StormpathUser'
 TEST_RUNNER = 'django.test.runner.DiscoverRunner'
 
 LOGIN_REDIRECT_URL = '/'
-
 
 STORMPATH_ENABLE_GOOGLE = True
 STORMPATH_ENABLE_FACEBOOK = True
