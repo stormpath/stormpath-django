@@ -85,20 +85,24 @@ class LiveTestBase(TestCase):
 class TestUserAndGroups(LiveTestBase):
     def test_creating_a_user(self):
         user = self.create_django_user(
-                email='john.doe1@example.com',
-                given_name='John',
-                surname='Doe',
-                password='TestPassword123!')
+            email='john.doe1@example.com',
+            given_name='John',
+            surname='Doe',
+            password='TestPassword123!',
+        )
+
         a = self.app.accounts.get(user.href)
         self.assertEqual(user.href, a.href)
 
     def test_creating_a_superuser(self):
         user = self.create_django_user(
-                superuser=True,
-                email='john.doe2@example.com',
-                given_name='John',
-                surname='Doe',
-                password='TestPassword123!')
+            superuser=True,
+            email='john.doe2@example.com',
+            given_name='John',
+            surname='Doe',
+            password='TestPassword123!',
+        )
+
         a = self.app.accounts.get(user.href)
         self.assertEqual(user.href, a.href)
         self.assertEqual(a.custom_data['spDjango_is_staff'], True)
@@ -106,10 +110,12 @@ class TestUserAndGroups(LiveTestBase):
 
     def test_updating_a_user(self):
         user = self.create_django_user(
-                email='john.doe3@example.com',
-                given_name='John',
-                surname='Doe',
-                password='TestPassword123!')
+            email='john.doe3@example.com',
+            given_name='John',
+            surname='Doe',
+            password='TestPassword123!',
+        )
+
         a = self.app.accounts.get(user.href)
         self.assertEqual(user.href, a.href)
 
@@ -121,160 +127,207 @@ class TestUserAndGroups(LiveTestBase):
 
     def test_get_with_non_existing(self):
         UserModel.objects.create_user(
-            email='me1@example.com', given_name='Sample', surname='User',
-            password='TestPassword123!')
+            email='me1@example.com',
+            given_name='Sample',
+            surname='User',
+            password='TestPassword123!',
+        )
+
         with self.assertRaises(UserModel.DoesNotExist):
             UserModel.objects.get(email='does.not@exist.com')
 
     def test_get_with_existing(self):
         UserModel.objects.create_user(
-            email='me2@example.com', given_name='Sample', surname='User',
-            password='TestPassword123!')
+            email='me2@example.com',
+            given_name='Sample',
+            surname='User',
+            password='TestPassword123!',
+        )
+
         user = UserModel.objects.get(
-            email='me2@example.com', given_name='Sample', surname='User',
-            password='TestPassword123!')
+            email='me2@example.com',
+            given_name='Sample',
+            surname='User',
+            password='TestPassword123!',
+        )
+
         self.assertTrue(user)
 
     def test_get_wrong_password(self):
         UserModel.objects.create_user(
-            email='me3@example.com', given_name='Sample', surname='User',
-            password='TestPassword123!')
+            email='me3@example.com',
+            given_name='Sample',
+            surname='User',
+            password='TestPassword123!',
+        )
+
         with self.assertRaises(UserModel.DoesNotExist):
             UserModel.objects.get(
-                email='me3@example.com', given_name='Sample', surname='User',
-                password='wrong')
+                email='me3@example.com',
+                given_name='Sample',
+                surname='User',
+                password='wrong',
+            )
 
     def test_get_or_create_user_with_non_existing(self):
         user, created = UserModel.objects.get_or_create(
-            email='me4@example.com', given_name='Sample', surname='User',
-            password='TestPassword123!')
+            email='me4@example.com',
+            given_name='Sample',
+            surname='User',
+            password='TestPassword123!',
+        )
 
         self.assertTrue(created)
         self.assertEqual(self.app.accounts.get(user.href).given_name, 'Sample')
         user = UserModel.objects.get(email='me4@example.com')
         self.assertEqual(user.surname, 'User')
-        self.assertIsNotNone(
-            StormpathBackend().authenticate(
-                'me4@example.com', 'TestPassword123!'))
+        self.assertIsNotNone(StormpathBackend().authenticate('me4@example.com', 'TestPassword123!'))
 
     def test_get_or_create_user_with_wrong_password(self):
         UserModel.objects.create_user(
-            email='me5@example.com', given_name='Sample', surname='User',
-            password='TestPassword123!')
+            email='me5@example.com',
+            given_name='Sample',
+            surname='User',
+            password='TestPassword123!',
+        )
 
         with self.assertRaises(IntegrityError):
             user, created = UserModel.objects.get_or_create(
-                email='me5@example.com', given_name='Sample', surname='User',
-                password='wrong')
+                email='me5@example.com',
+                given_name='Sample',
+                surname='User',
+                password='wrong',
+            )
 
     def test_get_or_create_user_with_existing(self):
         UserModel.objects.create_user(
-            email='me6@example.com', given_name='Sample', surname='User',
-            password='TestPassword123!')
+            email='me6@example.com',
+            given_name='Sample',
+            surname='User',
+            password='TestPassword123!',
+        )
+
         user, created = UserModel.objects.get_or_create(
-            email='me6@example.com', given_name='Sample', surname='User',
-            password='TestPassword123!')
+            email='me6@example.com',
+            given_name='Sample',
+            surname='User',
+            password='TestPassword123!',
+        )
 
         self.assertFalse(created)
         self.assertEqual(self.app.accounts.get(user.href).given_name, 'Sample')
         user = UserModel.objects.get(email='me6@example.com')
         self.assertEqual(user.surname, 'User')
-        self.assertIsNotNone(
-            StormpathBackend().authenticate(
-                'me6@example.com', 'TestPassword123!'))
+        self.assertIsNotNone(StormpathBackend().authenticate('me6@example.com', 'TestPassword123!'))
 
     def test_update_or_create_user_with_non_existing(self):
         user, created = UserModel.objects.update_or_create(
             defaults={'given_name': 'Updated'},
-            email='me7@example.com', given_name='Sample', surname='User',
-            password='TestPassword123!')
+            email='me7@example.com',
+            given_name='Sample',
+            surname='User',
+            password='TestPassword123!',
+        )
 
         self.assertTrue(created)
-        self.assertEqual(
-            self.app.accounts.get(user.href).given_name, 'Updated')
+        self.assertEqual(self.app.accounts.get(user.href).given_name, 'Updated')
         user = UserModel.objects.get(email='me7@example.com')
         self.assertEqual(user.given_name, 'Updated')
         self.assertEqual(user.surname, 'User')
-        self.assertIsNotNone(
-            StormpathBackend().authenticate(
-                'me7@example.com', 'TestPassword123!'))
+        self.assertIsNotNone(StormpathBackend().authenticate('me7@example.com', 'TestPassword123!'))
 
     def test_update_or_create_user_with_wrong_password(self):
         UserModel.objects.create_user(
-            email='me8@example.com', given_name='Sample', surname='User',
-            password='TestPassword123!')
+            email='me8@example.com',
+            given_name='Sample',
+            surname='User',
+            password='TestPassword123!',
+        )
 
         with self.assertRaises(IntegrityError):
             user, created = UserModel.objects.update_or_create(
                 defaults={'given_name': 'Updated'},
-                email='me8@example.com', given_name='Sample', surname='User',
-                password='123!TestPassword')
+                email='me8@example.com',
+                given_name='Sample',
+                surname='User',
+                password='123!TestPassword',
+            )
 
     def test_update_or_create_user_with_non_existing_and_password(self):
         user, created = UserModel.objects.update_or_create(
             defaults={'given_name': 'Updated', 'password': '123!TestPassword'},
-            email='me9@example.com', given_name='Sample', surname='User',
-            password='TestPassword123!')
+            email='me9@example.com',
+            given_name='Sample',
+            surname='User',
+            password='TestPassword123!',
+        )
 
         self.assertTrue(created)
-        self.assertEqual(
-            self.app.accounts.get(user.href).given_name, 'Updated')
+        self.assertEqual(self.app.accounts.get(user.href).given_name, 'Updated')
         user = UserModel.objects.get(email='me9@example.com')
         self.assertEqual(user.given_name, 'Updated')
         self.assertEqual(user.surname, 'User')
-        self.assertIsNotNone(
-            StormpathBackend().authenticate(
-                'me9@example.com', '123!TestPassword'))
+        self.assertIsNotNone(StormpathBackend().authenticate('me9@example.com', '123!TestPassword'))
 
     def test_update_or_create_user_with_existing(self):
         UserModel.objects.create_user(
-            email='me10@example.com', given_name='Sample', surname='User',
-            password='TestPassword123!')
+            email='me10@example.com',
+            given_name='Sample',
+            surname='User',
+            password='TestPassword123!',
+        )
+
         user, created = UserModel.objects.update_or_create(
             defaults={'given_name': 'Updated'},
-            email='me10@example.com', given_name='Sample', surname='User',
-            password='TestPassword123!')
+            email='me10@example.com',
+            given_name='Sample',
+            surname='User',
+            password='TestPassword123!',
+        )
 
         self.assertFalse(created)
-        self.assertEqual(
-            self.app.accounts.get(user.href).given_name, 'Updated')
+        self.assertEqual(self.app.accounts.get(user.href).given_name, 'Updated')
         user = UserModel.objects.get(email='me10@example.com')
         self.assertEqual(user.given_name, 'Updated')
         self.assertEqual(user.surname, 'User')
-        self.assertIsNotNone(
-            StormpathBackend().authenticate(
-                'me10@example.com', 'TestPassword123!'))
+        self.assertIsNotNone(StormpathBackend().authenticate('me10@example.com', 'TestPassword123!'))
 
     def test_update_or_create_user_with_existing_and_password(self):
         UserModel.objects.create_user(
-            email='me11@example.com', given_name='Sample', surname='User',
-            password='TestPassword123!')
+            email='me11@example.com',
+            given_name='Sample',
+            surname='User',
+            password='TestPassword123!',
+        )
+
         user, created = UserModel.objects.update_or_create(
             defaults={'given_name': 'Updated', 'password': '123!TestPassword'},
-            email='me11@example.com', given_name='Sample', surname='User')
+            email='me11@example.com',
+            given_name='Sample',
+            surname='User',
+        )
 
         self.assertFalse(created)
-        self.assertEqual(
-            self.app.accounts.get(user.href).given_name, 'Updated')
+        self.assertEqual(self.app.accounts.get(user.href).given_name, 'Updated')
         user = UserModel.objects.get(email='me11@example.com')
         self.assertEqual(user.given_name, 'Updated')
         self.assertEqual(user.surname, 'User')
-        self.assertIsNotNone(
-            StormpathBackend().authenticate(
-                'me11@example.com', '123!TestPassword'))
+        self.assertIsNotNone(StormpathBackend().authenticate('me11@example.com', '123!TestPassword'))
 
     def test_updating_a_user_with_invalid_fields_should_not_delete_user(self):
         """
         Issue https://github.com/stormpath/stormpath-django/issues/49
         """
         user = self.create_django_user(
-                email='john.doe3@example.com',
-                given_name='John',
-                surname='Doe',
-                password='TestPassword123!')
-        a = self.app.accounts.get(user.href)
+            email='john.doe3@example.com',
+            given_name='John',
+            surname='Doe',
+            password='TestPassword123!',
+        )
 
+        a = self.app.accounts.get(user.href)
         user.email = ''
+
         with self.assertRaises(StormpathError):
             user.save()
 
@@ -283,10 +336,12 @@ class TestUserAndGroups(LiveTestBase):
 
     def test_updating_nonexistent_user_deletes_that_user(self):
         user = self.create_django_user(
-                email='john.doe3@example.com',
-                given_name='John',
-                surname='Doe',
-                password='TestPassword123!')
+            email='john.doe3@example.com',
+            given_name='John',
+            surname='Doe',
+            password='TestPassword123!',
+        )
+
         a = self.app.accounts.get(user.href)
         self.assertEqual(user.href, a.href)
 
@@ -311,7 +366,6 @@ class TestUserAndGroups(LiveTestBase):
         })
 
         b = StormpathBackend()
-
         b.authenticate(acc.email, 'TestPassword123!')
         self.assertEqual(1, UserModel.objects.count())
 
@@ -325,7 +379,6 @@ class TestUserAndGroups(LiveTestBase):
         })
 
         b = StormpathBackend()
-
         b.authenticate(acc.email, 'TestPassword123!')
         self.assertEqual(1, UserModel.objects.count())
 
@@ -360,7 +413,6 @@ class TestUserAndGroups(LiveTestBase):
         acc.save()
 
         b = StormpathBackend()
-
         user = b.authenticate(acc.email, 'TestPassword123!!!')
 
         self.assertEqual(1, UserModel.objects.count())
@@ -403,21 +455,26 @@ class TestUserAndGroups(LiveTestBase):
             # do more queries until we commit
             self.assertRaises(IntegrityError,
             Group.objects.create, **{'name': 'testGroup'})
+
         self.assertEqual(1, Group.objects.count())
         self.assertEqual(1, len(self.app.groups))
 
     def test_deleting_a_user(self):
         self.assertEqual(0, UserModel.objects.count())
         user = self.create_django_user(
-                email='john.doe1@example.com',
-                given_name='John',
-                surname='Doe',
-                password='TestPassword123!')
+            email='john.doe1@example.com',
+            given_name='John',
+            surname='Doe',
+            password='TestPassword123!',
+        )
+
         a = self.app.accounts.get(user.href)
         self.assertEqual(user.href, a.href)
         self.assertEqual(1, UserModel.objects.count())
+
         href = user.href
         user.delete()
+
         self.assertEqual(0, UserModel.objects.count())
         a = self.app.accounts.get(href)
         self.assertRaises(StormpathError, a.__getattr__, 'email')
@@ -425,20 +482,24 @@ class TestUserAndGroups(LiveTestBase):
     def test_deleting_users(self):
         self.assertEqual(0, UserModel.objects.count())
         user_1 = self.create_django_user(
-                email='john.doe1@example.com',
-                given_name='John2',
-                surname='Doe',
-                password='TestPassword123!')
+            email='john.doe1@example.com',
+            given_name='John2',
+            surname='Doe',
+            password='TestPassword123!',
+        )
+
         user_2 = self.create_django_user(
-                email='john.doe2@example.com',
-                given_name='John',
-                surname='Doe',
-                password='TestPassword123!')
+            email='john.doe2@example.com',
+            given_name='John',
+            surname='Doe',
+            password='TestPassword123!',
+        )
+
         href_1, href_2 = user_1.href, user_2.href
-        self.assertEqual(
-            set([a.href for a in self.app.accounts]), {href_1, href_2})
+        self.assertEqual(set([a.href for a in self.app.accounts]), {href_1, href_2})
         self.assertEqual(2, UserModel.objects.count())
         UserModel.objects.delete()
+
         self.assertEqual(0, UserModel.objects.count())
         a = self.app.accounts.get(href_1)
         self.assertRaises(StormpathError, a.__getattr__, 'email')
@@ -460,10 +521,11 @@ class TestUserAndGroups(LiveTestBase):
     def test_saving_group_membership(self):
         self.assertEqual(0, UserModel.objects.count())
         user = self.create_django_user(
-                email='john.doe1@example.com',
-                given_name='John',
-                surname='Doe',
-                password='TestPassword123!')
+            email='john.doe1@example.com',
+            given_name='John',
+            surname='Doe',
+            password='TestPassword123!',
+        )
 
         g = Group.objects.create(name='testGroup')
         user.groups.add(g)
@@ -488,10 +550,11 @@ class TestUserAndGroups(LiveTestBase):
     def test_updating_non_existent_sp_user(self):
         self.assertEqual(0, UserModel.objects.count())
         user = self.create_django_user(
-                email='john.doe1@example.com',
-                given_name='John',
-                surname='Doe',
-                password='TestPassword123!')
+            email='john.doe1@example.com',
+            given_name='John',
+            surname='Doe',
+            password='TestPassword123!',
+        )
 
         a = self.app.accounts.get(href=user.href)
         a.delete()
@@ -501,53 +564,64 @@ class TestUserAndGroups(LiveTestBase):
     def test_updating_a_user_that_doesnt_exists_on_sp(self):
         self.assertEqual(0, UserModel.objects.count())
         user = self.create_django_user(
-                email='john.doe1@example.com',
-                given_name='John',
-                surname='Doe',
-                password='TestPassword123!')
+            email='john.doe1@example.com',
+            given_name='John',
+            surname='Doe',
+            password='TestPassword123!',
+        )
 
         self.assertEqual(1, UserModel.objects.count())
         user.delete()
+
         self.assertEqual(0, UserModel.objects.count())
         self.assertEqual(0, len(self.app.accounts))
 
     def test_creating_a_user_with_invalid_password(self):
         self.assertEqual(0, UserModel.objects.count())
         self.assertRaises(StormpathError, self.create_django_user,
-                email='john.doe1@example.com',
-                given_name='John',
-                surname='Doe',
-                password='invalidpassword')  # stormpath pass policy
+            email='john.doe1@example.com',
+            given_name='John',
+            surname='Doe',
+            password='invalidpassword',
+        )  # stormpath pass policy
 
         self.assertEqual(0, UserModel.objects.count())
         self.assertEqual(0, len(self.app.accounts))
 
     def test_valid_check_password(self):
         self.assertEqual(0, UserModel.objects.count())
+
         user = self.create_django_user(
-                email='john.doe1@example.com',
-                given_name='John',
-                surname='Doe',
-                password='TestPassword123!')
+            email='john.doe1@example.com',
+            given_name='John',
+            surname='Doe',
+            password='TestPassword123!',
+        )
+
         self.assertTrue(user.check_password('TestPassword123!'))
 
     def test_invalid_check_password(self):
         self.assertEqual(0, UserModel.objects.count())
+
         user = self.create_django_user(
-                email='john.doe1@example.com',
-                given_name='John',
-                surname='Doe',
-                password='TestPassword123!')
+            email='john.doe1@example.com',
+            given_name='John',
+            surname='Doe',
+            password='TestPassword123!',
+        )
+
         self.assertFalse(user.check_password('invalidpassword'))
 
 
 class TestDjangoUser(LiveTestBase):
     def test_creating_a_user(self):
         user = self.create_django_user(
-                email='john.doe1@example.com',
-                first_name='John',
-                last_name='Doe',
-                password='TestPassword123!')
+            email='john.doe1@example.com',
+            first_name='John',
+            last_name='Doe',
+            password='TestPassword123!',
+        )
+
         a = self.app.accounts.get(user.href)
         self.assertEqual(user.href, a.href)
         self.assertEqual(user.first_name, user.given_name)
@@ -557,11 +631,13 @@ class TestDjangoUser(LiveTestBase):
 
     def test_creating_a_superuser(self):
         user = self.create_django_user(
-                superuser=True,
-                email='john.doe2@example.com',
-                first_name='John',
-                last_name='Doe',
-                password='TestPassword123!')
+            superuser=True,
+            email='john.doe2@example.com',
+            first_name='John',
+            last_name='Doe',
+            password='TestPassword123!',
+        )
+
         a = self.app.accounts.get(user.href)
         self.assertEqual(user.href, a.href)
         self.assertEqual(user.first_name, user.given_name)
@@ -573,10 +649,12 @@ class TestDjangoUser(LiveTestBase):
 
     def test_updating_a_user(self):
         user = self.create_django_user(
-                email='john.doe3@example.com',
-                first_name='John',
-                last_name='Doe',
-                password='TestPassword123!')
+            email='john.doe3@example.com',
+            first_name='John',
+            last_name='Doe',
+            password='TestPassword123!',
+        )
+
         a = self.app.accounts.get(user.href)
         self.assertEqual(user.href, a.href)
 
@@ -598,10 +676,12 @@ class TestDjangoUser(LiveTestBase):
 
     def test_updating_a_users_password(self):
         user = self.create_django_user(
-                email='john.doe3@example.com',
-                first_name='John',
-                last_name='Doe',
-                password='TestPassword123!')
+            email='john.doe3@example.com',
+            first_name='John',
+            last_name='Doe',
+            password='TestPassword123!',
+        )
+
         a = self.app.accounts.get(user.href)
         self.assertEqual(user.href, a.href)
 
@@ -630,6 +710,7 @@ class TestDjangoUser(LiveTestBase):
 
         b.authenticate(acc.email, 'TestPassword123!')
         self.assertEqual(1, UserModel.objects.count())
+
         user = UserModel.objects.get()
         self.assertEqual(user.first_name, user.given_name)
         self.assertEqual(user.first_name, acc.given_name)
@@ -641,10 +722,11 @@ class TestDjangoUser(LiveTestBase):
         directory.account_creation_policy.verification_email_status = 'ENABLED'
         directory.account_creation_policy.save()
         user = self.create_django_user(
-                email='john.doe3@example.com',
-                first_name='John',
-                last_name='Doe',
-                password='TestPassword123!')
+            email='john.doe3@example.com',
+            first_name='John',
+            last_name='Doe',
+            password='TestPassword123!',
+        )
 
         a = self.app.accounts.get(user.href)
 
@@ -670,10 +752,11 @@ class TestDjangoUser(LiveTestBase):
 
     def test_user_email_verification_disabled(self):
         user = self.create_django_user(
-                email='john.doe3@example.com',
-                first_name='John',
-                last_name='Doe',
-                password='TestPassword123!')
+            email='john.doe3@example.com',
+            first_name='John',
+            last_name='Doe',
+            password='TestPassword123!',
+        )
 
         a = self.app.accounts.get(user.href)
 
@@ -700,24 +783,30 @@ class TestDjangoUser(LiveTestBase):
 
 class TestForms(LiveTestBase):
     def test_user_creation_form_password_missmatch(self):
-        data = {'email': 'john.doe@example.com',
-                'username': 'johndoe',
-                'given_name': 'John',
-                'surname': 'Doe',
-                'password1': 'TestPassword123!',
-                'password2': 'TestPassword12345!'}
+        data = {
+            'email': 'john.doe@example.com',
+            'username': 'johndoe',
+            'given_name': 'John',
+            'surname': 'Doe',
+            'password1': 'TestPassword123!',
+            'password2': 'TestPassword12345!',
+        }
+
         form = StormpathUserCreationForm(data)
         is_valid = form.is_valid()
         self.assertFalse(is_valid)
         self.assertRaises(ValueError, form.save)
 
     def test_user_creation_form_password_invalid(self):
-        data = {'email': 'john.doe@example.com',
-                'username': 'johndoe',
-                'given_name': 'John',
-                'surname': 'Doe',
-                'password1': 'invalid',
-                'password2': 'invalid'}
+        data = {
+            'email': 'john.doe@example.com',
+            'username': 'johndoe',
+            'given_name': 'John',
+            'surname': 'Doe',
+            'password1': 'invalid',
+            'password2': 'invalid',
+        }
+
         form = StormpathUserCreationForm(data)
         is_valid = form.is_valid()
         self.assertFalse(is_valid)
@@ -725,17 +814,21 @@ class TestForms(LiveTestBase):
 
     def test_user_creation_form_existing_email(self):
         self.create_django_user(
-                email='john.doe@example.com',
-                given_name='John',
-                surname='Doe',
-                password='TestPassword123!')
+            email='john.doe@example.com',
+            given_name='John',
+            surname='Doe',
+            password='TestPassword123!',
+        )
 
-        data = {'email': 'john.doe@example.com',
-                'username': 'johndoe',
-                'given_name': 'John',
-                'surname': 'Doe',
-                'password1': 'TestPassword123!',
-                'password2': 'TestPassword123!'}
+        data = {
+            'email': 'john.doe@example.com',
+            'username': 'johndoe',
+            'given_name': 'John',
+            'surname': 'Doe',
+            'password1': 'TestPassword123!',
+            'password2': 'TestPassword123!',
+        }
+
         form = StormpathUserCreationForm(data)
         is_valid = form.is_valid()
         self.assertFalse(is_valid)
@@ -743,34 +836,42 @@ class TestForms(LiveTestBase):
 
     def test_user_creation_form_existing_username(self):
         user = self.create_django_user(
-                email='john.doe@example.com',
-                given_name='John',
-                surname='Doe',
-                password='TestPassword123!')
+            email='john.doe@example.com',
+            given_name='John',
+            surname='Doe',
+            password='TestPassword123!',
+        )
 
         acc = self.app.accounts.get(href=user.href)
 
-        data = {'email': 'john.doe@example.com',
-                'given_name': 'John',
-                'username': acc.username,
-                'surname': 'Doe',
-                'password1': 'TestPassword123!',
-                'password2': 'TestPassword123!'}
+        data = {
+            'email': 'john.doe@example.com',
+            'given_name': 'John',
+            'username': acc.username,
+            'surname': 'Doe',
+            'password1': 'TestPassword123!',
+            'password2': 'TestPassword123!',
+        }
 
         form = StormpathUserCreationForm(data)
         is_valid = form.is_valid()
+
         self.assertFalse(is_valid)
         self.assertRaises(ValueError, form.save)
 
     def test_saving_user_form(self):
-        data = {'email': 'john.doe123@example.com',
-                'username': 'johndoe',
-                'given_name': 'John',
-                'surname': 'Doe',
-                'password1': 'TestPassword123!',
-                'password2': 'TestPassword123!'}
+        data = {
+            'email': 'john.doe123@example.com',
+            'username': 'johndoe',
+            'given_name': 'John',
+            'surname': 'Doe',
+            'password1': 'TestPassword123!',
+            'password2': 'TestPassword123!',
+        }
+
         form = StormpathUserCreationForm(data)
         is_valid = form.is_valid()
+
         self.assertTrue(is_valid)
         form.save()
         self.assertEqual(1, UserModel.objects.count())
