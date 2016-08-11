@@ -12,14 +12,14 @@ except NameError:
 from django_stormpath.models import StormpathUserManager, APPLICATION
 
 
-class Command(NoArgsCommand):
+class Command(BaseCommand):
     help = 'Syncs remote accounts to the local database.'
 
     def handle(self, **options):
         try:
             user_manager = StormpathUserManager()
             start_time = datetime.datetime.now()
-            user_manager.sync_accounts()
+            user_manager.sync_accounts_from_stormpath()
             duration = datetime.datetime.now() - start_time
             print("Successfully synced accounts from %s directory in %s" % (APPLICATION.name, duration))
         except Exception as e:

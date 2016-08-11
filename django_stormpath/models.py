@@ -140,7 +140,25 @@ class StormpathUserManager(BaseUserManager):
         # Clear the result cache, in case this QuerySet gets reused.
         self._result_cache = None
 
-    def sync_accounts(self):
+    def sync_accounts_from_stormpath(self):
+        """ Sync accounts from stormpath -> local database.
+        This may take a long time, depending on how many users you have in your
+        Stormpath application. It also makes numerous database queries.
+
+        This method updates local users from stormpath or creates new ones
+        where the user does not exist locally. This is an additive operation,
+        meaning it should delete no data from the local database OR stormpath.
+        """
+        # Sync groups
+        sp_groups = [g.name for g in APPLICATION.groups]
+        db_groups = set(Group.objects.all().values_list('name', flat=True))
+        missing_from_db = set(sp_groups).difference(db_groups)
+        if missing_from_db:
+            groups_to_create = []
+            for g_name in missing_from_db:
+                groups_to_create.append(Group(name=g_name))
+            Group.objects.bulk_create(groups_to_create)
+
         for account in APPLICATION.accounts:
             try:
                 user = StormpathUser.objects.get(email=account.email)
@@ -148,6 +166,9 @@ class StormpathUserManager(BaseUserManager):
                 user = StormpathUser()
             user._mirror_data_from_stormpath_account(account)
             user.set_unusable_password()
+
+            users_sp_groups = [g.name for g in account.groups]
+            user.groups = Group.objects.filter(name__in=users_sp_groups)
             user._save_db_only()
 
     delete.alters_data = True
