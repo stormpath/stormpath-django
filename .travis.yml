@@ -22,8 +22,6 @@ env:
   - DJANGO=1.9
   - DJANGO=1.10
   global:
-  - secure: KInYYJW03XLweRjY55IXpmmjDai3FZBGDF2FmiIv5eybp0pOiVsmqiUek/6cE2gVCjjbt5wXRXU+wfOjAgeYBEsh/itYb72FMs29oqxbIMB5uQ57557vJcb6XptaOTFzMga12y1dPo/RyEWsyhYZNfLoNzHfeXrkMmQX7qkVYYc=
-  - secure: Pe9F6fcRSvDwFZg5yujckt5+ZpjNBLmfpSEdBS/waOW6PpH11XXipFzUIY9UYpHh8YHUJ/Ku+QoftdP0LI7k6nC9xX6/qrZ/DSBm7p86TRokZeklhlP1e680UqFqKRpgQ752e/BFtlKUNo3VrBVv3pWyKlZiz7WQloeHA1cj0pw=
   - GOOGLE_CLIENT_ID=xxx
   - GOOGLE_CLIENT_SECRET=xxx
   - FACEBOOK_CLIENT_ID=xxx
@@ -32,3 +30,5 @@ env:
   - GITHUB_CLIENT_SECRET=xxx
   - LINKEDIN_CLIENT_ID=xxx
   - LINKEDIN_CLIENT_SECRET=xxx
+  - secure: J24jJ8Sp6e0At5raohFTqx/g2gtBkdTHQ4kk1nvbe/aGrHJbwJNliXEwNftOLm39eyoUyzRx6qXliEGf7Pk7Xwt4xtfcaEq0hnzpdw3CREQOi0h8udY5UIOFGabGPyTjN5lNJTGGINcGl3pjqd1+JCDfnM/nqbTfPQ3wRhKOlbM=
+  - secure: WKDRKgGrvuVSzArPkrihdmkQEC9F5NqS4Kf3nC5xFCFuM+HcnhhAXAYk/zaFv7vliy1bm2c6FMbTTtnH4r3qBS7QV0Cj3vPsrZxTGuFsME80/g5eRc30laBlyBV8JiFVPIX9GeoxUiMivuki+ja0MdEvUGP8ERgV1tQcNLEPSh0=
