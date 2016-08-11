@@ -141,7 +141,10 @@ class StormpathUserManager(BaseUserManager):
         self._result_cache = None
 
     def sync_accounts_from_stormpath(self, sync_groups=True):
-        """ Sync accounts from stormpath -> local database.
+        """ :arg sync_groups: ¡WARNING! Groups will be deleted from stormpath
+                                if not present locally when user logs in!
+
+        Sync accounts from stormpath -> local database.
         This may take a long time, depending on how many users you have in your
         Stormpath application. It also makes numerous database queries.
 
