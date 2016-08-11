@@ -190,22 +190,22 @@ STORMPATH_ENABLE_GITHUB = True
 STORMPATH_ENABLE_LINKEDIN = True
 
 STORMPATH_SOCIAL = {
-        'GOOGLE': {
-            'client_id': os.environ['GOOGLE_CLIENT_ID'],
-            'client_secret': os.environ['GOOGLE_CLIENT_SECRET'],
-        },
-        'FACEBOOK': {
-            'client_id': os.environ['FACEBOOK_CLIENT_ID'],
-            'client_secret': os.environ['FACEBOOK_CLIENT_SECRET']
-        },
-        'GITHUB': {
-            'client_id': os.environ['GITHUB_CLIENT_ID'],
-            'client_secret': os.environ['GITHUB_CLIENT_SECRET']
-        },
-        'LINKEDIN': {
-            'client_id': os.environ['LINKEDIN_CLIENT_ID'],
-            'client_secret': os.environ['LINKEDIN_CLIENT_SECRET']
-        },
+    'GOOGLE': {
+        'client_id': os.environ['GOOGLE_CLIENT_ID'],
+        'client_secret': os.environ['GOOGLE_CLIENT_SECRET'],
+    },
+    'FACEBOOK': {
+        'client_id': os.environ['FACEBOOK_CLIENT_ID'],
+        'client_secret': os.environ['FACEBOOK_CLIENT_SECRET']
+    },
+    'GITHUB': {
+        'client_id': os.environ['GITHUB_CLIENT_ID'],
+        'client_secret': os.environ['GITHUB_CLIENT_SECRET']
+    },
+    'LINKEDIN': {
+        'client_id': os.environ['LINKEDIN_CLIENT_ID'],
+        'client_secret': os.environ['LINKEDIN_CLIENT_SECRET']
+    },
 }
 
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
