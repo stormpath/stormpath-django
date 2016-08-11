@@ -46,14 +46,8 @@ class LiveTestBase(TestCase):
     def tearDown(self):
         super(LiveTestBase, self).tearDown()
 
-        for group in self.app.groups:
-            group.delete()
-
         for mapping in self.app.account_store_mappings:
             mapping.account_store.delete()
-
-        for account in self.app.accounts:
-            account.delete()
 
         self.app.delete()
 
