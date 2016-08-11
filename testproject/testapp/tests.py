@@ -55,6 +55,7 @@ class LiveTestBase(TestCase):
             custom_data=None, given_name=None, surname=None, first_name=None,
             last_name=None):
         rnd = uuid4().hex
+
         if email is None:
             email = rnd + '@example.com'
         if given_name is None and first_name is None:
@@ -77,6 +78,7 @@ class LiveTestBase(TestCase):
             user = UserModel.objects.create_superuser(**props)
         else:
             user = UserModel.objects.create_user(**props)
+
         return user
 
 
