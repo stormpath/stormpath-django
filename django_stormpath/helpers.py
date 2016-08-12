@@ -3,7 +3,7 @@
 
 from django.core.exceptions import ImproperlyConfigured
 
-
+.
 def validate_settings(settings):
     """Ensure all user-supplied settings exist, or throw a useful error message.
 

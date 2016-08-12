@@ -30,6 +30,7 @@ def _handle_authenticated(request, id_site_response):
 def _handle_logout(request, id_site_response):
     django_logout(request)
     redirect_to = resolve_url(settings.LOGIN_REDIRECT_URL)
+
     return HttpResponseRedirect(redirect_to)
 
 
