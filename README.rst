@@ -364,6 +364,7 @@ Version 1.1.0
 - Renaming management task ``sync_account`` -> ``sync_accounts_from_stormpath``.
 - Adding option to ``sync_accounts_from_stormpath`` to sync Stormpath Groups in
   addition to accounts.
+- Various code cleanup.
 
 
 Version 1.0.7
