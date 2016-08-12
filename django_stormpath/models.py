@@ -140,14 +140,44 @@ class StormpathUserManager(BaseUserManager):
         # Clear the result cache, in case this QuerySet gets reused.
         self._result_cache = None
 
-    def sync_accounts(self):
+    def sync_accounts_from_stormpath(self, sync_groups=True):
+        """ :arg sync_groups: ¡WARNING! Groups will be deleted from stormpath
+                                if not present locally when user logs in!
+
+        Sync accounts from stormpath -> local database.
+        This may take a long time, depending on how many users you have in your
+        Stormpath application. It also makes numerous database queries.
+
+        This method updates local users from stormpath or creates new ones
+        where the user does not exist locally. This is an additive operation,
+        meaning it should delete no data from the local database OR stormpath.
+        """
+        if sync_groups:
+            sp_groups = [g.name for g in APPLICATION.groups]
+            db_groups = set(Group.objects.all().values_list('name', flat=True))
+            missing_from_db = set(sp_groups).difference(db_groups)
+            if missing_from_db:
+                groups_to_create = []
+                for g_name in missing_from_db:
+                    groups_to_create.append(Group(name=g_name))
+                Group.objects.bulk_create(groups_to_create)
+
         for account in APPLICATION.accounts:
             try:
                 user = StormpathUser.objects.get(email=account.email)
+                created = True
             except StormpathUser.DoesNotExist:
                 user = StormpathUser()
+                created = True
             user._mirror_data_from_stormpath_account(account)
             user.set_unusable_password()
+
+            if created:
+                user._save_db_only()
+
+            if sync_groups:
+                users_sp_groups = [g.name for g in account.groups]
+                user.groups = Group.objects.filter(name__in=users_sp_groups)
             user._save_db_only()
 
     delete.alters_data = True
