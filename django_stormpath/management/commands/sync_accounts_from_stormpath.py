@@ -3,13 +3,7 @@ import sys
 import datetime
 
 from django.core.management.base import BaseCommand
-
-try:
-    input = raw_input
-except NameError:
-    pass
-
-from django_stormpath.models import StormpathUserManager, APPLICATION
+from django_stormpath.models import APPLICATION, StormpathUserManager
 
 
 class Command(BaseCommand):
@@ -21,8 +15,8 @@ class Command(BaseCommand):
             start_time = datetime.datetime.now()
             user_manager.sync_accounts_from_stormpath()
             duration = datetime.datetime.now() - start_time
-            print("Successfully synced accounts from %s directory in %s" % (APPLICATION.name, duration))
+            print('Successfully synced accounts from {} directory in {}'.format(APPLICATION.name, duration))
         except Exception as e:
-            print("Error! %s" % e)
+            print('Error! {}'.format(e))
             sys.exit(-1)
 
