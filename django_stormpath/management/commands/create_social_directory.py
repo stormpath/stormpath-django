@@ -7,8 +7,8 @@ try:
 except NameError:
     pass
 
-from stormpath.resources.provider import Provider
 from stormpath.error import Error as StormpathError
+from stormpath.resources.provider import Provider
 
 from django_stormpath import social
 
@@ -25,25 +25,25 @@ class Command(BaseCommand):
         4. Linkedin
         """)
 
-        p = input("Please choose a provider: ")
+        p = input('Please choose a provider: ')
         try:
             provider_choice = int(p) - 1  # off by one
         except ValueError:
-            print("Please choose on of the available provider from the list.")
+            print('Please choose on of the available provider from the list.')
             sys.exit(-1)
 
         provider = providers[provider_choice]
 
-        redirect_uri = input("Please specify the FQDN redirect uri for this provider: ")
+        redirect_uri = input('Please specify the FQDN redirect uri for this provider: ')
 
         if not redirect_uri.startswith('http'):
-            print("Invalid redirect URI. Please enter a FQDN URI like http://example.com/social-login/google/callback")
+            print('Invalid redirect URI. Please enter a FQDN URI like http://example.com/social-login/google/callback')
             sys.exit(-1)
 
         try:
             social.create_provider_directory(provider, redirect_uri)
-            print("Successfully created Directory for %s" % provider)
+            print('Successfully created Directory for {}'.format(provider))
         except StormpathError as e:
-            print("Error! %s" % e)
+            print('Error! {}'.format(e))
             sys.exit(-1)
 
