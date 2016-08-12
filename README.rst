@@ -351,6 +351,21 @@ Change Log
 All library changes, in descending order.
 
 
+Version 1.1.0
+*************
+
+**Released August 12, 2016.**
+
+- Dropping Python 3.3 support since Django doesn't support it in 1.10.
+- Supporting Python 3.5.
+- Dropping support for Django 1.6 / 1.7, since they are EOL by Django.
+- Fixing broken tests.
+- Adding coverage reporting.
+- Renaming management task ``sync_account`` -> ``sync_accounts_from_stormpath``.
+- Adding option to ``sync_accounts_from_stormpath`` to sync Stormpath Groups in
+  addition to accounts.
+
+
 Version 1.0.7
 *************
 
