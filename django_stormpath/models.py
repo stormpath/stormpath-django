@@ -23,7 +23,7 @@ from stormpath.error import Error as StormpathError
 from stormpath.resources import AccountCreationPolicy
 
 from django_stormpath import __version__
-from django_stormpath.helpers import validate_settings
+from django_stormpath.helpers import validate_settings, organization_if_any
 
 
 # Ensure all user settings have been properly initialized, otherwise we'll
@@ -50,7 +50,9 @@ def get_default_is_active():
     Stormpath user is active by default if e-mail verification is
     disabled.
     """
-    directory = APPLICATION.default_account_store_mapping.account_store
+    organization = organization_if_any(settings, CLIENT)
+    owner = APPLICATION if organization is None else organization
+    directory = owner.default_account_store_mapping.account_store
     verif_email = directory.account_creation_policy.verification_email_status
     return verif_email == AccountCreationPolicy.EMAIL_STATUS_DISABLED
 
@@ -68,7 +70,10 @@ class StormpathUserManager(BaseUserManager):
         if password:
             try:
                 APPLICATION.authenticate_account(
-                    getattr(user, user.USERNAME_FIELD), password)
+                    getattr(user, user.USERNAME_FIELD),
+                    password,
+                    organization_name_key=getattr(settings, 'STORMPATH_ORGANIZATION_NAME_KEY', None)
+                )
             except StormpathError:
                 raise self.model.DoesNotExist
 
@@ -296,7 +301,13 @@ class StormpathBaseUser(AbstractBaseUser, PermissionsMixin):
 
     def _create_stormpath_user(self, data, raw_password):
         data['password'] = raw_password
-        account = APPLICATION.accounts.create(data)
+        organization = organization_if_any(settings, CLIENT)
+
+        if organization is not None:
+            account = organization.default_account_store_mapping.account_store.accounts.create(data)
+        else:
+            account = APPLICATION.accounts.create(data)
+
         self._save_sp_group_memberships(account)
         return account
 
@@ -389,7 +400,11 @@ class StormpathBaseUser(AbstractBaseUser, PermissionsMixin):
 
     def check_password(self, raw_password):
         try:
-            acc = APPLICATION.authenticate_account(self.username, raw_password)
+            acc = APPLICATION.authenticate_account(
+                self.username,
+                raw_password,
+                organization_name_key=getattr(settings, 'STORMPATH_ORGANIZATION_NAME_KEY', None)
+            )
             return acc is not None
         except StormpathError as e:
             # explicity check to see if password is incorrect
@@ -423,17 +438,22 @@ class StormpathUser(StormpathBaseUser):
 
 @receiver(pre_save, sender=Group)
 def save_group_to_stormpath(sender, instance, **kwargs):
+    def create():
+        organization = organization_if_any(settings, CLIENT)
+        owner = APPLICATION if organization is None else organization
+        owner.groups.create({'name': instance.name})
+
     try:
         if instance.pk is None:
             # creating a new group
-            APPLICATION.groups.create({'name': instance.name})
+            create()
         else:
             # updating an existing group
             old_group = Group.objects.get(pk=instance.pk)
             remote_groups = APPLICATION.groups.search({'name': old_group.name})
             if len(remote_groups) is 0:
                 # group existed locally but not on Stormpath, create it
-                APPLICATION.groups.create({'name': instance.name})
+                create()
                 return
 
             remote_group = remote_groups[0]

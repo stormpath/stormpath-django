@@ -1,5 +1,6 @@
 from logging import getLogger
 
+from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.db.models import Q
 from django.contrib.auth.backends import ModelBackend
@@ -29,7 +30,11 @@ class StormpathBackend(ModelBackend):
         """
         APPLICATION = get_application()
         try:
-            result = APPLICATION.authenticate_account(username, password)
+            result = APPLICATION.authenticate_account(
+                login=username,
+                password=password,
+                organization_name_key=getattr(settings, 'STORMPATH_ORGANIZATION_NAME_KEY', None)
+            )
             return result.account
         except Error as e:
             log.debug(e)

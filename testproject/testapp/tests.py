@@ -1,3 +1,4 @@
+from contextlib import contextmanager
 from time import sleep
 from uuid import uuid4
 
@@ -9,7 +10,7 @@ from django.contrib.auth.models import Group
 
 import django_stormpath
 from django_stormpath.models import CLIENT
-from django_stormpath.backends import StormpathBackend
+from django_stormpath.backends import StormpathBackend, get_application
 from django_stormpath.forms import *
 
 from pydispatch import dispatcher
@@ -25,6 +26,37 @@ def sleep_receiver_function(signal, sender, data, params):
     created, to avoid test failures.
     """
     sleep(1)
+
+
+@contextmanager
+def organization_tenancy():
+    cfg_var = 'STORMPATH_ORGANIZATION_NAME_KEY'
+    org_name = 'stormpath-django-test-org-%s' % uuid4().hex
+
+    dir = CLIENT.directories.create({'name': org_name})
+    org = CLIENT.organizations.create({'name': org_name, 'name_key': org_name})
+    org_dir_mapping = CLIENT.organization_account_store_mappings.create({'organization': org,
+                                                                         'account_store': dir,
+                                                                         'is_default_account_store': True,
+                                                                         'is_default_group_store': True})
+    app = get_application()
+    app_org_mapping = app.account_store_mappings.create({'application': app,
+                                                         'account_store': org})
+    org.refresh()
+
+    cfg_save = getattr(settings, cfg_var, None)
+    setattr(settings, cfg_var, org_name)
+
+    yield org
+
+    app_org_mapping.delete()
+    org_dir_mapping.delete()
+    dir.delete()
+    org.delete()
+    if cfg_save is None:
+        delattr(settings, cfg_var)
+    else:
+        setattr(settings, cfg_var, cfg_save)
 
 
 # Connect the signal.
@@ -612,6 +644,92 @@ class TestUserAndGroups(LiveTestBase):
 
         self.assertFalse(user.check_password('invalidpassword'))
 
+    def test_creating_user_in_organization(self):
+        with organization_tenancy() as org:
+            user = self.create_django_user(
+                email='bib.fortuna1@testmail.stormpath.com',
+                given_name='Bib',
+                surname='Fortuna',
+                password='TestPassword123!',
+            )
+
+            self.assertEqual(len(org.accounts), 1)
+            a = next(acct for acct in org.accounts)
+            self.assertEqual(user.href, a.href)
+
+    def test_creating_user_with_invalid_organization_name(self):
+        with self.settings(STORMPATH_ORGANIZATION_NAME_KEY='does-not-exist'):
+            with self.assertRaises(ObjectDoesNotExist):
+                self.create_django_user(
+                    email='bib.fortuna0@testmail.stormpath.com',
+                    given_name='Bib',
+                    surname='Fortuna',
+                    password='TestPassword123!'
+                )
+
+    def test_authenticating_user_from_organization(self):
+        with organization_tenancy():
+            password = 'TestPassword123!'
+            self.create_django_user(
+                email='bib.fortuna2@testmail.stormpath.com',
+                given_name='Bib',
+                surname='Fortuna',
+                password=password,
+            )
+            b = StormpathBackend()
+            user = b.authenticate('bib.fortuna2@testmail.stormpath.com', password)
+            self.assertIsNotNone(user)
+
+    def test_get_from_organization_with_wrong_password(self):
+        with organization_tenancy():
+            UserModel.objects.create_user(
+                email='bib.fortuna3@testmail.stormpath.com',
+                given_name='Sample',
+                surname='User',
+                password='TestPassword123!',
+            )
+
+            with self.assertRaises(UserModel.DoesNotExist):
+                UserModel.objects.get(
+                    email='bib.fortuna3@testmail.stormpath.com',
+                    given_name='Sample',
+                    surname='User',
+                    password='wrong',
+                )
+
+    def test_valid_check_password_in_organization(self):
+        with organization_tenancy():
+            self.assertEqual(0, UserModel.objects.count())
+
+            user = self.create_django_user(
+                email='bib.fortuna4@testmail.stormpath.com',
+                given_name='Bib',
+                surname='Fortuna',
+                password='TestPassword123!',
+            )
+
+            self.assertTrue(user.check_password('TestPassword123!'))
+
+    def test_invalid_check_password_in_organization(self):
+        with organization_tenancy():
+            self.assertEqual(0, UserModel.objects.count())
+
+            user = self.create_django_user(
+                email='bib.fortuna5@testmail.stormpath.com',
+                given_name='Bib',
+                surname='Fortuna',
+                password='TestPassword123!',
+            )
+
+            self.assertFalse(user.check_password('invalidpassword'))
+
+    def test_groups_get_created_in_organization(self):
+        with organization_tenancy() as organization:
+            self.assertEqual(0, Group.objects.count())
+            Group.objects.create(name='testGroup')
+
+            self.assertEqual(1, len(organization.groups))
+
 
 class TestDjangoUser(LiveTestBase):
     def test_creating_a_user(self):
@@ -780,6 +898,40 @@ class TestDjangoUser(LiveTestBase):
         self.assertFalse(user.is_verified)
         self.assertEqual(a.status, a.STATUS_UNVERIFIED)
 
+    def test_user_email_verification_is_based_on_organization(self):
+        with organization_tenancy() as organization:
+            directory = organization.default_account_store_mapping.account_store
+            directory.account_creation_policy.verification_email_status = 'ENABLED'
+            directory.account_creation_policy.save()
+            user = self.create_django_user(
+                email='bib.fortuna6@testmail.stormpath.com',
+                first_name='Bib',
+                last_name='Fortuna',
+                password='TestPassword123!',
+            )
+
+            a = self.app.accounts.get(user.href)
+
+            self.assertFalse(user.is_active)
+            self.assertFalse(user.is_verified)
+            self.assertEqual(a.status, a.STATUS_UNVERIFIED)
+
+            a.status = a.STATUS_ENABLED
+            a.save()
+            sb = StormpathBackend()
+            user = sb._create_or_get_user(a)
+
+            self.assertTrue(user.is_active)
+            self.assertTrue(user.is_verified)
+            self.assertEqual(a.status, a.STATUS_ENABLED)
+
+            a.status = a.STATUS_DISABLED
+            a.save()
+            user = sb._create_or_get_user(a)
+            self.assertFalse(user.is_active)
+            self.assertTrue(user.is_verified)
+            self.assertEqual(a.status, a.STATUS_DISABLED)
+
 
 class TestForms(LiveTestBase):
     def test_user_creation_form_password_missmatch(self):
@@ -875,3 +1027,26 @@ class TestForms(LiveTestBase):
         self.assertTrue(is_valid)
         form.save()
         self.assertEqual(1, UserModel.objects.count())
+
+    def test_user_creation_form_password_validated_using_organization_policies(self):
+        with organization_tenancy() as organization:
+            strength = organization.default_account_store_mapping.account_store.password_policy.strength
+            strength.min_length = 5
+            strength.min_numeric = 0
+            strength.min_symbol = 0
+            strength.min_upper_case = 0
+            strength.save()
+
+            data = {
+                'email': 'bib.fortuna7@testmail.stormpath.com',
+                'username': 'bibfortuna7',
+                'given_name': 'Bib',
+                'surname': 'Fortuna',
+                'password1': 'valid',
+                'password2': 'valid',
+            }
+
+            form = StormpathUserCreationForm(data)
+            is_valid = form.is_valid()
+            self.assertTrue(is_valid)
+            self.assertIsNotNone(form.save())

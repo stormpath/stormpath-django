@@ -336,6 +336,31 @@ official `Caching Docs <https://docs.stormpath.com/python/product-guide/#caching
 in our Python library.
 
 
+Multi-tenancy with Organizations
+--------------------------------
+
+Stormpath supports a
+`multi-tenancy <https://docs.stormpath.com/rest/product-guide/latest/multitenancy.html>`_
+model for user management based on Organizations. The ``Django-Stormpath`` plug-in
+provides limited support for multi-tenancy by allowing you to specify a
+configuration setting, STORMPATH_ORGANIZATION_NAME_KEY, that customizes these
+behaviors of the plug-in:
+
+- Which account store new accounts and groups are created in.
+- Which account store is searched first when authenticating a user.
+- Which set of constraints are used by the forms module to validate passwords.
+- Which account store's e-mail verification setting is consulted to determine
+  whether accounts are enabled (active) when first created.
+- How ID Site redirect URLs are composed.
+
+The STORMPATH_ORGANIZATION_NAME_KEY setting is optional, and if present it
+should contain a name key belonging to an Organization that is mapped as an
+account store to the application specified in the STORMPATH_APPLICATION
+setting. This is a static solution, intended to mandate the use of a single
+Organization over the entire lifetime of a running instance of a Django
+project.
+
+
 Copyright and License
 ---------------------
 
