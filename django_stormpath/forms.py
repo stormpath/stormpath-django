@@ -2,12 +2,21 @@
 """
 
 from django import forms
+from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.contrib.auth.forms import ReadOnlyPasswordHashField
 
 from stormpath.error import Error
 
-from .models import APPLICATION
+from django_stormpath.helpers import organization_if_any
+from .models import APPLICATION, CLIENT
+
+
+def get_controlling_password_policy():
+    organization = organization_if_any(settings, CLIENT)
+    owner = APPLICATION if organization is None else organization
+    directory = owner.default_account_store_mapping.account_store
+    return directory.password_policy
 
 
 class StormpathUserCreationForm(forms.ModelForm):
@@ -29,8 +38,7 @@ class StormpathUserCreationForm(forms.ModelForm):
         password2 = self.cleaned_data.get('password2')
 
         try:
-            directory = APPLICATION.default_account_store_mapping.account_store
-            directory.password_policy.strength.validate_password(password2)
+            get_controlling_password_policy().strength.validate_password(password2)
         except ValueError as e:
             raise forms.ValidationError(str(e))
 
@@ -121,8 +129,7 @@ class PasswordResetForm(forms.Form):
         password2 = self.cleaned_data.get('new_password2')
 
         try:
-            directory = APPLICATION.default_account_store_mapping.account_store
-            directory.password_policy.strength.validate_password(password2)
+            get_controlling_password_policy().strength.validate_password(password2)
         except ValueError as e:
             raise forms.ValidationError(str(e))
 
